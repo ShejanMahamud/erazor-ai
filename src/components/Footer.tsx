@@ -1,14 +1,5 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  ArrowRight,
-  Github,
-  Linkedin,
-  Mail,
-  Phone,
-  Twitter
-} from 'lucide-react';
+import { Github, Linkedin, Mail, Phone, Twitter } from 'lucide-react';
 import Link from 'next/link';
 
 export const Footer = () => {
@@ -17,46 +8,6 @@ export const Footer = () => {
       {/* Main Footer Container */}
       <div className='container mx-auto px-6'>
         {/* Newsletter Section - Similar to PricingCard highlighted style */}
-        <div
-          className={cn(
-            'relative mb-12 flex flex-col gap-8 overflow-hidden rounded-2xl border p-8 shadow',
-            'bg-foreground text-background'
-          )}
-        >
-          {/* Background Decoration - Same as PricingCard */}
-          <HighlightedBackground />
-
-          <div className='relative z-10 flex flex-col items-center justify-between gap-6 md:flex-row'>
-            <div className='flex-1 text-center md:text-left'>
-              <div className='mb-4 flex items-center justify-center gap-3 md:justify-start'>
-                <h3 className='text-2xl font-medium'>Stay Updated</h3>
-                <Badge className='bg-orange-900 px-2 py-1 text-white hover:bg-orange-900'>
-                  🚀 Latest News
-                </Badge>
-              </div>
-              <p className='text-background/80 max-w-md'>
-                Get the latest updates, features, and tips delivered straight to
-                your inbox.
-              </p>
-            </div>
-
-            <div className='flex w-full flex-col gap-3 sm:flex-row md:w-auto'>
-              <input
-                type='email'
-                placeholder='Enter your email'
-                className='bg-background text-foreground flex-1 rounded-lg border px-4 py-2 md:min-w-[300px]'
-              />
-              <Button
-                variant='expandIcon'
-                Icon={ArrowRight}
-                iconPlacement='right'
-                className='bg-accent text-foreground hover:bg-accent/95 rounded-lg'
-              >
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Main Footer Content */}
         <div className='mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4'>

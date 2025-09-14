@@ -376,7 +376,8 @@ export const Pricing = () => {
     <section className='my-24 flex flex-col items-center gap-10 px-5 py-10'>
       {/* Section Header */}
       <PricingHeader
-        title='Plans and Pricing'
+        title='Plans and '
+        focusText=' Pricing'
         subtitle='Receive unlimited credits when you pay yearly, and save on your plan.'
         frequencies={PAYMENT_FREQUENCIES}
         selectedFrequency={selectedPaymentFreq}

@@ -6,12 +6,12 @@ import { useState } from 'react';
 import HeadingText from './ui/heading-text';
 
 export const UseCases = () => {
-  const [activeCategory, setActiveCategory] = useState('ecommerce');
+  const [activeCategory, setActiveCategory] = useState('branding');
 
   const categories = [
     {
-      id: 'ecommerce',
-      name: 'E-commerce',
+      id: 'branding',
+      name: 'Branding',
       color: 'from-orange-500 to-purple-600'
     },
     {
@@ -32,120 +32,82 @@ export const UseCases = () => {
   ];
 
   const useCases = {
-    ecommerce: [
+    branding: [
       {
-        title: 'Fashion Product',
-        description: 'Clean product shots for online stores',
-        before:
-          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop',
-        after:
-          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Clothing', 'Clean Background', 'Professional']
+        before: '/assets/product-1.jpg',
+        after: '/assets/product-1-removed.png'
       },
       {
-        title: 'Electronics',
-        description: 'Tech products with consistent backgrounds',
         before:
           'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Gadgets', 'White Background', 'Catalog']
+          'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Jewelry',
-        description: 'Luxury items with premium presentation',
         before:
           'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Luxury', 'Detailed', 'High-end']
+          'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&bg-remove=true'
       }
     ],
     portraits: [
       {
-        title: 'Professional Headshots',
-        description: 'Corporate profiles and LinkedIn photos',
         before:
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Business', 'Professional', 'Corporate']
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Creative Portraits',
-        description: 'Artistic and personal photography',
         before:
-          'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1757589815261-89c790bb3241?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Artistic', 'Personal', 'Creative']
+          'https://images.unsplash.com/photo-1757589815261-89c790bb3241?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Team Photos',
-        description: 'Consistent team member presentations',
         before:
           'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Team', 'Consistent', 'Group']
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop&bg-remove=true'
       }
     ],
     creative: [
       {
-        title: 'Digital Art',
-        description: 'Fantasy and creative compositions',
         before:
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1531379410502-63bfe8cdaf6f?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Art', 'Digital', 'Fantasy']
+          'https://images.unsplash.com/photo-1531379410502-63bfe8cdaf6f?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Photo Manipulation',
-        description: 'Advanced editing and composites',
         before:
-          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Composite', 'Advanced', 'Creative']
+          'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Brand Assets',
-        description: 'Marketing materials and graphics',
         before:
-          'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Branding', 'Marketing', 'Graphics']
+          'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop&bg-remove=true'
       }
     ],
     social: [
       {
-        title: 'Instagram Posts',
-        description: 'Eye-catching social media content',
         before:
           'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Instagram', 'Social', 'Viral']
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Story Content',
-        description: 'Engaging stories and reels',
         before:
           'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Stories', 'Reels', 'Engaging']
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=300&fit=crop&bg-remove=true'
       },
       {
-        title: 'Profile Pictures',
-        description: 'Perfect avatars for all platforms',
         before:
           'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop',
         after:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop&bg-remove=true',
-        tags: ['Avatar', 'Profile', 'Personal']
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop&bg-remove=true'
       }
     ]
   };
@@ -207,10 +169,10 @@ export const UseCases = () => {
               {/* Before/After Images */}
               <div className='relative aspect-[4/4] overflow-hidden'>
                 {/* Before Image */}
-                <div className='absolute inset-0 transition-transform duration-700 group-hover:scale-105'>
+                <div className='absolute inset-0 transition-opacity duration-500 group-hover:opacity-0'>
                   <Image
                     src={useCase.before}
-                    alt={`${useCase.title} - Before`}
+                    alt={`Before`}
                     fill
                     className='object-cover'
                   />
@@ -218,15 +180,27 @@ export const UseCases = () => {
                 </div>
 
                 {/* After Image Overlay */}
-                <div className='absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100'>
-                  <div className='absolute top-0 right-0 h-full w-1/2'>
-                    <Image
-                      src={useCase.after}
-                      alt={`${useCase.title} - After`}
-                      fill
-                      className='object-cover'
-                    />
-                  </div>
+                <div className='absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100'>
+                  {/* Transparent Background Pattern */}
+                  <div
+                    className='absolute inset-0'
+                    style={{
+                      backgroundImage: `
+                        linear-gradient(45deg, #ccc 25%, transparent 25%),
+                        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #ccc 75%),
+                        linear-gradient(-45deg, transparent 75%, #ccc 75%)
+                      `,
+                      backgroundSize: '20px 20px',
+                      backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                    }}
+                  />
+                  <Image
+                    src={useCase.after}
+                    alt={`After`}
+                    fill
+                    className='object-cover'
+                  />
                 </div>
 
                 {/* Before/After Labels */}

@@ -17,7 +17,7 @@ const HeadingText = ({
 }) => {
   return (
     <div className={`mb-16 space-y-4 text-center ${boxStyles}`}>
-      <h2 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
+      <h2 className='text-4xl font-bold tracking-tight uppercase md:text-5xl lg:text-6xl'>
         {heading}
         <span
           className={`bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent ${headingStyles}`}
