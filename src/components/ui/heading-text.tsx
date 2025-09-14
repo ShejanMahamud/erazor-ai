@@ -1,7 +1,10 @@
+import { AuroraText } from './aurora-text';
+
 const HeadingText = ({
   headingStyles,
   paragraphStyles,
   heading,
+  focusText,
   paragraph,
   boxStyles
 }: {
@@ -9,19 +12,22 @@ const HeadingText = ({
   paragraphStyles?: string;
   paragraph: string;
   heading: string;
+  focusText: string;
   boxStyles?: string;
 }) => {
   return (
-    <div
-      className={`flex w-full flex-col items-center justify-center ${boxStyles}`}
-    >
-      <h1
-        className={` ${headingStyles} mb-2 text-center text-2xl leading-[52px] font-bold text-white lg:text-4xl`}
-      >
+    <div className={`mb-16 space-y-4 text-center ${boxStyles}`}>
+      <h2 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
         {heading}
-      </h1>
+        <span
+          className={`bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent ${headingStyles}`}
+        >
+          <AuroraText colors={['#ff6900', '#9810fa']}>{focusText}</AuroraText>
+        </span>
+      </h2>
+
       <p
-        className={`${paragraphStyles} font-manrope mt-3 px-10 text-center text-sm text-[#ffffff99] lg:px-80`}
+        className={`text-foreground/70 mx-auto max-w-2xl text-xl leading-relaxed ${paragraphStyles}`}
       >
         {paragraph}
       </p>

@@ -9,7 +9,8 @@ const baseConfig: NextConfig = {
         protocol: 'https',
         hostname: 's3.aws-k8s.generated.photos',
         port: ''
-      }, {
+      },
+      {
         protocol: 'https',
         hostname: 'api.slingacademy.com',
         port: ''
@@ -23,6 +24,14 @@ const baseConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.clerk.com',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatar.vercel.sh'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
       }
     ]
   },

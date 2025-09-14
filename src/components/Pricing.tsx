@@ -31,9 +31,9 @@ export const Pricing = () => {
     // Group plans by base name (removing AI, Monthly, Yearly suffixes)
     const planGroups = activePlans.reduce(
       (groups, plan) => {
-        // Extract base name: "Erazor AI - Free Monthly" -> "Free"
+        // Extract base name: "Erazor - Free Monthly" -> "Free"
         let baseName = plan.name
-          .replace(/^Erazor\s*(AI)?\s*-\s*/, '') // Remove "Erazor AI -" prefix
+          .replace(/^Erazor\s*(AI)?\s*-\s*/, '') // Remove "Erazor -" prefix
           .replace(/\s*(Monthly|Yearly)$/, '') // Remove Monthly/Yearly suffix
           .trim();
 

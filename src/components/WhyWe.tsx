@@ -14,11 +14,15 @@ import {
 import React from 'react';
 const WhyWe: React.FC = () => {
   return (
-    <div className='my-28 w-full'>
+    <div className='bg-background relative w-full overflow-hidden py-20'>
+      {/* Gradient Background Enhancement */}
+      <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]' />
+
       <HeadingText
-        heading='Why Erazor AI?'
+        heading='Why '
+        focusText=' Erazor?'
         headingStyles='font-manrope'
-        paragraph='We are not just another AI tool. We are a revolution in the world of AI, designed to empower developers and businesses alike.'
+        paragraph='The most powerful AI background removal tool designed for professionals, creators, and businesses who demand perfection.'
       />
       <FeaturesSection />
     </div>
@@ -30,48 +34,51 @@ export default WhyWe;
 function FeaturesSection() {
   const features = [
     {
-      title: 'Built for individuals',
+      title: 'Lightning Fast Processing',
       description:
-        'Built for engineers, developers, dreamers, thinkers and doers.',
+        'Remove backgrounds in under 3 seconds with our advanced AI technology.',
       icon: <IconTerminal2 />
     },
     {
-      title: 'Ease of use',
+      title: 'One-Click Simplicity',
       description:
-        "It's as easy as using an Apple, and as expensive as buying one.",
+        'Just upload, click, and download. No technical skills required.',
       icon: <IconEaseInOut />
     },
     {
-      title: 'Pricing like no other',
+      title: 'Transparent Pricing',
       description:
-        'Our prices are best in the market. No cap, no lock, no credit card required.',
+        'Pay per image or choose unlimited plans. No hidden fees, no surprises.',
       icon: <IconCurrencyDollar />
     },
     {
-      title: '100% Uptime guarantee',
-      description: 'We just cannot be taken down by anyone.',
+      title: '99.9% Uptime Guarantee',
+      description:
+        'Always available when you need it. Enterprise-grade reliability.',
       icon: <IconCloud />
     },
     {
-      title: 'Multi-tenant Architecture',
-      description: 'You can simply share passwords instead of buying new seats',
+      title: 'Batch Processing',
+      description:
+        'Process hundreds of images at once. Perfect for large projects.',
       icon: <IconRouteAltLeft />
     },
     {
-      title: '24/7 Customer Support',
+      title: '24/7 Expert Support',
       description:
-        'We are available a 100% of the time. Atleast our AI Agents are.',
+        'Get help whenever you need it. Our team is always ready to assist.',
       icon: <IconHelp />
     },
     {
-      title: 'Money back guarantee',
+      title: 'Quality Guarantee',
       description:
-        'If you donot like EveryAI, we will convince you to like us.',
+        'Not satisfied? Get your money back. We stand behind our results.',
       icon: <IconAdjustmentsBolt />
     },
     {
-      title: 'And everything else',
-      description: 'I just ran out of copy ideas. Accept my sincere apologies',
+      title: 'API & Integrations',
+      description:
+        'Seamlessly integrate with your existing workflow and tools.',
       icon: <IconHeart />
     }
   ];
@@ -104,17 +111,17 @@ const Feature = ({
       )}
     >
       {index < 4 && (
-        <div className='pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 to-transparent opacity-0 transition duration-200 group-hover/feature:opacity-100 dark:from-neutral-800' />
+        <div className='pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-t from-orange-50/50 via-purple-50/30 to-transparent opacity-0 transition duration-300 group-hover/feature:opacity-100 dark:from-orange-950/20 dark:via-purple-950/10' />
       )}
       {index >= 4 && (
-        <div className='pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 to-transparent opacity-0 transition duration-200 group-hover/feature:opacity-100 dark:from-neutral-800' />
+        <div className='pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-b from-orange-50/50 via-purple-50/30 to-transparent opacity-0 transition duration-300 group-hover/feature:opacity-100 dark:from-orange-950/20 dark:via-purple-950/10' />
       )}
       <div className='relative z-10 mb-4 px-10 text-neutral-600 dark:text-neutral-400'>
         {icon}
       </div>
       <div className='relative z-10 mb-2 px-10 text-lg font-bold'>
-        <div className='absolute inset-y-0 left-0 h-6 w-1 origin-center rounded-tr-full rounded-br-full bg-neutral-300 transition-all duration-200 group-hover/feature:h-8 group-hover/feature:bg-blue-500 dark:bg-neutral-700' />
-        <span className='inline-block text-neutral-800 transition duration-200 group-hover/feature:translate-x-2 dark:text-neutral-100'>
+        <div className='absolute inset-y-0 left-0 h-6 w-1 origin-center rounded-tr-full rounded-br-full bg-neutral-300 transition-all duration-300 group-hover/feature:h-8 group-hover/feature:bg-gradient-to-b group-hover/feature:from-orange-500 group-hover/feature:to-purple-600 dark:bg-neutral-700' />
+        <span className='inline-block text-neutral-800 transition duration-300 group-hover/feature:translate-x-2 group-hover/feature:bg-gradient-to-r group-hover/feature:from-orange-500 group-hover/feature:to-purple-600 group-hover/feature:bg-clip-text group-hover/feature:text-transparent dark:text-neutral-100'>
           {title}
         </span>
       </div>

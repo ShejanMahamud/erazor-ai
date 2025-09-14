@@ -30,10 +30,10 @@ export default function SignUpViewPage() {
           className='relative z-20 mb-40 flex items-center text-lg font-medium'
         >
           <Image src='/assets/logo.png' alt='Logo' width={40} height={40} />
-          <span className='ml-2'>Erazor AI</span>
+          <span className='ml-2'>Erazor</span>
         </Link>
         <FallingText
-          text={`Erazor AI is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
+          text={`Erazor is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
           highlightWords={[
             'Erazor',
             'AI',

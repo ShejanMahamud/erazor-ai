@@ -5,7 +5,7 @@ const CTA: React.FC = () => {
     <div
       className='relative mx-auto my-28 flex w-[80%] flex-col items-center justify-center rounded-2xl border border-[#ffffff1a] bg-[#0E0E0E] py-28'
       style={{
-        backgroundImage: `url('/cta-bg-light.png')`,
+        backgroundImage: `url('/assets/cta-bg-light.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
@@ -79,7 +79,7 @@ const CTA: React.FC = () => {
         />
       </svg>
       <h1 className='font-manrope mb-5 text-center text-2xl leading-[40px] tracking-[-0.48px] text-white lg:text-4xl lg:leading-[52px]'>
-        Erazor AI has no limitation.
+        Erazor has no limitation.
         <br />
         Get Started in a journey with promptverse.
       </h1>

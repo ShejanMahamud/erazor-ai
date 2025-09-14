@@ -17,11 +17,11 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Erazor AI - AI-Powered Background Remover & Image Editor',
+  title: 'Erazor - AI-Powered Background Remover & Image Editor',
   description:
-    'Erazor AI is an advanced AI-powered background remover and image editor that allows you to effortlessly remove backgrounds, edit images, and enhance your photos with precision and ease.',
+    'Erazor is an advanced AI-powered background remover and image editor that allows you to effortlessly remove backgrounds, edit images, and enhance your photos with precision and ease.',
   keywords: [
-    'Erazor AI',
+    'Erazor',
     'AI-powered background remover',
     'image editor',
     'photo enhancement'
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   creator: 'Erazor',
   themeColor: META_THEME_COLORS.light,
   openGraph: {
-    title: 'Erazor AI - AI-Powered Background Remover & Image Editor'
+    title: 'Erazor - AI-Powered Background Remover & Image Editor'
   },
   twitter: {
     card: 'summary_large_image'

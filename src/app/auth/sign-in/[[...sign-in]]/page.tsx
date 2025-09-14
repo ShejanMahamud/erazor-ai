@@ -2,8 +2,8 @@ import SignInViewPage from '@/features/auth/components/sign-in-view';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Erazor AI | Sign In',
-  description: 'Sign In page for Erazor AI.'
+  title: 'Erazor | Sign In',
+  description: 'Sign In page for Erazor.'
 };
 
 export default async function Page() {

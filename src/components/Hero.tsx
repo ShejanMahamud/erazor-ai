@@ -13,6 +13,7 @@ import { AvatarCircles } from './magicui/avatar-circles';
 import { AnimatedGradientText } from './ui/animated-gradient-text';
 import { AnimatedShinyText } from './ui/animated-shiny-text';
 import CircularText from './ui/circular-text';
+import { MainBackground } from './ui/main-background';
 import { PointerHighlight } from './ui/pointer-highlight';
 
 export const Hero = () => {
@@ -20,9 +21,9 @@ export const Hero = () => {
   const [imageState, setImageState] = useState<'before' | 'after'>('before');
 
   return (
-    <section className='bg-background font-manrope relative min-h-screen overflow-hidden pt-40'>
+    <section className='bg-background font-manrope relative inset-0 min-h-screen overflow-hidden bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] pt-40'>
       {/* Background Effects */}
-      <HeroBackground />
+      <MainBackground />
 
       <div className='container mx-auto px-6 pb-16 lg:pl-32'>
         <div className='grid min-h-[80vh] grid-cols-1 items-center gap-12 lg:grid-cols-2'>
@@ -47,7 +48,7 @@ export const Hero = () => {
                 🎉{' '}
                 <AnimatedGradientText className='text-sm font-medium'>
                   {' '}
-                  Introducing Erazor AI
+                  Introducing Erazor
                 </AnimatedGradientText>
                 <ChevronRight className='ml-1 size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5' />
               </div>
@@ -213,12 +214,3 @@ export const Hero = () => {
     </section>
   );
 };
-
-// Background Components
-const HeroBackground = () => (
-  <div className='absolute inset-0'>
-    <div className='absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.05),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))]' />
-    <div className='absolute top-0 left-1/4 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl' />
-    <div className='absolute top-1/4 right-1/4 h-96 w-96 rounded-full bg-purple-600/10 blur-3xl' />
-  </div>
-);
