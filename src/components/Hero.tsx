@@ -31,7 +31,7 @@ export const Hero = () => {
           <div className='space-y-4'>
             {/* Simple Badge */}
             <div className='flex items-start gap-2'>
-              <div className='group relative flex items-start justify-start rounded-full px-4 py-1.5 shadow-[inset_0_-8px_10px_#8fdfff1f] transition-shadow duration-500 ease-out hover:shadow-[inset_0_-5px_10px_#8fdfff3f]'>
+              <div className='group relative flex items-center justify-center rounded-full px-4 py-1.5 shadow-[inset_0_-8px_10px_#8fdfff1f] transition-shadow duration-500 ease-out hover:shadow-[inset_0_-5px_10px_#8fdfff3f]'>
                 <span
                   className={cn(
                     'animate-gradient absolute inset-0 block h-full w-full rounded-[inherit] bg-gradient-to-r from-[#ffaa40]/50 via-[#9c40ff]/50 to-[#ffaa40]/50 bg-[length:300%_100%] p-[1px]'
@@ -45,12 +45,13 @@ export const Hero = () => {
                     WebkitClipPath: 'padding-box'
                   }}
                 />
-                🎉{' '}
-                <AnimatedGradientText className='text-sm font-medium'>
-                  {' '}
-                  Introducing Erazor
-                </AnimatedGradientText>
-                <ChevronRight className='ml-1 size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5' />
+                <div className='flex items-center gap-1'>
+                  🎉
+                  <AnimatedGradientText className='text-sm font-medium'>
+                    Introducing Erazor
+                  </AnimatedGradientText>
+                  <ChevronRight className='size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5' />
+                </div>
               </div>
             </div>
 
