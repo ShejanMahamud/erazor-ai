@@ -115,8 +115,8 @@ function FAQSection({
   toggleItem: (id: string) => void;
 }) {
   return (
-    <div className='relative z-10 mx-auto max-w-4xl px-10 py-10 lg:px-20'>
-      <div className='grid grid-cols-1 md:grid-cols-2'>
+    <div className='relative z-10 mx-auto max-w-3xl px-10 py-10 lg:px-20'>
+      <div className='space-y-0'>
         {faqData.map((faq, index) => (
           <FAQItem
             key={faq.id}
@@ -142,16 +142,11 @@ const FAQItem = ({
   isOpen: boolean;
   onToggle: () => void;
 }) => {
-  const isLeftColumn = index % 2 === 0;
-  const isTopRow = index < 2;
-
   return (
     <div
       className={cn(
         'group/faq relative flex flex-col border-b py-8 dark:border-neutral-800',
-        !isLeftColumn && 'md:border-l dark:border-neutral-800',
-        isLeftColumn && 'md:border-r dark:border-neutral-800',
-        isTopRow && 'border-t dark:border-neutral-800'
+        index === 0 && 'border-t dark:border-neutral-800'
       )}
     >
       {/* Hover Background Effect */}
