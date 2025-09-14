@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 
 // Define the base Next.js configuration
 const baseConfig: NextConfig = {
+  // Image optimization for Vercel CDN
   images: {
     remotePatterns: [
       {
@@ -33,8 +34,78 @@ const baseConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com'
       }
-    ]
+    ],
+    // Optimize images for better performance
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year cache
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
+
+  // Enable static exports for better CDN caching (optional)
+  output: 'standalone',
+
+  // Compress assets
+  compress: true,
+
+  // Enable SWC minification for better performance
+  swcMinify: true,
+
+  // Optimize fonts
+  optimizeFonts: true,
+
+  // Configure headers for static assets
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          }
+        ]
+      },
+      {
+        source: '/assets/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/(favicon.ico|robots.txt|sitemap.xml)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400'
+          }
+        ]
+      }
+    ];
+  },
+
   transpilePackages: ['geist']
 };
 

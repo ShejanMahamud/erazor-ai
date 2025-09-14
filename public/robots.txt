@@ -1,0 +1,38 @@
+# Robots.txt for Erazor - AI Background Remover
+User-agent: *
+Allow: /
+
+# Optimize crawl budget by disallowing unnecessary paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+
+# Allow important pages
+Allow: /
+Allow: /pricing
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Sitemap location
+Sitemap: https://erazor.ai/sitemap.xml
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
