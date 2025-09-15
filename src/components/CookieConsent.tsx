@@ -147,7 +147,7 @@ export default function CookieConsentProvider() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className='fixed right-6 bottom-6 z-[9999] w-full max-w-md'
+        className='fixed bottom-6 left-1/2 z-[9999] w-full max-w-md -translate-x-1/2 px-6 md:left-6 md:translate-x-0 md:px-0'
       >
         <Card className='border-border bg-background/95 border shadow-xl backdrop-blur-md'>
           <CardContent className='p-6'>
