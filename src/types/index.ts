@@ -13,6 +13,13 @@ export interface NavItem {
   items?: NavItem[];
 }
 
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category?: 'general' | 'pricing' | 'technical' | 'support';
+}
+
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[];
 }

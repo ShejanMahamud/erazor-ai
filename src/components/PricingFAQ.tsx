@@ -5,6 +5,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import Link from 'next/link';
+import HeadingText from './ui/heading-text';
 
 const pricingFAQItems = [
   {
@@ -95,14 +96,11 @@ export const PricingFAQ = () => {
   return (
     <section className='bg-background py-16'>
       <div className='container mx-auto px-4'>
-        <div className='mb-12 text-center'>
-          <h2 className='mb-4 text-3xl font-bold tracking-tight sm:text-4xl'>
-            Frequently Asked Questions
-          </h2>
-          <p className='text-muted-foreground mx-auto max-w-2xl text-lg'>
-            Get answers to common questions about our pricing and plans
-          </p>
-        </div>
+        <HeadingText
+          heading='Frequently Asked '
+          focusText=' Questions'
+          paragraph='Got questions? We&apos;ve got answers. Here are some of the most common questions about our pricing plans and services.'
+        />
 
         <div className='mx-auto max-w-3xl'>
           <Accordion type='single' collapsible className='w-full'>

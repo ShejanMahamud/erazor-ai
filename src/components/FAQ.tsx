@@ -1,18 +1,12 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { FAQItem as FAQItemData } from '@/types';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import HeadingText from './ui/heading-text';
 
-interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-  category?: 'general' | 'pricing' | 'technical' | 'support';
-}
-
-const faqData: FAQItem[] = [
+const faqData: FAQItemData[] = [
   {
     id: '1',
     question: 'How accurate is the AI background removal?',
@@ -105,12 +99,12 @@ export const FAQ = () => {
   );
 };
 
-function FAQSection({
+export function FAQSection({
   faqData,
   openItems,
   toggleItem
 }: {
-  faqData: FAQItem[];
+  faqData: FAQItemData[];
   openItems: Set<string>;
   toggleItem: (id: string) => void;
 }) {
@@ -137,7 +131,7 @@ const FAQItem = ({
   isOpen,
   onToggle
 }: {
-  faq: FAQItem;
+  faq: FAQItemData;
   index: number;
   isOpen: boolean;
   onToggle: () => void;

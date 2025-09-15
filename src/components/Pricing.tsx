@@ -198,9 +198,9 @@ export const Pricing = () => {
           originalPrice:
             originalMonthlyPrice || originalYearlyPrice
               ? {
-                  monthly: originalMonthlyPrice,
-                  yearly: originalYearlyPrice
-                }
+                monthly: originalMonthlyPrice,
+                yearly: originalYearlyPrice
+              }
               : undefined,
           description: primaryPlan.description,
           features,
@@ -236,10 +236,16 @@ export const Pricing = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // Prevent state updates if component unmounts
+
     const fetchPlans = async () => {
       try {
         setLoading(true);
+        setError(null);
+
         const response = await fetch('/api/billing/plans');
+
+        if (!isMounted) return; // Component unmounted, don't update state
 
         if (!response.ok) {
           throw new Error(`Failed to fetch plans: ${response.statusText}`);
@@ -254,10 +260,14 @@ export const Pricing = () => {
         const transformedTiers = transformPlansToTiers(data.data);
         setTiers(transformedTiers);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        // Error logged to error state
+        if (isMounted) {
+          console.warn('API error, but fallback data should be returned from API route:', err);
+          setError('Unable to load pricing plans. Please refresh the page.');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -266,21 +276,52 @@ export const Pricing = () => {
 
       try {
         const response = await fetch(`/api/billing/subscription/${userId}`);
-        if (response.ok) {
+        if (response.ok && isMounted) {
           const data: SubscriptionResponse = await response.json();
           if (data.success) {
             setUserSubscription(data.data);
           }
         }
-        // If the request fails (like 404), we just continue without subscription data
       } catch (err) {
         // Continue without subscription data - error is non-critical
+        console.warn('Failed to fetch user subscription:', err);
       }
     };
 
+    // Only fetch plans once when component mounts
     fetchPlans();
-    fetchUserSubscription();
-  }, [isSignedIn, userId]);
+
+    // Fetch user subscription if user is signed in
+    if (isSignedIn && userId) {
+      fetchUserSubscription();
+    }
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
+
+  // Separate effect for user subscription when auth state changes
+  useEffect(() => {
+    if (isSignedIn && userId && !userSubscription) {
+      const fetchUserSubscription = async () => {
+        try {
+          const response = await fetch(`/api/billing/subscription/${userId}`);
+          if (response.ok) {
+            const data: SubscriptionResponse = await response.json();
+            if (data.success) {
+              setUserSubscription(data.data);
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to fetch user subscription:', err);
+        }
+      };
+
+      fetchUserSubscription();
+    }
+  }, [isSignedIn, userId, userSubscription]);
 
   if (loading) {
     return (
@@ -333,8 +374,7 @@ export const Pricing = () => {
                     <div key={featureIndex} className='flex items-center gap-2'>
                       <div className='h-4 w-4 rounded bg-gray-200 dark:bg-gray-700'></div>
                       <div
-                        className={`bg-gray-150 h-3 rounded dark:bg-gray-600 ${
-                          featureIndex === 0
+                        className={`bg-gray-150 h-3 rounded dark:bg-gray-600 ${featureIndex === 0
                             ? 'w-28'
                             : featureIndex === 1
                               ? 'w-24'
@@ -343,7 +383,7 @@ export const Pricing = () => {
                                 : featureIndex === 3
                                   ? 'w-20'
                                   : 'w-16'
-                        }`}
+                          }`}
                       ></div>
                     </div>
                   ))}
