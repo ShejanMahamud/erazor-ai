@@ -93,26 +93,24 @@ export const Hero = () => {
 
             {/* Clean CTAs */}
             <div className='flex flex-col gap-4 pt-4 sm:flex-row'>
-              <Button
-                asChild
-                size='lg'
-                className={cn(
-                  'h-12 rounded-full px-8 text-base',
-                  'bg-gradient-to-r from-orange-500 to-purple-600',
-                  'hover:shadow-lg hover:shadow-purple-500/25',
-                  'text-white transition-all duration-300 hover:scale-105'
-                )}
+              <Link
+                href={
+                  isSignedIn ? '/dashboard/background-remover' : '/auth/sign-up'
+                }
               >
-                <Link
-                  href={
-                    isSignedIn
-                      ? '/dashboard/background-remover'
-                      : '/auth/sign-up'
-                  }
+                <Button
+                  asChild
+                  size='lg'
+                  className={cn(
+                    'h-12 rounded-full px-8 text-base',
+                    'bg-gradient-to-r from-orange-500 to-purple-600',
+                    'hover:shadow-lg hover:shadow-purple-500/25',
+                    'text-white transition-all duration-300 hover:scale-105'
+                  )}
                 >
                   {isSignedIn ? 'Start Now' : 'Try Free'}
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
 
             <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center'>
@@ -134,8 +132,8 @@ export const Hero = () => {
                 <Image
                   src={
                     imageState === 'before'
-                      ? '/assets/before.jpg'
-                      : '/assets/after.png'
+                      ? '/assets/before.webp'
+                      : '/assets/after.webp'
                   }
                   alt={
                     imageState === 'before'
