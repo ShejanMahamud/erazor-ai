@@ -1,3 +1,4 @@
+import CookieConsent from '@/components/CookieConsent';
 import Providers from '@/components/layout/providers';
 import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
 import ClickSpark from '@/components/ui/click-spark';
@@ -185,7 +186,6 @@ export default async function RootLayout({
         {/* DNS prefetch for better performance */}
         <link rel='dns-prefetch' href='//www.google-analytics.com' />
         <link rel='dns-prefetch' href='//googletagmanager.com' />
-
         {/* Structured Data - Organization */}
         <script
           type='application/ld+json'
@@ -283,7 +283,7 @@ export default async function RootLayout({
           fontVariables
         )}
       >
-        {/* Google Analytics with Next.js Script component */}
+        {/* Google Analytics with consent management */}
         <Script
           src='https://www.googletagmanager.com/gtag/js?id=G-4RYFWYBPY8'
           strategy='afterInteractive'
@@ -293,6 +293,15 @@ export default async function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
+            
+            // Initialize with consent denied by default (GDPR compliance)
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied'
+            });
+            
             gtag('config', 'G-4RYFWYBPY8');
           `}
         </Script>
@@ -308,6 +317,7 @@ export default async function RootLayout({
           >
             <Providers activeThemeValue={activeThemeValue as string}>
               <Toaster />
+              <CookieConsent />
               <ClickSpark
                 sparkColor='#fff'
                 sparkSize={10}

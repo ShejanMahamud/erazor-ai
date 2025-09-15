@@ -1,5 +1,10 @@
 import { NavItem } from '@/types';
 
+// CDN Configuration
+export const CDN_URL =
+  process.env.NEXT_PUBLIC_CLOUDFLARE_CDN_URL ||
+  'https://pub-7c5475f69164473cb8f82ee5ae4a5718.r2.dev';
+
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems: NavItem[] = [
   {

@@ -1,5 +1,6 @@
 'use client';
 
+import { CDN_URL } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -34,58 +35,58 @@ export const UseCases = () => {
   const useCases = {
     branding: [
       {
-        before: '/assets/product-1.jpg',
-        after: '/assets/product-1-removed.png'
+        before: `${CDN_URL}/assets/product-1.jpg`,
+        after: `${CDN_URL}/assets/product-1-removed.png`
       },
       {
-        before: '/assets/product-2.jpg',
-        after: '/assets/product-2-removed.png'
+        before: `${CDN_URL}/assets/product-2.jpg`,
+        after: `${CDN_URL}/assets/product-2-removed.png`
       },
       {
-        before: '/assets/product-3.jpg',
-        after: '/assets/product-3-removed.png'
+        before: `${CDN_URL}/assets/product-3.jpg`,
+        after: `${CDN_URL}/assets/product-3-removed.png`
       }
     ],
     portraits: [
       {
-        before: '/assets/portrait-1.jpg',
-        after: '/assets/portrait-1-removed.png'
+        before: `${CDN_URL}/assets/portrait-1.jpg`,
+        after: `${CDN_URL}/assets/portrait-1-removed.png`
       },
       {
-        before: '/assets/portrait-2.jpg',
-        after: '/assets/portrait-2-removed.png'
+        before: `${CDN_URL}/assets/portrait-2.jpg`,
+        after: `${CDN_URL}/assets/portrait-2-removed.png`
       },
       {
-        before: '/assets/portrait-3.jpg',
-        after: '/assets/portrait-3-removed.png'
+        before: `${CDN_URL}/assets/portrait-3.jpg`,
+        after: `${CDN_URL}/assets/portrait-3-removed.png`
       }
     ],
     creative: [
       {
-        before: '/assets/creative-1.jpg',
-        after: '/assets/creative-1-removed.png'
+        before: `${CDN_URL}/assets/creative-1.jpg`,
+        after: `${CDN_URL}/assets/creative-1-removed.png`
       },
       {
-        before: '/assets/creative-2.jpg',
-        after: '/assets/creative-2-removed.png'
+        before: `${CDN_URL}/assets/creative-2.jpg`,
+        after: `${CDN_URL}/assets/creative-2-removed.png`
       },
       {
-        before: '/assets/creative-3.jpg',
-        after: '/assets/creative-3-removed.png'
+        before: `${CDN_URL}/assets/creative-3.jpg`,
+        after: `${CDN_URL}/assets/creative-3-removed.png`
       }
     ],
     social: [
       {
-        before: '/assets/social-1.jpg',
-        after: '/assets/social-1-removed.png'
+        before: `${CDN_URL}/assets/social-1.jpg`,
+        after: `${CDN_URL}/assets/social-1-removed.png`
       },
       {
-        before: '/assets/social-2.jpg',
-        after: '/assets/social-2-removed.png'
+        before: `${CDN_URL}/assets/social-2.jpg`,
+        after: `${CDN_URL}/assets/social-2-removed.png`
       },
       {
-        before: '/assets/social-3.jpg',
-        after: '/assets/social-3-removed.png'
+        before: `${CDN_URL}/assets/social-3.jpg`,
+        after: `${CDN_URL}/assets/social-3-removed.png`
       }
     ]
   };

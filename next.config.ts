@@ -33,6 +33,10 @@ const baseConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-7c5475f69164473cb8f82ee5ae4a5718.r2.dev'
       }
     ],
     // Optimize images for better performance

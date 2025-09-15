@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { avatars } from '@/constants/data';
+import { avatars, CDN_URL } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronRight } from 'lucide-react';
@@ -132,8 +132,8 @@ export const Hero = () => {
                 <Image
                   src={
                     imageState === 'before'
-                      ? '/assets/before.jpg'
-                      : '/assets/after.png'
+                      ? `${CDN_URL}/assets/before.jpg`
+                      : `${CDN_URL}/assets/after.png`
                   }
                   alt={
                     imageState === 'before'
