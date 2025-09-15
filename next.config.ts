@@ -54,12 +54,6 @@ const baseConfig: NextConfig = {
   // Compress assets
   compress: true,
 
-  // Enable SWC minification for better performance
-  swcMinify: true,
-
-  // Optimize fonts
-  optimizeFonts: true,
-
   // Configure headers for static assets
   async headers() {
     return [

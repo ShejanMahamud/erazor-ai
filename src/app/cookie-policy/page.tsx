@@ -248,8 +248,8 @@ export default function CookiePolicyPage() {
                   Our Cookie Consent Tool
                 </h3>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  When you first visit our website, you'll see a cookie consent
-                  banner that allows you to:
+                  When you first visit our website, you&apos;ll see a cookie
+                  consent banner that allows you to:
                 </p>
                 <ul className='text-foreground/80 mb-6 list-disc space-y-2 pl-6'>
                   <li>Accept all cookies for the best experience</li>
@@ -292,7 +292,7 @@ export default function CookiePolicyPage() {
                   Browser-Specific Cookie Management
                 </h2>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  Here's how to manage cookies in popular browsers:
+                  Here&apos;s how to manage cookies in popular browsers:
                 </p>
 
                 <div className='grid gap-6 md:grid-cols-2'>
