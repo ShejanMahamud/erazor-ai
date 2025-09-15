@@ -8,6 +8,7 @@ import HeadingText from './ui/heading-text';
 
 export const UseCases = () => {
   const [activeCategory, setActiveCategory] = useState('branding');
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   const categories = [
     {
@@ -143,12 +144,21 @@ export const UseCases = () => {
           {currentUseCase.map((useCase, index) => (
             <div
               key={`${activeCategory}-${index}`}
-              className='group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'
+              className='group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'
+              onClick={() =>
+                setActiveImageIndex(activeImageIndex === index ? null : index)
+              }
             >
               {/* Before/After Images */}
               <div className='relative aspect-[4/4] overflow-hidden'>
                 {/* Before Image */}
-                <div className='absolute inset-0 transition-opacity duration-500 group-hover:opacity-0'>
+                <div
+                  className={cn(
+                    'absolute inset-0 transition-opacity duration-500',
+                    'group-hover:opacity-0',
+                    activeImageIndex === index && 'opacity-0'
+                  )}
+                >
                   <Image
                     src={useCase.before}
                     alt={`Before`}
@@ -164,7 +174,13 @@ export const UseCases = () => {
                 </div>
 
                 {/* After Image Overlay */}
-                <div className='absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100'>
+                <div
+                  className={cn(
+                    'absolute inset-0 transition-opacity duration-500',
+                    'group-hover:opacity-100',
+                    activeImageIndex === index ? 'opacity-100' : 'opacity-0'
+                  )}
+                >
                   {/* Transparent Background Pattern */}
                   <div
                     className='absolute inset-0'
@@ -199,7 +215,9 @@ export const UseCases = () => {
                   </div>
                   <div
                     className={cn(
-                      'rounded-full bg-gradient-to-r px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100',
+                      'rounded-full bg-gradient-to-r px-3 py-1 text-xs font-medium text-white transition-opacity duration-300',
+                      'group-hover:opacity-100',
+                      activeImageIndex === index ? 'opacity-100' : 'opacity-0',
                       activeColor
                     )}
                   >

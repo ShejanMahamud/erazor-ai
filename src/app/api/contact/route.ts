@@ -1,8 +1,18 @@
-import sgMail from '@sendgrid/mail';
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
-// Initialize SendGrid
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+// Create reusable transporter object using the default SMTP transport
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER, // your email
+      pass: process.env.SMTP_PASS // your app password
+    }
+  });
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,12 +37,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Email to admin/support
-    const adminEmail = {
-      to: process.env.CONTACT_EMAIL || 'support@erazor.ai',
+    const adminEmailOptions = {
       from: {
-        email: process.env.FROM_EMAIL || 'noreply@erazor.ai',
-        name: 'Erazor Contact Form'
+        name: 'Erazor Contact Form',
+        address:
+          process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@erazor.ai'
       },
+      to: process.env.CONTACT_EMAIL || 'support@erazor.ai',
       subject: `New Contact Form Submission: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -59,16 +70,18 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
+      replyTo: email
     };
 
     // Auto-reply email to customer
-    const autoReplyEmail = {
-      to: email,
+    const autoReplyEmailOptions = {
       from: {
-        email: process.env.FROM_EMAIL || 'noreply@erazor.ai',
-        name: 'Erazor Support'
+        name: 'Erazor Support',
+        address:
+          process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@erazor.ai'
       },
-      subject: 'Thank you for contacting Erazor - We\'ve received your message',
+      to: email,
+      subject: "Thank you for contacting Erazor - We've received your message",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f97316 0%, #9333ea 100%); border-radius: 8px 8px 0 0;">
@@ -87,12 +100,15 @@ export async function POST(request: NextRequest) {
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <h3 style="color: #333; margin-top: 0;">Your Message Summary</h3>
               <p><strong>Subject:</strong> ${subject}</p>
-              <p><strong>Submitted:</strong> ${new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}</p>
+              <p><strong>Submitted:</strong> ${new Date().toLocaleDateString(
+                'en-US',
+                {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }
+              )}</p>
             </div>
             
             <p style="color: #666; line-height: 1.6;">
@@ -122,32 +138,36 @@ export async function POST(request: NextRequest) {
             </p>
           </div>
         </div>
-      `,
+      `
     };
+
+    // Create transporter
+    const transporter = createTransporter();
 
     // Send both emails
     await Promise.all([
-      sgMail.send(adminEmail),
-      sgMail.send(autoReplyEmail)
+      transporter.sendMail(adminEmailOptions),
+      transporter.sendMail(autoReplyEmailOptions)
     ]);
 
     return NextResponse.json(
-      { 
+      {
         success: true,
-        message: 'Message sent successfully! We\'ll get back to you within 24 hours.' 
+        message:
+          "Message sent successfully! We'll get back to you within 24 hours."
       },
       { status: 200 }
     );
-
   } catch (error) {
-    console.error('SendGrid Error:', error);
-    
-    // Handle SendGrid specific errors
+    console.error('Nodemailer Error:', error);
+
+    // Handle Nodemailer specific errors
     if (error instanceof Error) {
       return NextResponse.json(
-        { 
+        {
           error: 'Failed to send email. Please try again later.',
-          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+          details:
+            process.env.NODE_ENV === 'development' ? error.message : undefined
         },
         { status: 500 }
       );
