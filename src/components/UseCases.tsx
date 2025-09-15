@@ -38,10 +38,8 @@ export const UseCases = () => {
         after: '/assets/product-1-removed.png'
       },
       {
-        before:
-          'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop',
-        after:
-          'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop&bg-remove=true'
+        before: '/assets/product-2.jpg',
+        after: '/assets/product-2-removed.png'
       },
       {
         before:

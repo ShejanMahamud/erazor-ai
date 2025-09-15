@@ -6,13 +6,68 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
+  title: 'Sign In - Access Your Erazor Account | AI Background Remover',
+  description:
+    'Sign in to your Erazor account and continue using our AI-powered background removal tool. Access your projects, history, and premium features instantly.',
+  keywords: [
+    'sign in erazor',
+    'login erazor',
+    'access account',
+    'ai background remover login',
+    'photo editing login',
+    'image editor sign in',
+    'background removal tool login',
+    'erazor dashboard access',
+    'user account login',
+    'member login'
+  ],
+  authors: [{ name: 'Erazor Team', url: 'https://erazor.ai' }],
+  creator: 'Erazor',
+  publisher: 'Erazor',
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/auth/sign-in',
+    title: 'Sign In to Erazor - AI Background Remover Dashboard',
+    description:
+      'Access your Erazor account dashboard. Continue editing photos and removing backgrounds with our AI-powered tools.',
+    siteName: 'Erazor',
+    images: [
+      {
+        url: '/og-signin.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sign in to Erazor - AI Background Remover',
+        type: 'image/png'
+      }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sign In to Erazor - AI Background Remover',
+    description:
+      'Access your account and continue using our AI-powered background removal tools. Professional photo editing made simple.',
+    images: ['/twitter-signin.png'],
+    creator: '@erazor_ai',
+    site: '@erazor_ai'
+  },
+  alternates: {
+    canonical: '/auth/sign-in'
+  },
+  other: {
+    'login-purpose': 'user-authentication',
+    'dashboard-access': 'member-portal'
+  }
 };
 
 export default function SignInViewPage() {
   return (
-    <div className='relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
+    <div className='relative min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       <div className='bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r'>
         <div className='absolute inset-0 bg-zinc-900' />
         <div
@@ -32,13 +87,13 @@ export default function SignInViewPage() {
           <Image
             src='/assets/logo.png'
             alt='Logo'
-            width={40}
-            height={40}
             priority={false}
             loading='lazy'
             placeholder='blur'
             blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyI+PHN0b3Agc3RvcC1jb2xvcj0iIzMzMzMzMyIgc3RvcC1vcGFjaXR5PSIwLjAzIiBvZmZzZXQ9IjIwJSIvPjxzdG9wIHN0b3AtY29sb3I9IiM2NjY2NjYiIHN0b3Atb3BhY2l0eT0iMC4wNSIgb2Zmc2V0PSI1MCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjMzMzMzMzIiBzdG9wLW9wYWNpdHk9IjAuMDMiIG9mZnNldD0iNzAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
             sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+            width={40}
+            height={40}
           />
           <span className='ml-2'>Erazor</span>
         </Link>
@@ -74,10 +129,8 @@ export default function SignInViewPage() {
         </div>
       </div>
 
-      <div className='flex h-full items-center justify-center p-4 lg:p-8'>
-        <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
-          <ClerkSignInForm />
-        </div>
+      <div className='flex min-h-screen w-full items-center justify-center px-10 py-10 lg:min-h-0'>
+        <ClerkSignInForm />
       </div>
     </div>
   );
