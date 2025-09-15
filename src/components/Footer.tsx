@@ -64,7 +64,7 @@ export const Footer = () => {
               <FooterLink href='/help'>Help Center</FooterLink>
               <FooterLink href='/privacy'>Privacy Policy</FooterLink>
               <FooterLink href='/terms'>Terms of Service</FooterLink>
-              <FooterLink href='/cookies'>Cookie Settings</FooterLink>
+              <FooterLink href='/cookie-policy'>Cookie Policy</FooterLink>
             </ul>
 
             <div className='space-y-2 pt-2'>
