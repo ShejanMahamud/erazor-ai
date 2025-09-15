@@ -1,6 +1,7 @@
 'use client';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
+import { Analytics } from '@vercel/analytics/next';
 import { useTheme } from 'next-themes';
 import React from 'react';
 import { ActiveThemeProvider } from '../active-theme';
@@ -23,6 +24,7 @@ export default function Providers({
             baseTheme: resolvedTheme === 'dark' ? dark : undefined
           }}
         >
+          <Analytics />
           {children}
         </ClerkProvider>
       </ActiveThemeProvider>
