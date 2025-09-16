@@ -56,8 +56,7 @@ export function useNotifications(userId: string) {
     // WebSocket connection
     // Connect to backend (adjust URL)
     const wsUrl =
-      process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL ||
-      'http://localhost:4545/notifications';
+      process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL;
     socket = io(wsUrl, {
       transports: ['websocket']
     });

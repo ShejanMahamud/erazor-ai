@@ -19,7 +19,7 @@ export const useImageSocket = (clerkId: string) => {
     }
 
     imageSocketInstance = io(
-      process.env.NEXT_PUBLIC_IMAGES_WS_URL || 'http://localhost:4545/images',
+      process.env.NEXT_PUBLIC_IMAGES_WS_URL,
       {
         transports: ['websocket']
       }

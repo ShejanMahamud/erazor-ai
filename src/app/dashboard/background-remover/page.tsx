@@ -187,13 +187,13 @@ export default function BackgroundRemoverPage() {
 
     const formData = new FormData();
     formData.append('file', file[0]);
-    formData.append('userId', userId!);
     try {
       setIsProcessing(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/images/process`,
         {
           method: 'POST',
+          credentials: "include",
           body: formData,
           headers: {
             Authorization: `Bearer ${await token}`

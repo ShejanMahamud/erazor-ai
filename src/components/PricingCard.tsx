@@ -61,7 +61,7 @@ export const PricingCard = ({
     userSubscription.amount > currentTierPrice &&
     currentTierPrice >= 0;
 
-  // Handle button click - redirect to customer portal for all actions except current plan
+  // Handle button click - create checkout for free plan, redirect to portal for others
   const handleButtonClick = async () => {
     // Don't allow action if it's the current plan
     if (isCurrentPlan) {
@@ -76,10 +76,44 @@ export const PricingCard = ({
     setIsLoading(true);
 
     try {
-      // Redirect to customer portal for all plan changes
-      window.location.href = '/api/portal';
+      // For Free plan, create checkout session
+      if (tier.name.toLowerCase() === 'free') {
+        const planId = paymentFrequency === 'yearly' ? tier.planIds.yearly : tier.planIds.monthly;
+
+        if (!planId) {
+          throw new Error('Plan ID not found for free tier');
+        }
+
+        const response = await fetch('/api/billing/checkout/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: planId,
+            clerkId: userId
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to create checkout session');
+        }
+
+        // Redirect to checkout URL
+        if (data.data?.url) {
+          window.location.href = data.data.url;
+        } else {
+          throw new Error('Checkout URL not received');
+        }
+      } else {
+        // For paid plans, redirect to customer portal for all plan changes
+        window.location.href = '/api/portal';
+      }
     } catch (error) {
-      console.error('Error redirecting to portal:', error);
+      console.error('Error handling plan action:', error);
+      // You might want to show a toast notification here
     } finally {
       setIsLoading(false);
     }
@@ -116,14 +150,14 @@ export const PricingCard = ({
             {/* Show original price with strike-through if exists */}
             {tier.originalPrice &&
               tier.originalPrice[
-                paymentFrequency as keyof typeof tier.originalPrice
+              paymentFrequency as keyof typeof tier.originalPrice
               ] && (
                 <div className='mb-1'>
                   <span className='text-lg font-medium line-through opacity-60'>
                     $
                     {
                       tier.originalPrice[
-                        paymentFrequency as keyof typeof tier.originalPrice
+                      paymentFrequency as keyof typeof tier.originalPrice
                       ]
                     }
                   </span>
@@ -151,7 +185,7 @@ export const PricingCard = ({
                     {Math.round(
                       ((tier.originalPrice.yearly - price) /
                         tier.originalPrice.yearly) *
-                        100
+                      100
                     )}
                     %
                   </Badge>
