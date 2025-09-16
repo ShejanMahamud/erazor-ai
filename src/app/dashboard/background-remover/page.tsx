@@ -259,7 +259,7 @@ export default function BackgroundRemoverPage() {
   };
 
   const handleDownload = () => {
-    if (currentImage?.bgRemovedImageUrlHQ) {
+    if (currentImage?.bgRemovedImageUrlHQ || currentImage?.bgRemovedImageUrlLQ) {
       // Add download animation
       if (buttonsRef.current) {
         const downloadBtn = buttonsRef.current.querySelector('button');
@@ -275,7 +275,7 @@ export default function BackgroundRemoverPage() {
       }
 
       const link = document.createElement('a');
-      link.href = currentImage.bgRemovedImageUrlHQ;
+      link.href = currentImage.bgRemovedImageUrlHQ || currentImage.bgRemovedImageUrlLQ;
       link.download = `${currentImage.originalFileName}_no_bg.png`;
       document.body.appendChild(link);
       link.click();
@@ -402,7 +402,9 @@ export default function BackgroundRemoverPage() {
                       <Image
                         ref={afterImageRef}
                         src={
-                          currentImage.bgRemovedImageUrlHQ || '/placeholder.svg'
+                          currentImage.bgRemovedImageUrlHQ ||
+                          currentImage.bgRemovedImageUrlLQ ||
+                          '/placeholder.svg'
                         }
                         alt='Background Removed'
                         width={500}
