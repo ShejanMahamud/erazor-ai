@@ -67,7 +67,7 @@ export function useNotifications(userId: string) {
     socket.emit('join', userId);
 
     socket.on('connect', () => {
-      console.log('✅ Connected to notifications WS:', socket.id);
+
     });
 
     socket.on('connect_error', (error) => {
@@ -85,7 +85,6 @@ export function useNotifications(userId: string) {
       socket.off('connect');
       socket.off('connect_error');
       socket.disconnect();
-      console.log('❌ Disconnected from notifications WS');
     };
   }, [userId]);
 

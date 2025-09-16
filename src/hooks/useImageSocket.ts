@@ -26,10 +26,7 @@ export const useImageSocket = (clerkId: string) => {
     );
 
     imageSocketInstance.on('connect', () => {
-      console.log(
-        '✅ Connected to image socket server:',
-        imageSocketInstance?.id
-      );
+
       // Join user-specific room
       imageSocketInstance?.emit('join', clerkId);
     });

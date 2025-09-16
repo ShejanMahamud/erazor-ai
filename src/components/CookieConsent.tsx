@@ -73,7 +73,7 @@ export default function CookieConsentProvider() {
         try {
           window.chatwootSDK.toggle('close');
         } catch (e) {
-          console.log('Chatwoot not available');
+          console.error('Error toggling Chatwoot:', e);
         }
       }
     }

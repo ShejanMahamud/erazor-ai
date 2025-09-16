@@ -1,7 +1,6 @@
 'use client';
 
 import { BackgroundRemover } from '@/components/BackgroundRemover';
-import { Button } from '@/components/ui/button';
 import { avatars } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -11,6 +10,7 @@ import CurvedLoop from './CurvedLoop';
 import { AvatarCircles } from './magicui/avatar-circles';
 import { AnimatedGradientText } from './ui/animated-gradient-text';
 import { AnimatedShinyText } from './ui/animated-shiny-text';
+import { Button } from './ui/button';
 import { MainBackground } from './ui/main-background';
 import { PointerHighlight } from './ui/pointer-highlight';
 
@@ -89,24 +89,24 @@ export const Hero = () => {
 
             {/* Clean CTAs */}
             <div className='flex flex-col gap-4 pt-4 sm:flex-row'>
-              <Link
-                href={
-                  isSignedIn ? '/dashboard/background-remover' : '/auth/sign-up'
-                }
+              <Button
+                asChild
+                size='lg'
+                className={cn(
+                  'h-12 rounded-full px-8 text-base',
+                  'bg-gradient-to-r from-orange-500 to-purple-600',
+                  'hover:shadow-lg hover:shadow-purple-500/25',
+                  'text-white transition-all duration-300 hover:scale-105 relative z-50'
+                )}
               >
-                <Button
-                  asChild
-                  size='lg'
-                  className={cn(
-                    'h-12 rounded-full px-8 text-base',
-                    'bg-gradient-to-r from-orange-500 to-purple-600',
-                    'hover:shadow-lg hover:shadow-purple-500/25',
-                    'text-white transition-all duration-300 hover:scale-105'
-                  )}
+                <Link
+                  href={
+                    isSignedIn ? '/dashboard/background-remover' : '/auth/sign-up'
+                  }
                 >
                   {isSignedIn ? 'Start Now' : 'Try Free'}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
 
             <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center'>

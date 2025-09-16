@@ -28,11 +28,6 @@ export const useAnonImageSocket = (userId: string | undefined) => {
     );
 
     imageSocketInstance.on('connect', () => {
-      console.log(
-        '✅ Connected to image socket server:',
-        imageSocketInstance?.id
-      );
-      console.log('🔗 Joining room for userId:', userId);
       // Join user-specific room
       imageSocketInstance?.emit('join', userId);
     });
@@ -42,12 +37,12 @@ export const useAnonImageSocket = (userId: string | undefined) => {
     });
 
     imageSocketInstance.on('disconnect', (reason) => {
-      console.log('🔌 Socket disconnected:', reason);
+
+      console.warn('⚠️ Disconnected from image socket:', reason);
     });
 
     // Listen for updates
     imageSocketInstance.on('image-status-update', (update) => {
-      console.log('🎯 Received image update:', update);
       setImageUpdates((prev) => [...prev, update]);
     });
 

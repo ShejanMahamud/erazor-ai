@@ -1,7 +1,6 @@
 'use client';
 
 import PageContainer from '@/components/layout/page-container';
-import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/ui/file-upload';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useAnonImageSocket } from '@/hooks/useAnonImageSocket';
@@ -9,6 +8,8 @@ import { gsap } from 'gsap';
 import { Download, Loader2, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from './ui/button';
 
 export function BackgroundRemover() {
     const [files, setFiles] = useState<File[]>([]);
@@ -31,25 +32,12 @@ export function BackgroundRemover() {
     // Move hook call to top level - hooks cannot be called inside useEffect
     const { imageUpdates: socketImageUpdates, clearImageUpdates } = useAnonImageSocket(userId || undefined);
 
-    // Debug userId changes
-    useEffect(() => {
-        console.log('👤 UserId changed:', userId);
-    }, [userId]);
 
     useEffect(() => {
-        // Update local state when socket updates change
-        console.log('📡 Socket updates changed:', socketImageUpdates);
         setImageUpdates(socketImageUpdates);
     }, [socketImageUpdates]);
 
     useEffect(() => {
-        // Only process image updates if we're currently processing or have files
-        console.log('🔍 Image updates effect triggered:', {
-            isProcessing,
-            filesLength: files.length,
-            imageUpdatesLength: imageUpdates.length,
-            imageUpdates
-        });
 
         if (!isProcessing && !files.length) return;
 
@@ -57,15 +45,37 @@ export function BackgroundRemover() {
             (img: any) => img.status === 'ready'
         );
 
-        console.log('✅ Ready images found:', readyImages);
+        const failedImages = imageUpdates.filter(
+            (img: any) => img.status === 'failed' || img.status === 'error'
+        );
 
         if (readyImages.length > 0 && isProcessing) {
             // Get the most recent image that matches our current upload
             const latestImage = readyImages[readyImages.length - 1];
             setCurrentImage(latestImage);
             setIsProcessing(false);
+            // Show success toast
+            toast.success('Background removed successfully!', {
+                description: 'Your image is ready for download.'
+            });
+        } else if (failedImages.length > 0 && isProcessing) {
+            // Handle failed processing
+            const failedImage = failedImages[failedImages.length - 1];
+            console.error('Image processing failed:', failedImage);
+
+            toast.error('Background removal failed', {
+                description: failedImage.error || 'Unable to process the image. Please try again with a different image.'
+            });
+
+            setIsProcessing(false);
+            // Reset states on processing failure
+            setFiles([]);
+            if (originalImageUrl) {
+                URL.revokeObjectURL(originalImageUrl);
+            }
+            setOriginalImageUrl('');
         }
-    }, [imageUpdates, isProcessing, files.length]);
+    }, [imageUpdates, isProcessing, files.length, originalImageUrl]);
 
     // GSAP Animation Effects
     useEffect(() => {
@@ -188,21 +198,55 @@ export function BackgroundRemover() {
     }, [currentImage, isProcessing, isUploading]);
 
     const handleFileUpload = async (file: File[]) => {
+        // Validate file
+        if (!file || file.length === 0) {
+            toast.error('No file selected', {
+                description: 'Please select an image file to upload.'
+            });
+            return;
+        }
+
+        const selectedFile = file[0];
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(selectedFile.type)) {
+            toast.error('Invalid file type', {
+                description: 'Please upload a JPG, PNG, or WebP image file.'
+            });
+            return;
+        }
+
+        // Validate file size (e.g., max 10MB)
+        const maxSize = 20 * 1024 * 1024; // 10MB in bytes
+        if (selectedFile.size > maxSize) {
+            toast.error('File too large', {
+                description: 'Please upload an image smaller than 10MB.'
+            });
+            return;
+        }
+
         // Clear any previous state first
         setCurrentImage(null);
-        setFiles([file[0]]);
+        setFiles([selectedFile]);
         setIsUploading(true);
+        setImageUpdates([]); // Clear previous image updates
+
+        // Clear socket updates if available
+        if (clearImageUpdates) {
+            clearImageUpdates();
+        }
 
         // Clear previous image URL to prevent memory leaks
         if (originalImageUrl) {
             URL.revokeObjectURL(originalImageUrl);
         }
 
-        const imageUrl = URL.createObjectURL(file[0]);
+        const imageUrl = URL.createObjectURL(selectedFile);
         setOriginalImageUrl(imageUrl);
 
         const formData = new FormData();
-        formData.append('file', file[0]);
+        formData.append('file', selectedFile);
         try {
             setIsProcessing(true);
             const res = await fetch(
@@ -214,19 +258,57 @@ export function BackgroundRemover() {
                 }
             );
             if (!res.ok) {
-                throw new Error('Failed to upload file');
+                const errorData = await res.json().catch(() => ({}));
+                const errorMessage = errorData.message || `Server error: ${res.status}`;
+                throw new Error(errorMessage);
             }
             const data = await res.json();
-            console.log('Upload response:', data);
             setUserId(data.data.anonId);
+            // Show upload success toast
+            toast.success('Image uploaded successfully!', {
+                description: 'Processing background removal...'
+            });
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
+            console.error('Upload error:', error);
+            toast.error('Upload failed', {
+                description: errorMessage
+            });
             setIsProcessing(false);
+            // Reset states on error
+            setFiles([]);
+            if (originalImageUrl) {
+                URL.revokeObjectURL(originalImageUrl);
+            }
+            setOriginalImageUrl('');
         } finally {
             setIsUploading(false);
         }
     };
 
     const handleReset = () => {
+        // Store the current URL for cleanup before state changes
+        const currentUrl = originalImageUrl;
+
+        // Clear state immediately to prevent showing previous results
+        setFiles([]);
+        setCurrentImage(null);
+        setOriginalImageUrl('');
+        setIsUploading(false);
+        setIsProcessing(false);
+        setUserId(null);
+        setImageUpdates([]);
+
+        // Clear socket updates if available
+        if (clearImageUpdates) {
+            clearImageUpdates();
+        }
+
+        // Clear any URLs to prevent memory leaks
+        if (currentUrl) {
+            URL.revokeObjectURL(currentUrl);
+        }
+
         // Animate out current content before reset
         if (resultsRef.current) {
             gsap.to(resultsRef.current, {
@@ -235,18 +317,6 @@ export function BackgroundRemover() {
                 duration: 0.3,
                 ease: 'power2.out',
                 onComplete: () => {
-                    // Clear all state completely
-                    setFiles([]);
-                    setCurrentImage(null);
-                    setOriginalImageUrl('');
-                    setIsUploading(false);
-                    setIsProcessing(false);
-
-                    // Clear any URLs to prevent memory leaks
-                    if (originalImageUrl) {
-                        URL.revokeObjectURL(originalImageUrl);
-                    }
-
                     // Animate in upload area
                     if (uploadAreaRef.current) {
                         gsap.fromTo(
@@ -255,44 +325,59 @@ export function BackgroundRemover() {
                             { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }
                         );
                     }
+
+                    // Show reset success toast
+                    toast.success('Ready for new image!', {
+                        description: 'You can now upload another image to process.'
+                    });
                 }
             });
         } else {
-            // If no results are showing, just clear state immediately
-            setFiles([]);
-            setCurrentImage(null);
-            setOriginalImageUrl('');
-            setIsUploading(false);
-            setIsProcessing(false);
-            // Clear any URLs to prevent memory leaks
-            if (originalImageUrl) {
-                URL.revokeObjectURL(originalImageUrl);
-            }
+            // Show reset success toast
+            toast.success('Ready for new image!', {
+                description: 'You can now upload another image to process.'
+            });
         }
     };
 
     const handleDownload = () => {
         if (currentImage?.bgRemovedImageUrlHQ || currentImage?.bgRemovedImageUrlLQ) {
-            // Add download animation
-            if (buttonsRef.current) {
-                const downloadBtn = buttonsRef.current.querySelector('button');
-                if (downloadBtn) {
-                    gsap.to(downloadBtn, {
-                        scale: 0.95,
-                        duration: 0.1,
-                        yoyo: true,
-                        repeat: 1,
-                        ease: 'power2.inOut'
-                    });
+            try {
+                // Add download animation
+                if (buttonsRef.current) {
+                    const downloadBtn = buttonsRef.current.querySelector('button');
+                    if (downloadBtn) {
+                        gsap.to(downloadBtn, {
+                            scale: 0.95,
+                            duration: 0.1,
+                            yoyo: true,
+                            repeat: 1,
+                            ease: 'power2.inOut'
+                        });
+                    }
                 }
-            }
 
-            const link = document.createElement('a');
-            link.href = currentImage.bgRemovedImageUrlHQ || currentImage.bgRemovedImageUrlLQ;
-            link.download = `${currentImage.originalFileName}_no_bg.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                const link = document.createElement('a');
+                link.href = currentImage.bgRemovedImageUrlHQ || currentImage.bgRemovedImageUrlLQ;
+                link.download = `${currentImage.originalFileName}_no_bg.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Show success toast
+                toast.success('Download started!', {
+                    description: 'Your image with removed background is being downloaded.'
+                });
+            } catch (error) {
+                console.error('Download error:', error);
+                toast.error('Download failed', {
+                    description: 'Unable to download the image. Please try again.'
+                });
+            }
+        } else {
+            toast.error('Download unavailable', {
+                description: 'No processed image available for download.'
+            });
         }
     };
 
@@ -354,26 +439,7 @@ export function BackgroundRemover() {
 
                         {currentImage && originalImageUrl && (
                             <div ref={resultsRef} className='space-y-6'>
-                                <div className='flex items-center justify-between'>
 
-                                    <div ref={buttonsRef} className='flex gap-2'>
-                                        <Button
-                                            onClick={handleDownload}
-                                            className='flex items-center gap-2'
-                                        >
-                                            <Download className='h-4 w-4' />
-                                            Download
-                                        </Button>
-                                        <Button
-                                            variant='outline'
-                                            onClick={handleReset}
-                                            className='flex items-center gap-2 bg-transparent'
-                                        >
-                                            <RotateCcw className='h-4 w-4' />
-                                            New Image
-                                        </Button>
-                                    </div>
-                                </div>
 
                                 <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
                                     {/* Before */}
@@ -422,6 +488,26 @@ export function BackgroundRemover() {
 
                                 <div className='text-muted-foreground text-center text-sm'>
                                     Original filename: {currentImage.originalFileName}
+                                </div>
+                                <div className='w-full mx-auto flex items-center justify-between'>
+
+                                    <div ref={buttonsRef} className='flex gap-2 w-full justify-center'>
+                                        <Button
+                                            onClick={handleDownload}
+                                            className='flex items-center gap-2'
+                                        >
+                                            <Download className='h-4 w-4' />
+                                            Download
+                                        </Button>
+                                        <Button
+                                            variant='outline'
+                                            onClick={handleReset}
+                                            className='flex items-center gap-2 bg-transparent'
+                                        >
+                                            <RotateCcw className='h-4 w-4' />
+                                            New Image
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         )}
