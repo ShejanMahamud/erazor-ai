@@ -35,7 +35,7 @@ export function useNotifications(userId: string) {
 
     // Initial load from DB
     const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4545/v1/api';
+      process.env.NEXT_PUBLIC_API_URL;
     const fullUrl = `${apiUrl}/notifications/${userId}`;
 
     axios
@@ -56,9 +56,11 @@ export function useNotifications(userId: string) {
     // WebSocket connection
     // Connect to backend (adjust URL)
     const wsUrl =
-      process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL;
+      process.env.NEXT_PUBLIC_WS_URL + '/notifications';
     socket = io(wsUrl, {
-      transports: ['websocket']
+      transports: ['websocket'],
+      forceNew: true,
+      autoConnect: true
     });
 
     // Join user-specific room
@@ -66,6 +68,10 @@ export function useNotifications(userId: string) {
 
     socket.on('connect', () => {
       console.log('✅ Connected to notifications WS:', socket.id);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('❌ Notifications socket connection error:', error);
     });
 
     socket.on('new-notification', (data: Notification) => {
@@ -77,6 +83,7 @@ export function useNotifications(userId: string) {
     return () => {
       socket.off('new-notification');
       socket.off('connect');
+      socket.off('connect_error');
       socket.disconnect();
       console.log('❌ Disconnected from notifications WS');
     };
