@@ -33,7 +33,6 @@ import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { SignOutButton, useUser } from '@clerk/nextjs';
 import {
-  IconBell,
   IconChevronRight,
   IconChevronsDown,
   IconCreditCard,
@@ -200,10 +199,6 @@ export default function AppSidebar() {
                   >
                     <IconCreditCard className='mr-2 h-4 w-4' />
                     Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <IconBell className='mr-2 h-4 w-4' />
-                    Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

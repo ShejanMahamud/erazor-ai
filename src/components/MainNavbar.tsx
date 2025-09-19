@@ -17,6 +17,10 @@ import { useState } from 'react';
 export function MainNavbar() {
   const navItems = [
     {
+      name: 'Image Editor',
+      link: '/editor'
+    },
+    {
       name: 'How to use',
       link: '/how-to-use'
     },

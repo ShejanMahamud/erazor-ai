@@ -24,6 +24,14 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
+    title: 'Image Editor',
+    url: '/dashboard/image-editor',
+    icon: 'userPen',
+    shortcut: ['i', 'e'],
+    isActive: false,
+    items: []
+  },
+  {
     title: 'Image History',
     url: '/dashboard/image-history',
     icon: 'history',

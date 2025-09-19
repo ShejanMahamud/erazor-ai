@@ -15,6 +15,7 @@ import useThemeSwitching from './use-theme-switching';
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
+
   // These action are for the navigation
   const actions = useMemo(() => {
     // Define navigateTo inside the useMemo callback to avoid dependency array issues
@@ -27,14 +28,14 @@ export default function KBar({ children }: { children: React.ReactNode }) {
       const baseAction =
         navItem.url !== '#'
           ? {
-              id: `${navItem.title.toLowerCase()}Action`,
-              name: navItem.title,
-              shortcut: navItem.shortcut,
-              keywords: navItem.title.toLowerCase(),
-              section: 'Navigation',
-              subtitle: `Go to ${navItem.title}`,
-              perform: () => navigateTo(navItem.url)
-            }
+            id: `${navItem.title.toLowerCase()}Action`,
+            name: navItem.title,
+            shortcut: navItem.shortcut,
+            keywords: navItem.title.toLowerCase(),
+            section: 'Navigation',
+            subtitle: `Go to ${navItem.title}`,
+            perform: () => navigateTo(navItem.url)
+          }
           : null;
 
       // Map child items into actions
