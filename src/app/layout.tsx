@@ -331,12 +331,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NuqsAdapter>
         <Analytics />
-        
-        {/* Fabric.js for Image Editor */}
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/6.0.2/fabric.min.js"
-          strategy="beforeInteractive"
-        />
+
       </body>
     </html>
   );

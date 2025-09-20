@@ -56,15 +56,6 @@ export default function AppSidebar() {
     // Tenant switching functionality would be implemented here
   };
 
-  // Filter navigation items based on user role
-  const userRole = user?.publicMetadata?.role as string;
-  const filteredNavItems = navItems.filter((item) => {
-    // Hide User Management for non-admin users
-    if (item.title === 'User Management' && userRole !== 'ADMIN') {
-      return false;
-    }
-    return true;
-  });
 
   const handleRedirect = () => {
     // Redirect to your API route
@@ -90,7 +81,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
-            {filteredNavItems.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible

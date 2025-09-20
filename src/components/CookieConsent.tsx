@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
   BarChart3,
   Cookie,
@@ -13,6 +12,7 @@ import {
   Target,
   X
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 interface CookiePreferences {

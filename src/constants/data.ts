@@ -24,14 +24,6 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
-    title: 'Image Editor',
-    url: '/dashboard/image-editor',
-    icon: 'userPen',
-    shortcut: ['i', 'e'],
-    isActive: false,
-    items: []
-  },
-  {
     title: 'Image History',
     url: '/dashboard/image-history',
     icon: 'history',
@@ -40,10 +32,18 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
-    title: 'User Management',
-    url: '/dashboard/user-management',
+    title: 'Billing',
+    url: '/api/portal',
+    icon: 'billing',
+    shortcut: ['b', 'b'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Profile',
+    url: '/dashboard/profile',
     icon: 'user',
-    shortcut: ['u', 'm'],
+    shortcut: ['b', 'b'],
     isActive: false,
     items: []
   }
