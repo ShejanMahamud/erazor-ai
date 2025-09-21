@@ -10,6 +10,8 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { serverBaseUrl } from '@/config';
+import { EmptyState } from '@/features/overview/components/empty-state';
+import { InsightsCards } from '@/features/overview/components/insights-cards';
 import { useAuth } from '@clerk/nextjs';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
@@ -29,6 +31,7 @@ export default function OverViewLayout({
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasData, setHasData] = useState(false);
 
   const fetchData = async () => {
     if (!userId) {
@@ -56,6 +59,10 @@ export default function OverViewLayout({
       const data = await response.json();
       console.log('Dashboard data received:', data);
       setDashboardData(data);
+
+      // Check if user has any data
+      const totalImages = data?.data?.cards?.totalImagesProcessed || 0;
+      setHasData(totalImages > 0);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch dashboard data';
       console.error('Error fetching dashboard data:', err);
@@ -73,7 +80,7 @@ export default function OverViewLayout({
 
   return (
     <PageContainer>
-      <div className='flex flex-1 flex-col space-y-2'>
+      <div className='flex flex-1 flex-col space-y-6'>
         <div className='flex items-center justify-between space-y-2'>
           <h2 className='text-2xl font-bold tracking-tight'>
             Hi, Welcome back 👋
@@ -90,110 +97,122 @@ export default function OverViewLayout({
           )}
         </div>
 
-        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total Images Processed</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.data?.cards?.totalImagesProcessed || 0)}
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  All Time
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Total background removals <IconTrendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Since you joined on {dashboardData?.data?.userInfo?.joinedDate ? new Date(dashboardData.data.userInfo.joinedDate).toLocaleDateString() : 'N/A'}
-              </div>
-            </CardFooter>
-          </Card>
+        {/* Show empty state if no data */}
+        {!isLoading && !hasData ? (
+          <EmptyState />
+        ) : (
+          <>
+            {/* Main Stats Cards */}
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4'>
+              <Card className='@container/card'>
+                <CardHeader>
+                  <CardDescription>Total Images Processed</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {isLoading ? '...' : (dashboardData?.data?.cards?.totalImagesProcessed || 0).toLocaleString()}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant='outline'>
+                      <IconTrendingUp />
+                      All Time
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    Total background removals <IconTrendingUp className='size-4' />
+                  </div>
+                  <div className='text-muted-foreground'>
+                    Since you joined on {dashboardData?.data?.userInfo?.joinedDate ? new Date(dashboardData.data.userInfo.joinedDate).toLocaleDateString() : 'N/A'}
+                  </div>
+                </CardFooter>
+              </Card>
 
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>This Month</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.data?.cards?.imagesThisMonth || 0)}
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp /> : <IconTrendingDown />}
-                  {dashboardData?.data?.insights?.monthlyGrowth ? `${dashboardData.data.insights.monthlyGrowth > 0 ? '+' : ''}${dashboardData.data.insights.monthlyGrowth}%` : '0%'}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Monthly activity {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp className='size-4' /> : <IconTrendingDown className='size-4' />}
-              </div>
-              <div className='text-muted-foreground'>
-                Last month: {dashboardData?.data?.cards?.lastMonthImagesProcessed || 0}
-              </div>
-            </CardFooter>
-          </Card>
+              <Card className='@container/card'>
+                <CardHeader>
+                  <CardDescription>This Month</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {isLoading ? '...' : (dashboardData?.data?.cards?.imagesThisMonth || 0).toLocaleString()}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant='outline'>
+                      {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp /> : <IconTrendingDown />}
+                      {dashboardData?.data?.insights?.monthlyGrowth ? `${dashboardData.data.insights.monthlyGrowth > 0 ? '+' : ''}${dashboardData.data.insights.monthlyGrowth}%` : '0%'}
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    Monthly activity {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp className='size-4' /> : <IconTrendingDown className='size-4' />}
+                  </div>
+                  <div className='text-muted-foreground'>
+                    Last month: {(dashboardData?.data?.cards?.lastMonthImagesProcessed || 0).toLocaleString()}
+                  </div>
+                </CardFooter>
+              </Card>
 
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Subscription Status</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Active' : 'Free')}
-              </CardTitle>
-              <CardAction>
-                <Badge variant={dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'default' : 'outline'}>
-                  {dashboardData?.data?.cards?.subscriptionStatus?.status || 'none'}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                {dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Premium features enabled' : 'Limited usage available'}
-              </div>
-              <div className='text-muted-foreground'>
-                {dashboardData?.data?.cards?.subscriptionStatus?.currentPeriodEnd
-                  ? `Expires: ${new Date(dashboardData.data.cards.subscriptionStatus.currentPeriodEnd).toLocaleDateString()}`
-                  : 'No active subscription'
-                }
-              </div>
-            </CardFooter>
-          </Card>
+              <Card className='@container/card'>
+                <CardHeader>
+                  <CardDescription>Subscription Status</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {isLoading ? '...' : (dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Active' : 'Free')}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant={dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'default' : 'outline'}>
+                      {dashboardData?.data?.cards?.subscriptionStatus?.status || 'none'}
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    {dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Premium features enabled' : 'Limited usage available'}
+                  </div>
+                  <div className='text-muted-foreground'>
+                    {dashboardData?.data?.cards?.subscriptionStatus?.currentPeriodEnd
+                      ? `Expires: ${new Date(dashboardData.data.cards.subscriptionStatus.currentPeriodEnd).toLocaleDateString()}`
+                      : 'No active subscription'
+                    }
+                  </div>
+                </CardFooter>
+              </Card>
 
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Daily Average</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.data?.insights?.averageDailyProcessing?.toFixed(1) || '0.0')}
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  Per Day
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Most active: {dashboardData?.data?.insights?.mostActiveDay?.date ? new Date(dashboardData.data.insights.mostActiveDay.date).toLocaleDateString() : 'N/A'}
+              <Card className='@container/card'>
+                <CardHeader>
+                  <CardDescription>Daily Average</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {isLoading ? '...' : (dashboardData?.data?.insights?.averageDailyProcessing?.toFixed(1) || '0.0')}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant='outline'>
+                      <IconTrendingUp />
+                      Per Day
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    Most active: {dashboardData?.data?.insights?.mostActiveDay?.date ? new Date(dashboardData.data.insights.mostActiveDay.date).toLocaleDateString() : 'N/A'}
+                  </div>
+                  <div className='text-muted-foreground'>
+                    {(dashboardData?.data?.insights?.mostActiveDay?.count || 0).toLocaleString()} images processed
+                  </div>
+                </CardFooter>
+              </Card>
+            </div>
+
+            {/* Insights Cards */}
+            {!isLoading && <InsightsCards />}
+
+            {/* Charts Grid */}
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
+              <div className='col-span-1 lg:col-span-4'>{bar_stats}</div>
+              <div className='col-span-1 lg:col-span-3'>
+                {sales}
               </div>
-              <div className='text-muted-foreground'>
-                {dashboardData?.data?.insights?.mostActiveDay?.count || 0} images processed
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
-          <div className='col-span-4'>{bar_stats}</div>
-          <div className='col-span-4 md:col-span-3'>
-            {/* sales arallel routes */}
-            {sales}
-          </div>
-          <div className='col-span-4'>{area_stats}</div>
-          <div className='col-span-4 md:col-span-3'>{pie_stats}</div>
-        </div>
+              <div className='col-span-1 lg:col-span-4'>{area_stats}</div>
+              <div className='col-span-1 lg:col-span-3'>{pie_stats}</div>
+            </div>
+          </>
+        )}
       </div>
     </PageContainer>
   );

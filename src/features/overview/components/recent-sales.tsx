@@ -1,16 +1,17 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
-  CardHeader,
   CardContent,
-  CardTitle,
-  CardDescription
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { serverBaseUrl } from '@/config';
 import { useAuth } from '@clerk/nextjs';
+import { FileX } from 'lucide-react';
 import * as React from 'react';
 
 const getStatusColor = (status: string) => {
@@ -51,7 +52,7 @@ export function RecentSales() {
   React.useEffect(() => {
     const fetchData = async () => {
       if (!userId) return;
-      
+
       try {
         const token = await getToken();
         const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
@@ -59,7 +60,7 @@ export function RecentSales() {
             Authorization: `Bearer ${token}`
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data?.recentActivity) {
@@ -90,8 +91,16 @@ export function RecentSales() {
             <div className="text-muted-foreground">Loading recent activity...</div>
           </div>
         ) : recentActivity.length === 0 ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">No recent activity</div>
+          <div className="flex flex-col items-center justify-center py-8 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <FileX className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <div className="text-center">
+              <div className="text-muted-foreground font-medium">No recent activity</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                Process your first image to see activity here
+              </div>
+            </div>
           </div>
         ) : (
           <div className='space-y-8'>
@@ -111,7 +120,7 @@ export function RecentSales() {
                   </p>
                 </div>
                 <div className='ml-auto'>
-                  <Badge 
+                  <Badge
                     variant={item.status === 'ready' ? 'default' : 'secondary'}
                     className={`${getStatusColor(item.status)} text-white`}
                   >
