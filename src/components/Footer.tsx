@@ -17,7 +17,7 @@ export const Footer = () => {
               <div className='bg-foreground flex h-8 w-8 items-center justify-center rounded-lg'>
                 <span className='text-background font-bold'>E</span>
               </div>
-              <h3 className='text-xl font-semibold'>Erazor</h3>
+              <h3 className='text-xl font-semibold'>Erazor AI</h3>
             </div>
             <p className='text-foreground/60 text-sm leading-relaxed'>
               Advanced background removal and image editing tools powered by AI.
@@ -89,7 +89,7 @@ export const Footer = () => {
         >
           <PopularBackground />
           <div className='text-foreground/60 relative z-10 text-sm'>
-            © 2025 Erazor. All rights reserved.
+            © 2025 Erazor AI. All rights reserved.
           </div>
           <div className='relative z-10 flex items-center gap-4 text-sm'>
             <Link

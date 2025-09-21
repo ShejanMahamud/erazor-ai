@@ -44,7 +44,7 @@ export const Hero = () => {
                 <div className='flex items-center gap-1'>
                   🎉
                   <AnimatedGradientText className='text-sm font-medium'>
-                    Introducing Erazor
+                    Introducing Erazor AI
                   </AnimatedGradientText>
                   <ChevronRight className='size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5' />
                 </div>

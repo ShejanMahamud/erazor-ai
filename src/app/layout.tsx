@@ -22,11 +22,11 @@ const META_THEME_COLORS = {
 export const metadata: Metadata = {
   title: {
     default:
-      'Erazor - AI-Powered Background Remover & Photo Editor | Remove Backgrounds Instantly',
-    template: '%s | Erazor - AI Background Remover'
+      'Erazor AI - AI-Powered Background Remover & Photo Editor | Remove Backgrounds Instantly',
+    template: '%s | Erazor AI - AI Background Remover'
   },
   description:
-    "Remove backgrounds from photos instantly with Erazor's AI-powered background remover. Professional-quality results in 3 seconds. Free online tool for e-commerce, portraits, and creative projects. No signup required.",
+    "Remove backgrounds from photos instantly with Erazor AI's AI-powered background remover. Professional-quality results in 3 seconds. Free online tool for e-commerce, portraits, and creative projects. No signup required.",
   keywords: [
     'background remover',
     'remove background',
@@ -49,16 +49,16 @@ export const metadata: Metadata = {
     'background eraser',
     'professional photo editing'
   ],
-  authors: [{ name: 'Erazor Team', url: 'https://erazor.johuniq.xyz' }],
-  creator: 'Erazor',
-  publisher: 'Erazor',
+  authors: [{ name: 'Erazor AI Team', url: 'https://erazor.app' }],
+  creator: 'Erazor AI',
+  publisher: 'Erazor AI',
   formatDetection: {
     email: false,
     address: false,
     telephone: false
   },
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://erazor.johuniq.xyz'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://erazor.app'
   ),
   alternates: {
     canonical: '/',
@@ -72,30 +72,30 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: '/',
     title:
-      'Erazor - AI-Powered Background Remover | Remove Backgrounds Instantly',
+      'Erazor AI - AI-Powered Background Remover | Remove Backgrounds Instantly',
     description:
       'Remove backgrounds from photos instantly with AI. Professional results in 3 seconds. Free online background remover for e-commerce, portraits, and creative projects.',
-    siteName: 'Erazor',
+    siteName: 'Erazor AI',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Erazor - AI Background Remover Tool',
+        alt: 'Erazor AI - AI Background Remover Tool',
         type: 'image/png'
       },
       {
         url: '/og-image-square.png',
         width: 1200,
         height: 1200,
-        alt: 'Erazor - Remove Backgrounds with AI',
+        alt: 'Erazor AI - Remove Backgrounds with AI',
         type: 'image/png'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Erazor - AI Background Remover | Remove Backgrounds Instantly',
+    title: 'Erazor AI - AI Background Remover | Remove Backgrounds Instantly',
     description:
       'Remove backgrounds from photos instantly with AI. Professional results in 3 seconds. Free online background remover.',
     images: ['/twitter-image.png'],
@@ -140,11 +140,11 @@ export const metadata: Metadata = {
   category: 'technology',
   classification: 'Photo Editing Software',
   referrer: 'origin-when-cross-origin',
-  applicationName: 'Erazor',
+  applicationName: 'Erazor AI',
   generator: 'Next.js',
   other: {
-    'google-site-verification': 'your-google-verification-code',
-    'msvalidate.01': 'your-bing-verification-code',
+    'google-site-verification': '-vDPvwoV59xNhbusZ7ukVdea6H0u2K0bgqYbO3TjlKQ',
+    'msvalidate.01': '117FCF20377F6D1208898A5975FB202C',
     'yandex-verification': 'your-yandex-verification-code',
     'facebook-domain-verification': 'your-facebook-verification-code'
   }
@@ -174,6 +174,7 @@ export default async function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <head>
+        <meta name="msvalidate.01" content="117FCF20377F6D1208898A5975FB202C" />
         {/* Preconnect to external domains for performance */}
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link
@@ -193,7 +194,7 @@ export default async function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'Erazor',
+              name: 'Erazor AI',
               description:
                 'AI-powered background remover and photo editing tool',
               url: 'https://erazor.ai',
@@ -220,7 +221,7 @@ export default async function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: 'Erazor Background Remover',
+              name: 'Erazor AI Background Remover',
               description:
                 'AI-powered tool to remove backgrounds from images instantly',
               url: 'https://erazor.ai',
@@ -285,7 +286,7 @@ export default async function RootLayout({
       >
         {/* Google Analytics with consent management */}
         <Script
-          src='https://www.googletagmanager.com/gtag/js?id=G-4RYFWYBPY8'
+          src='https://www.googletagmanager.com/gtag/js?id=G-XRTGX8M0YB'
           strategy='afterInteractive'
         />
         <Script id='google-analytics' strategy='afterInteractive'>
@@ -302,7 +303,7 @@ export default async function RootLayout({
               'ad_personalization': 'denied'
             });
             
-            gtag('config', 'G-4RYFWYBPY8');
+            gtag('config', 'G-XRTGX8M0YB');
           `}
         </Script>
 

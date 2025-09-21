@@ -93,7 +93,7 @@ export default function ContactPage() {
             heading='Get In '
             focusText=' Touch'
             headingStyles='font-manrope'
-            paragraph="Have questions about Erazor? Need help with your account? We're here to help and would love to hear from you."
+            paragraph="Have questions about Erazor AI? Need help with your account? We're here to help and would love to hear from you."
             boxStyles='mb-16'
           />
 

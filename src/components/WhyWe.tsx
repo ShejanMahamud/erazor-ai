@@ -20,7 +20,7 @@ const WhyWe: React.FC = () => {
 
       <HeadingText
         heading='Why '
-        focusText=' Erazor?'
+        focusText=' Erazor AI?'
         headingStyles='font-manrope'
         paragraph='The most powerful AI background removal tool designed for professionals, creators, and businesses who demand perfection.'
       />

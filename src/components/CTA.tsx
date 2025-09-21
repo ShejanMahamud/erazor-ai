@@ -85,7 +85,7 @@ const CTA: React.FC = () => {
       </svg>
 
       <h1 className='font-manrope relative z-20 mb-5 text-center text-2xl leading-[40px] tracking-[-0.48px] text-white lg:text-4xl lg:leading-[52px]'>
-        Erazor has no limitation.
+        Erazor AI has no limitation.
         <br />
         Get Started in a journey with promptverse.
       </h1>

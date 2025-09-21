@@ -1,6 +1,6 @@
-# Erazor Client
+# Erazor AI Client
 
-A modern Next.js client application for Erazor - an AI-powered background removal service.
+A modern Next.js client application for Erazor AI - an AI-powered background removal service.
 
 ## Installation
 

@@ -107,7 +107,7 @@ export const UseCases = () => {
         <HeadingText
           heading='Use '
           focusText=' Cases'
-          paragraph='Discover how Erazor can transform your images across various scenarios, from e-commerce to creative projects.'
+          paragraph='Discover how Erazor AI can transform your images across various scenarios, from e-commerce to creative projects.'
           boxStyles='mb-12'
         />
 

@@ -2,9 +2,9 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Erazor - AI Background Removal',
+  title: 'Terms of Service | Erazor AI - AI Background Removal',
   description:
-    'Read the terms and conditions for using Erazor AI background removal service.'
+    'Read the terms and conditions for using Erazor AI AI background removal service.'
 };
 
 export default function TermsOfServicePage() {
@@ -43,7 +43,7 @@ export default function TermsOfServicePage() {
                   Agreement to Terms
                 </h2>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  By accessing and using Erazor (&ldquo;we,&rdquo;
+                  By accessing and using Erazor AI (&ldquo;we,&rdquo;
                   &ldquo;our,&rdquo; or &ldquo;us&rdquo;), you accept and agree
                   to be bound by the terms and provision of this agreement. If
                   you do not agree to abide by the above, please do not use this
@@ -52,7 +52,7 @@ export default function TermsOfServicePage() {
                 <p className='text-foreground/80 leading-relaxed'>
                   These Terms of Service (&ldquo;Terms&rdquo;) govern your use
                   of our AI-powered background removal service available at
-                  erazor.com (the &ldquo;Service&rdquo;) operated by Erazor.
+                  erazor.com (the &ldquo;Service&rdquo;) operated by Erazor AI.
                 </p>
               </section>
 
@@ -62,7 +62,7 @@ export default function TermsOfServicePage() {
                   Service Description
                 </h2>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  Erazor provides an AI-powered background removal service that
+                  Erazor AI provides an AI-powered background removal service that
                   allows users to automatically remove backgrounds from digital
                   images. Our service includes:
                 </p>
@@ -336,7 +336,7 @@ export default function TermsOfServicePage() {
                   Indemnification
                 </h2>
                 <p className='text-foreground/80 leading-relaxed'>
-                  You agree to indemnify and hold harmless Erazor and its
+                  You agree to indemnify and hold harmless Erazor AI and its
                   affiliates from any claims, damages, or expenses arising from
                   your use of the Service, violation of these Terms, or
                   infringement of any third-party rights.
@@ -459,7 +459,7 @@ export default function TermsOfServicePage() {
                 </h2>
                 <p className='text-foreground/80 leading-relaxed'>
                   These Terms of Service, together with our Privacy Policy,
-                  constitute the entire agreement between you and Erazor
+                  constitute the entire agreement between you and Erazor AI
                   concerning the Service and supersede all prior agreements and
                   understandings.
                 </p>

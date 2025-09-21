@@ -2,9 +2,9 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | Erazor - AI Background Removal',
+  title: 'Cookie Policy | Erazor AI - AI Background Removal',
   description:
-    'Learn about how Erazor uses cookies and similar technologies to enhance your experience with our AI background removal service.'
+    'Learn about how Erazor AI uses cookies and similar technologies to enhance your experience with our AI background removal service.'
 };
 
 export default function CookiePolicyPage() {
@@ -50,7 +50,7 @@ export default function CookiePolicyPage() {
                   removal service.
                 </p>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  This Cookie Policy explains how Erazor (&ldquo;we,&rdquo;
+                  This Cookie Policy explains how Erazor AI (&ldquo;we,&rdquo;
                   &ldquo;our,&rdquo; or &ldquo;us&rdquo;) uses cookies and
                   similar technologies on our website at erazor.com (the
                   &ldquo;Service&rdquo;).

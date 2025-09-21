@@ -58,11 +58,11 @@ export function OrgSwitcher({
                   src={'/assets/logo.png'}
                   width={24}
                   height={24}
-                  alt='Erazor Logo'
+                  alt='Erazor AI Logo'
                 />
               </div>
               <div className='flex flex-col gap-0.5 leading-none'>
-                <span className='font-semibold'>Erazor</span>
+                <span className='font-semibold'>Erazor AI</span>
                 <span className=''>{selectedTenant.name}</span>
               </div>
               <ChevronsUpDown className='ml-auto' />

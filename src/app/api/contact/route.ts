@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Email to admin/support
     const adminEmailOptions = {
       from: {
-        name: 'Erazor Contact Form',
+        name: 'Erazor AI Contact Form',
         address:
           process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@erazor.ai'
       },
@@ -76,12 +76,12 @@ export async function POST(request: NextRequest) {
     // Auto-reply email to customer
     const autoReplyEmailOptions = {
       from: {
-        name: 'Erazor Support',
+        name: 'Erazor AI Support',
         address:
           process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@erazor.ai'
       },
       to: email,
-      subject: "Thank you for contacting Erazor - We've received your message",
+      subject: "Thank you for contacting Erazor AI - We've received your message",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f97316 0%, #9333ea 100%); border-radius: 8px 8px 0 0;">
@@ -101,14 +101,14 @@ export async function POST(request: NextRequest) {
               <h3 style="color: #333; margin-top: 0;">Your Message Summary</h3>
               <p><strong>Subject:</strong> ${subject}</p>
               <p><strong>Submitted:</strong> ${new Date().toLocaleDateString(
-                'en-US',
-                {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                }
-              )}</p>
+        'en-US',
+        {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }
+      )}</p>
             </div>
             
             <p style="color: #666; line-height: 1.6;">
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
                         border-radius: 6px; 
                         display: inline-block; 
                         font-weight: bold;">
-                Visit Erazor.ai
+                Visit Erazor AI.ai
               </a>
             </div>
             
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
             
             <p style="color: #999; font-size: 14px; text-align: center; margin: 0;">
               Best regards,<br>
-              The Erazor Team<br>
+              The Erazor AI Team<br>
               <a href="mailto:support@erazor.ai" style="color: #f97316;">support@erazor.ai</a>
             </p>
           </div>

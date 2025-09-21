@@ -2,9 +2,9 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Erazor - AI Background Removal',
+  title: 'Privacy Policy | Erazor AI - AI Background Removal',
   description:
-    'Learn how Erazor protects your privacy and handles your data when using our AI background removal service.'
+    'Learn how Erazor AI protects your privacy and handles your data when using our AI background removal service.'
 };
 
 export default function PrivacyPolicyPage() {
@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
                   Introduction
                 </h2>
                 <p className='text-foreground/80 mb-4 leading-relaxed'>
-                  Erazor (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or
+                  Erazor AI (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or
                   &ldquo;us&rdquo;) is committed to protecting your privacy.
                   This Privacy Policy explains how we collect, use, disclose,
                   and safeguard your information when you use our AI-powered

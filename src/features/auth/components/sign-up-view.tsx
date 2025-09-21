@@ -6,9 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Sign Up - Create Your Free Erazor Account | AI Background Remover',
+  title: 'Sign Up - Create Your Free Erazor AI Account | AI Background Remover',
   description:
-    'Join thousands of users and create your free Erazor account today. Get instant access to AI-powered background removal, professional photo editing tools, and more. No credit card required.',
+    'Join thousands of users and create your free Erazor AI account today. Get instant access to AI-powered background removal, professional photo editing tools, and more. No credit card required.',
   keywords: [
     'sign up erazor',
     'create account',
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     'erazor account creation',
     'professional photo editing'
   ],
-  authors: [{ name: 'Erazor Team', url: 'https://erazor.ai' }],
-  creator: 'Erazor',
-  publisher: 'Erazor',
+  authors: [{ name: 'Erazor AI Team', url: 'https://erazor.ai' }],
+  creator: 'Erazor AI',
+  publisher: 'Erazor AI',
   robots: {
     index: true,
     follow: true,
@@ -33,23 +33,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/auth/sign-up',
-    title: 'Sign Up for Erazor - Free AI Background Remover',
+    title: 'Sign Up for Erazor AI - Free AI Background Remover',
     description:
-      'Create your free Erazor account and start removing backgrounds with AI in seconds. Join thousands of satisfied users worldwide.',
-    siteName: 'Erazor',
+      'Create your free Erazor AI account and start removing backgrounds with AI in seconds. Join thousands of satisfied users worldwide.',
+    siteName: 'Erazor AI',
     images: [
       {
         url: '/og-signup.png',
         width: 1200,
         height: 630,
-        alt: 'Sign up for Erazor - AI Background Remover',
+        alt: 'Sign up for Erazor AI - AI Background Remover',
         type: 'image/png'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sign Up for Erazor - Free AI Background Remover',
+    title: 'Sign Up for Erazor AI - Free AI Background Remover',
     description:
       'Create your free account and start removing backgrounds with AI in seconds. Professional results guaranteed.',
     images: ['/twitter-signup.png'],
@@ -95,12 +95,12 @@ export default function SignUpViewPage() {
             width={40}
             height={40}
           />
-          <span className='ml-2'>Erazor</span>
+          <span className='ml-2'>Erazor AI</span>
         </Link>
         <FallingText
-          text={`Erazor is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
+          text={`Erazor AI is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
           highlightWords={[
-            'Erazor',
+            'Erazor AI',
             'AI',
             'background',
             'removal',

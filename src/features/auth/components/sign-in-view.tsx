@@ -6,9 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Sign In - Access Your Erazor Account | AI Background Remover',
+  title: 'Sign In - Access Your Erazor AI Account | AI Background Remover',
   description:
-    'Sign in to your Erazor account and continue using our AI-powered background removal tool. Access your projects, history, and premium features instantly.',
+    'Sign in to your Erazor AI account and continue using our AI-powered background removal tool. Access your projects, history, and premium features instantly.',
   keywords: [
     'sign in erazor',
     'login erazor',
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     'user account login',
     'member login'
   ],
-  authors: [{ name: 'Erazor Team', url: 'https://erazor.ai' }],
-  creator: 'Erazor',
-  publisher: 'Erazor',
+  authors: [{ name: 'Erazor AI Team', url: 'https://erazor.ai' }],
+  creator: 'Erazor AI',
+  publisher: 'Erazor AI',
   robots: {
     index: true,
     follow: true,
@@ -33,23 +33,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/auth/sign-in',
-    title: 'Sign In to Erazor - AI Background Remover Dashboard',
+    title: 'Sign In to Erazor AI - AI Background Remover Dashboard',
     description:
-      'Access your Erazor account dashboard. Continue editing photos and removing backgrounds with our AI-powered tools.',
-    siteName: 'Erazor',
+      'Access your Erazor AI account dashboard. Continue editing photos and removing backgrounds with our AI-powered tools.',
+    siteName: 'Erazor AI',
     images: [
       {
         url: '/og-signin.png',
         width: 1200,
         height: 630,
-        alt: 'Sign in to Erazor - AI Background Remover',
+        alt: 'Sign in to Erazor AI - AI Background Remover',
         type: 'image/png'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sign In to Erazor - AI Background Remover',
+    title: 'Sign In to Erazor AI - AI Background Remover',
     description:
       'Access your account and continue using our AI-powered background removal tools. Professional photo editing made simple.',
     images: ['/twitter-signin.png'],
@@ -95,12 +95,12 @@ export default function SignInViewPage() {
             width={40}
             height={40}
           />
-          <span className='ml-2'>Erazor</span>
+          <span className='ml-2'>Erazor AI</span>
         </Link>
         <FallingText
-          text={`Erazor is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
+          text={`Erazor AI is an AI-powered background removal tool that simplifies image editing and enhances productivity.`}
           highlightWords={[
-            'Erazor',
+            'Erazor AI',
             'AI',
             'background',
             'removal',

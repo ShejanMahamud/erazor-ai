@@ -1,4 +1,4 @@
-# Robots.txt for Erazor - AI Background Remover
+# Robots.txt for Erazor AI - AI Background Remover
 User-agent: *
 Allow: /
 
