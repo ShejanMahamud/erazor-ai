@@ -43,5 +43,13 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
+    <!-- Cookie Policy -->
+  <url>
+    <loc>https://erazor.ai/cookie-policy</loc>
+    <lastmod>2025-09-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   
 </urlset>

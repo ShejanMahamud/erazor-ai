@@ -87,7 +87,7 @@ const CTA: React.FC = () => {
       <h1 className='font-manrope relative z-20 mb-5 text-center text-2xl leading-[40px] tracking-[-0.48px] text-white lg:text-4xl lg:leading-[52px]'>
         Erazor AI has no limitation.
         <br />
-        Get Started in a journey with promptverse.
+        Get Started in a journey with Erazor AI.
       </h1>
       <Button className='relative z-20 border-0 bg-gradient-to-r from-orange-500 to-purple-600 px-6 text-sm shadow-lg transition-all duration-300 hover:from-orange-600 hover:to-purple-700 hover:shadow-xl'>
         Get Started - It&apos;s Free

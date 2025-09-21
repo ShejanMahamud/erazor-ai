@@ -184,10 +184,16 @@ export default async function RootLayout({
           crossOrigin=''
         />
         <link rel='preconnect' href='https://app.chatwoot.com' />
+        <link rel='preconnect' href='https://www.googletagmanager.com' />
 
         {/* DNS prefetch for better performance */}
         <link rel='dns-prefetch' href='//www.google-analytics.com' />
         <link rel='dns-prefetch' href='//googletagmanager.com' />
+        <link rel='dns-prefetch' href='//vercel-analytics.com' />
+
+        {/* Preload critical resources */}
+        <link rel='preload' href='/logo.png' as='image' />
+        <link rel='preload' href='/assets/favicon.ico.png' as='image' />
         {/* Structured Data - Organization */}
         <script
           type='application/ld+json'
@@ -260,19 +266,21 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function(d,t) {
-                var BASE_URL="https://app.chatwoot.com";
-                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=BASE_URL+"/packs/js/sdk.js";
-                g.async = true;
-                s.parentNode.insertBefore(g,s);
-                g.onload=function(){
-                  window.chatwootSDK.run({
-                    websiteToken: '${process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN}',
-                    baseUrl: BASE_URL
-                  })
-                }
-              })(document,"script");
+              setTimeout(function() {
+                (function(d,t) {
+                  var BASE_URL="https://app.chatwoot.com";
+                  var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                  g.src=BASE_URL+"/packs/js/sdk.js";
+                  g.async = true;
+                  s.parentNode.insertBefore(g,s);
+                  g.onload=function(){
+                    window.chatwootSDK.run({
+                      websiteToken: '${process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN}',
+                      baseUrl: BASE_URL
+                    })
+                  }
+                })(document,"script");
+              }, 3000);
             `
           }}
         />
@@ -288,9 +296,9 @@ export default async function RootLayout({
         {/* Google Analytics with consent management */}
         <Script
           src='https://www.googletagmanager.com/gtag/js?id=G-XRTGX8M0YB'
-          strategy='afterInteractive'
+          strategy='lazyOnload'
         />
-        <Script id='google-analytics' strategy='afterInteractive'>
+        <Script id='google-analytics' strategy='lazyOnload'>
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

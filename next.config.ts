@@ -3,6 +3,23 @@ import type { NextConfig } from 'next';
 
 // Define the base Next.js configuration
 const baseConfig: NextConfig = {
+  // Performance optimizations
+  compiler: {
+    // Remove console.logs in production
+    removeConsole: process.env.NODE_ENV === 'production'
+  },
+
+  // Optimize bundle size
+  experimental: {
+    optimizePackageImports: [
+      '@/components',
+      '@/hooks',
+      '@/lib',
+      'lucide-react',
+      'framer-motion'
+    ]
+  },
+
   // Image optimization for Vercel CDN
   images: {
     remotePatterns: [

@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { cn } from "@/lib/utils";
 import { IconUpload } from "@tabler/icons-react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -182,10 +183,13 @@ export const FileUpload = ({
             <CardDescription>{(files[0]?.size / (1024 * 1024)).toFixed(2)} MB</CardDescription>
           </CardHeader>
           <CardContent>
-            <img
+            <Image
               src={previewUrl}
               alt={files[0]?.name || 'Preview'}
+              width={400}
+              height={192}
               className="w-full h-48 object-contain rounded-md border border-gray-200 dark:border-neutral-800 mb-2"
+              priority
             />
           </CardContent>
           <CardFooter>
