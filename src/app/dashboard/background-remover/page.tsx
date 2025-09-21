@@ -7,14 +7,17 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useImageSocket } from '@/hooks/useImageSocket';
+import { SubscriptionResponse } from '@/types/billing';
 import { useAuth } from '@clerk/nextjs';
 import { gsap } from 'gsap';
 import { Download, Loader2, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
 export default function BackgroundRemoverPage() {
   const { userId, getToken } = useAuth();
+  const router = useRouter();
   const token = getToken();
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -32,6 +35,43 @@ export default function BackgroundRemoverPage() {
   const buttonsRef = useRef<HTMLDivElement>(null);
 
   const { imageUpdates, clearImageUpdates } = useImageSocket(userId!);
+
+  // Function to check if user has active subscription
+  const checkSubscription = async (): Promise<boolean> => {
+    if (!userId) return false;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/subscription/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await token}`
+        }
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data: SubscriptionResponse = await response.json();
+
+      if (!data.success || !data.data) {
+        return false;
+      }
+
+      const subscription = data.data;
+
+      // Check if subscription is active and not expired
+      const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+      const isNotExpired = !subscription.endsAt || new Date(subscription.endsAt) > new Date();
+      const isNotCanceled = !subscription.canceledAt || new Date(subscription.canceledAt) > new Date();
+
+      return isActive && isNotExpired && isNotCanceled;
+    } catch (error) {
+      console.error('Failed to check subscription:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Only process image updates if we're currently processing or have files
@@ -170,6 +210,14 @@ export default function BackgroundRemoverPage() {
   }, [currentImage, isProcessing, isUploading]);
 
   const handleFileUpload = async (file: File[]) => {
+    // Check subscription before allowing upload
+    const hasActiveSubscription = await checkSubscription();
+
+    if (!hasActiveSubscription) {
+      router.push('/pricing');
+      return;
+    }
+
     // Clear any previous state first
     setCurrentImage(null);
     clearImageUpdates(); // Clear socket updates
