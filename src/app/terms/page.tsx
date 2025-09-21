@@ -2,14 +2,230 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Erazor AI - AI Background Removal',
+  title: 'Terms of Service - AI Background Remover | Erazor AI',
   description:
-    'Read the terms and conditions for using Erazor AI AI background removal service.'
+    'Read the terms and conditions for using Erazor AI background removal service. Clear guidelines for acceptable use, payment terms, privacy, and user rights.',
+  keywords: [
+    'terms of service',
+    'terms and conditions',
+    'AI background remover terms',
+    'user agreement',
+    'service agreement',
+    'acceptable use policy',
+    'background removal terms',
+    'photo editing terms',
+    'AI service terms',
+    'subscription terms',
+    'payment terms',
+    'refund policy',
+    'user rights',
+    'service limitations',
+    'legal agreement'
+  ],
+  openGraph: {
+    title: 'Terms of Service - AI Background Remover | Erazor AI',
+    description:
+      'Clear and comprehensive terms of service for Erazor AI background removal. Learn about acceptable use, payment terms, and your rights as a user.',
+    url: '/terms',
+    siteName: 'Erazor AI',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erazor AI Terms of Service - Legal Agreement',
+        type: 'image/jpeg'
+      }
+    ],
+    type: 'website',
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service - AI Background Remover | Erazor AI',
+    description:
+      'Transparent terms of service for AI background removal. Clear guidelines on usage, payments, and user rights.',
+    images: ['/og-image.jpg'],
+    creator: '@erazor_ai',
+    site: '@erazor_ai'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1
+    }
+  },
+  alternates: {
+    canonical: '/terms'
+  },
+  other: {
+    'document-type': 'Terms of Service',
+    'last-updated': 'September 14, 2025',
+    'governing-law': 'International',
+    'refund-period': '30 days'
+  }
 };
 
 export default function TermsOfServicePage() {
   return (
     <MainLayout>
+      {/* Structured Data for Terms of Service */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'Terms of Service - Erazor AI',
+            description: 'Terms and conditions for using Erazor AI background removal service',
+            url: 'https://erazor.app/terms',
+            dateModified: '2025-09-14',
+            publisher: {
+              '@type': 'Organization',
+              name: 'Erazor AI',
+              url: 'https://erazor.app'
+            },
+            mainEntity: {
+              '@type': 'Article',
+              headline: 'Terms of Service',
+              datePublished: '2025-09-14',
+              dateModified: '2025-09-14',
+              author: {
+                '@type': 'Organization',
+                name: 'Erazor AI'
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Erazor AI',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://erazor.app/logo.png'
+                }
+              }
+            }
+          })
+        }}
+      />
+
+      {/* Service Agreement Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            name: 'Erazor AI Background Removal Service',
+            description: 'AI-powered background removal service with clear terms and conditions',
+            provider: {
+              '@type': 'Organization',
+              name: 'Erazor AI',
+              url: 'https://erazor.app'
+            },
+            termsOfService: 'https://erazor.app/terms',
+            serviceType: 'AI Image Processing',
+            areaServed: 'Worldwide',
+            availableChannel: {
+              '@type': 'ServiceChannel',
+              serviceUrl: 'https://erazor.app',
+              servicePhone: 'Available via support',
+              serviceSmsNumber: 'N/A'
+            }
+          })
+        }}
+      />
+
+      {/* FAQ Structured Data for Terms */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'What are the acceptable uses for Erazor AI?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'You can use Erazor AI for e-commerce product photography, professional headshots, creative projects, social media content, marketing materials, and educational purposes. Commercial use is allowed.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What is your refund policy?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'We offer refunds for unused subscription time within 30 days of purchase. Pay-per-image charges are generally non-refundable unless there was a technical error on our part.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Can I use Erazor AI for commercial purposes?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes, you can use Erazor AI for commercial purposes including e-commerce, marketing, and professional photography. You retain all rights to your processed images.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What are the usage limits?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Free accounts have monthly processing limits. Pro and Business plans offer unlimited processing. We have rate limits on API requests and a maximum file size of 10MB per image.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Can you terminate my account?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'We may terminate or suspend accounts that violate our Terms of Service or engage in prohibited activities such as uploading inappropriate content or exceeding usage limits.'
+                }
+              }
+            ]
+          })
+        }}
+      />
+
+      {/* Legal Organization Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Erazor AI',
+            url: 'https://erazor.app',
+            contactPoint: [
+              {
+                '@type': 'ContactPoint',
+                email: 'legal@erazor.app',
+                contactType: 'Legal Department',
+                availableLanguage: 'English'
+              },
+              {
+                '@type': 'ContactPoint',
+                email: 'support@erazor.app',
+                contactType: 'Customer Support',
+                availableLanguage: 'English'
+              }
+            ],
+            sameAs: [
+              'https://twitter.com/erazor_ai',
+              'https://linkedin.com/company/erazor'
+            ],
+            termsOfService: 'https://erazor.app/terms',
+            privacyPolicy: 'https://erazor.app/privacy'
+          })
+        }}
+      />
+
       <div className='bg-background min-h-screen'>
         {/* Header */}
         <div className='border-b border-gray-200/50 bg-gradient-to-br from-orange-50 to-purple-50 pt-20 dark:border-gray-800/50 dark:from-orange-950/20 dark:to-purple-950/20'>

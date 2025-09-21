@@ -78,18 +78,18 @@ export const metadata: Metadata = {
     siteName: 'Erazor AI',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Erazor AI - AI Background Remover Tool',
-        type: 'image/png'
+        type: 'image/jpeg'
       },
       {
-        url: '/og-image-square.png',
+        url: '/og-image.jpg',
         width: 1200,
         height: 1200,
         alt: 'Erazor AI - Remove Backgrounds with AI',
-        type: 'image/png'
+        type: 'image/jpeg'
       }
     ]
   },
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     title: 'Erazor AI - AI Background Remover | Remove Backgrounds Instantly',
     description:
       'Remove backgrounds from photos instantly with AI. Professional results in 3 seconds. Free online background remover.',
-    images: ['/twitter-image.png'],
+    images: ['/og-image.jpg'],
     creator: '@erazor_ai',
     site: '@erazor_ai'
   },
@@ -145,7 +145,7 @@ export const metadata: Metadata = {
   other: {
     'google-site-verification': '-vDPvwoV59xNhbusZ7ukVdea6H0u2K0bgqYbO3TjlKQ',
     'msvalidate.01': '117FCF20377F6D1208898A5975FB202C',
-    'yandex-verification': 'your-yandex-verification-code',
+    'yandex-verification': 'c054bf5b69da36f3',
     'facebook-domain-verification': 'your-facebook-verification-code'
   }
 };
@@ -175,6 +175,7 @@ export default async function RootLayout({
     <html lang='en' suppressHydrationWarning>
       <head>
         <meta name="msvalidate.01" content="117FCF20377F6D1208898A5975FB202C" />
+        <meta name="yandex-verification" content="c054bf5b69da36f3" />
         {/* Preconnect to external domains for performance */}
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link

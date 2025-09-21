@@ -2,14 +2,240 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | Erazor AI - AI Background Removal',
+  title: 'Cookie Policy - AI Background Remover | Erazor AI',
   description:
-    'Learn about how Erazor AI uses cookies and similar technologies to enhance your experience with our AI background removal service.'
+    'Learn about how Erazor AI uses cookies and similar technologies to enhance your experience with our AI background removal service. Manage your cookie preferences and understand data collection.',
+  keywords: [
+    'cookie policy',
+    'cookies',
+    'web tracking',
+    'data collection',
+    'privacy settings',
+    'cookie consent',
+    'analytics cookies',
+    'functional cookies',
+    'marketing cookies',
+    'third-party cookies',
+    'browser settings',
+    'cookie management',
+    'GDPR cookies',
+    'tracking technologies',
+    'user preferences'
+  ],
+  openGraph: {
+    title: 'Cookie Policy - AI Background Remover | Erazor AI',
+    description:
+      'Transparent cookie policy for Erazor AI. Learn how we use cookies to improve your experience and manage your preferences.',
+    url: '/cookie-policy',
+    siteName: 'Erazor AI',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erazor AI Cookie Policy - Privacy and Preferences',
+        type: 'image/jpeg'
+      }
+    ],
+    type: 'website',
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cookie Policy - AI Background Remover | Erazor AI',
+    description:
+      'Transparent cookie usage and privacy controls for AI background removal service. Manage your preferences easily.',
+    images: ['/og-image.jpg'],
+    creator: '@erazor_ai',
+    site: '@erazor_ai'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1
+    }
+  },
+  alternates: {
+    canonical: '/cookie-policy'
+  },
+  other: {
+    'cookie-types': 'Necessary, Analytics, Functional, Marketing',
+    'consent-management': 'User-controlled preferences',
+    'last-updated': 'September 15, 2025',
+    'data-retention': 'Variable by cookie type'
+  }
 };
 
 export default function CookiePolicyPage() {
   return (
     <MainLayout>
+      {/* Structured Data for Cookie Policy */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'Cookie Policy - Erazor AI',
+            description: 'Cookie policy explaining how Erazor AI uses cookies and tracking technologies',
+            url: 'https://erazor.app/cookie-policy',
+            dateModified: '2025-09-15',
+            publisher: {
+              '@type': 'Organization',
+              name: 'Erazor AI',
+              url: 'https://erazor.app'
+            },
+            mainEntity: {
+              '@type': 'Article',
+              headline: 'Cookie Policy',
+              datePublished: '2025-09-15',
+              dateModified: '2025-09-15',
+              author: {
+                '@type': 'Organization',
+                name: 'Erazor AI'
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Erazor AI',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://erazor.app/logo.png'
+                }
+              }
+            }
+          })
+        }}
+      />
+
+      {/* Cookie Categories Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'TechArticle',
+            headline: 'Cookie Usage and Categories',
+            description: 'Detailed explanation of cookie types and usage on Erazor AI',
+            author: {
+              '@type': 'Organization',
+              name: 'Erazor AI'
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Erazor AI'
+            },
+            datePublished: '2025-09-15',
+            dateModified: '2025-09-15',
+            about: [
+              {
+                '@type': 'Thing',
+                name: 'Necessary Cookies',
+                description: 'Essential cookies for website functionality'
+              },
+              {
+                '@type': 'Thing',
+                name: 'Analytics Cookies',
+                description: 'Cookies for tracking website usage and performance'
+              },
+              {
+                '@type': 'Thing',
+                name: 'Functional Cookies',
+                description: 'Cookies for enhanced functionality and personalization'
+              },
+              {
+                '@type': 'Thing',
+                name: 'Marketing Cookies',
+                description: 'Cookies for advertising and marketing campaigns'
+              }
+            ]
+          })
+        }}
+      />
+
+      {/* FAQ Structured Data for Cookies */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'What cookies does Erazor AI use?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Erazor AI uses four types of cookies: Necessary cookies for essential functionality, Analytics cookies for usage tracking, Functional cookies for enhanced features, and Marketing cookies for advertising campaigns.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'How can I manage my cookie preferences?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'You can manage cookie preferences through our cookie consent tool, browser settings, or by contacting us. You can accept all, reject non-essential, or customize preferences for different cookie types.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Are cookies necessary for the website to work?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Some cookies are essential for basic functionality like authentication and security. However, analytics and marketing cookies are optional and can be disabled without affecting core features.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'How long are cookies stored?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Cookie storage varies by type: Session cookies are deleted when you close your browser, authentication cookies last 30 days, preference cookies last 1 year, analytics cookies last 2 years, and marketing cookies last 90 days.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What third-party services use cookies on your site?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'We use Google Analytics for website analytics, Chatwoot for customer support, Stripe and PayPal for payments, and various marketing tools. Each service has its own cookie policy.'
+                }
+              }
+            ]
+          })
+        }}
+      />
+
+      {/* Privacy Organization Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Erazor AI',
+            url: 'https://erazor.app',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              email: 'privacy@erazor.app',
+              contactType: 'Privacy and Cookie Support',
+              availableLanguage: 'English'
+            },
+            sameAs: [
+              'https://twitter.com/erazor_ai',
+              'https://linkedin.com/company/erazor'
+            ],
+            privacyPolicy: 'https://erazor.app/privacy',
+            cookiePolicy: 'https://erazor.app/cookie-policy'
+          })
+        }}
+      />
+
       <div className='bg-background min-h-screen'>
         {/* Header */}
         <div className='border-b border-gray-200/50 bg-gradient-to-br from-orange-50 to-purple-50 pt-20 dark:border-gray-800/50 dark:from-orange-950/20 dark:to-purple-950/20'>

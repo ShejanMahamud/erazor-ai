@@ -1,80 +1,62 @@
 import { cn } from '@/lib/utils';
-import { Github, Linkedin, Mail, Phone, Twitter } from 'lucide-react';
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import Link from 'next/link';
+import { NavbarLogo } from './ui/resizable-navbar';
 
 export const Footer = () => {
   return (
-    <footer className='bg-background relative py-16'>
+    <footer className='bg-background relative py-16 '>
       {/* Main Footer Container */}
       <div className='container mx-auto px-6'>
-        {/* Newsletter Section - Similar to PricingCard highlighted style */}
-
         {/* Main Footer Content */}
-        <div className='mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4'>
+        <div className='mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
           {/* Company Info */}
           <div className='space-y-4'>
-            <div className='flex items-center gap-2'>
-              <div className='bg-foreground flex h-8 w-8 items-center justify-center rounded-lg'>
-                <span className='text-background font-bold'>E</span>
-              </div>
-              <h3 className='text-xl font-semibold'>Erazor AI</h3>
-            </div>
+            <NavbarLogo />
+
             <p className='text-foreground/60 text-sm leading-relaxed'>
-              Advanced background removal and image editing tools powered by AI.
-              Transform your images with professional quality.
+              AI-powered background remover that delivers professional results in seconds. Remove backgrounds from any image with precision and ease.
             </p>
             <div className='flex gap-3'>
-              <SocialButton href='#' icon={Twitter} />
-              <SocialButton href='#' icon={Github} />
-              <SocialButton href='#' icon={Linkedin} />
-              <SocialButton href='#' icon={Mail} />
+              <SocialButton href='https://twitter.com/erazor_ai' icon={Twitter} />
+              <SocialButton href='https://github.com/erazor-ai' icon={Github} />
+              <SocialButton href='https://linkedin.com/company/erazor' icon={Linkedin} />
+              <SocialButton href='mailto:support@erazor.app' icon={Mail} />
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Background Removal Tools */}
           <div className='space-y-4'>
-            <h4 className='text-foreground font-medium'>Product</h4>
+            <h4 className='text-foreground font-medium'>Background Removal</h4>
             <ul className='space-y-2'>
+              <FooterLink href='/'>Free Background Remover</FooterLink>
               <FooterLink href='/dashboard'>Dashboard</FooterLink>
               <FooterLink href='/dashboard/background-remover'>
-                Background Remover
+                Advanced Editor
               </FooterLink>
               <FooterLink href='/dashboard/image-history'>
                 Image History
               </FooterLink>
-              <FooterLink href='/pricing'>Pricing</FooterLink>
+              <FooterLink href='/pricing'>Pricing Plans</FooterLink>
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Legal & Support */}
           <div className='space-y-4'>
-            <h4 className='text-foreground font-medium'>Company</h4>
+            <h4 className='text-foreground font-medium'>Legal & Support</h4>
             <ul className='space-y-2'>
-              <FooterLink href='/about'>About Us</FooterLink>
-              <FooterLink href='/contact'>Contact</FooterLink>
-              <FooterLink href='/blog'>Blog</FooterLink>
-              <FooterLink href='/careers'>Careers</FooterLink>
-            </ul>
-          </div>
-
-          {/* Support & Contact */}
-          <div className='space-y-4'>
-            <h4 className='text-foreground font-medium'>Support</h4>
-            <ul className='space-y-2'>
-              <FooterLink href='/help'>Help Center</FooterLink>
+              <FooterLink href='/contact'>Contact Support</FooterLink>
               <FooterLink href='/privacy'>Privacy Policy</FooterLink>
               <FooterLink href='/terms'>Terms of Service</FooterLink>
               <FooterLink href='/cookie-policy'>Cookie Policy</FooterLink>
             </ul>
 
-            <div className='space-y-2 pt-2'>
+            <div className='space-y-2 pt-4'>
               <div className='text-foreground/60 flex items-center gap-2 text-sm'>
                 <Mail size={14} />
-                <span>support@erazor.com</span>
-              </div>
-              <div className='text-foreground/60 flex items-center gap-2 text-sm'>
-                <Phone size={14} />
-                <span>+1 (555) 123-4567</span>
+                <a href='mailto:support@erazor.app' className='hover:text-foreground transition-colors'>
+                  support@erazor.app
+                </a>
               </div>
             </div>
           </div>
@@ -105,7 +87,7 @@ export const Footer = () => {
               Terms
             </Link>
             <Link
-              href='/cookies'
+              href='/cookie-policy'
               className='text-foreground/60 hover:text-foreground transition-colors'
             >
               Cookies

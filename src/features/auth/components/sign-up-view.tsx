@@ -1,69 +1,8 @@
 import FallingText from '@/components/FallingText';
 import { cn } from '@/lib/utils';
 import { SignUp as ClerkSignUpForm } from '@clerk/nextjs';
-import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Sign Up - Create Your Free Erazor AI Account | AI Background Remover',
-  description:
-    'Join thousands of users and create your free Erazor AI account today. Get instant access to AI-powered background removal, professional photo editing tools, and more. No credit card required.',
-  keywords: [
-    'sign up erazor',
-    'create account',
-    'free registration',
-    'ai background remover account',
-    'photo editing signup',
-    'image editor registration',
-    'background removal tool signup',
-    'free ai photo editor',
-    'erazor account creation',
-    'professional photo editing'
-  ],
-  authors: [{ name: 'Erazor AI Team', url: 'https://erazor.ai' }],
-  creator: 'Erazor AI',
-  publisher: 'Erazor AI',
-  robots: {
-    index: true,
-    follow: true,
-    nocache: true
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: '/auth/sign-up',
-    title: 'Sign Up for Erazor AI - Free AI Background Remover',
-    description:
-      'Create your free Erazor AI account and start removing backgrounds with AI in seconds. Join thousands of satisfied users worldwide.',
-    siteName: 'Erazor AI',
-    images: [
-      {
-        url: '/og-signup.png',
-        width: 1200,
-        height: 630,
-        alt: 'Sign up for Erazor AI - AI Background Remover',
-        type: 'image/png'
-      }
-    ]
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sign Up for Erazor AI - Free AI Background Remover',
-    description:
-      'Create your free account and start removing backgrounds with AI in seconds. Professional results guaranteed.',
-    images: ['/twitter-signup.png'],
-    creator: '@erazor_ai',
-    site: '@erazor_ai'
-  },
-  alternates: {
-    canonical: '/auth/sign-up'
-  },
-  other: {
-    'signup-benefits': 'Free account, instant access, no credit card required',
-    'user-type': 'new-user-registration'
-  }
-};
 
 export default function SignUpViewPage() {
   return (
@@ -130,7 +69,7 @@ export default function SignUpViewPage() {
       </div>
 
       <div className='flex min-h-screen w-full items-center justify-center px-10 py-10 lg:min-h-0'>
-        <ClerkSignUpForm />
+        <ClerkSignUpForm fallbackRedirectUrl={'/dashboard'} />
       </div>
     </div>
   );

@@ -2,14 +2,193 @@ import MainLayout from '@/components/layout/main-layout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Erazor AI - AI Background Removal',
+  title: 'Privacy Policy - AI Background Remover | Erazor AI',
   description:
-    'Learn how Erazor AI protects your privacy and handles your data when using our AI background removal service.'
+    'Learn how Erazor AI protects your privacy and handles your data when using our AI background removal service. GDPR compliant with secure image processing and automatic deletion.',
+  keywords: [
+    'privacy policy',
+    'data protection',
+    'AI background remover privacy',
+    'image data security',
+    'GDPR compliance',
+    'CCPA privacy rights',
+    'secure photo editing',
+    'data handling policy',
+    'image processing privacy',
+    'background removal privacy',
+    'AI photo editor security',
+    'user data protection',
+    'cookie policy',
+    'data deletion',
+    'privacy rights'
+  ],
+  openGraph: {
+    title: 'Privacy Policy - AI Background Remover | Erazor AI',
+    description:
+      'Your privacy is our priority. Learn how we protect your data and images with secure processing, automatic deletion, and GDPR compliance.',
+    url: '/privacy',
+    siteName: 'Erazor AI',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erazor AI Privacy Policy - Data Protection',
+        type: 'image/jpeg'
+      }
+    ],
+    type: 'website',
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy - AI Background Remover | Erazor AI',
+    description:
+      'Secure AI background removal with GDPR compliance, automatic image deletion, and strong data protection.',
+    images: ['/og-image.jpg'],
+    creator: '@erazor_ai',
+    site: '@erazor_ai'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1
+    }
+  },
+  alternates: {
+    canonical: '/privacy'
+  },
+  other: {
+    'data-retention': '24 hours for images',
+    'compliance': 'GDPR, CCPA compliant',
+    'last-updated': 'September 14, 2025'
+  }
 };
 
 export default function PrivacyPolicyPage() {
   return (
     <MainLayout>
+      {/* Structured Data for Privacy Policy */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'Privacy Policy - Erazor AI',
+            description: 'Privacy policy for Erazor AI background removal service',
+            url: 'https://erazor.app/privacy',
+            dateModified: '2025-09-14',
+            publisher: {
+              '@type': 'Organization',
+              name: 'Erazor AI',
+              url: 'https://erazor.app'
+            },
+            mainEntity: {
+              '@type': 'Article',
+              headline: 'Privacy Policy',
+              datePublished: '2025-09-14',
+              dateModified: '2025-09-14',
+              author: {
+                '@type': 'Organization',
+                name: 'Erazor AI'
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Erazor AI',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://erazor.app/logo.png'
+                }
+              }
+            }
+          })
+        }}
+      />
+
+      {/* FAQ Structured Data for Privacy */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'How long do you store uploaded images?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Uploaded images are automatically deleted from our servers within 24 hours after processing. We do not permanently store your images.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Do you use my images to train your AI models?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'No, we never use your uploaded images to train our AI models. Your images are processed for background removal only and then automatically deleted.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Is Erazor AI GDPR compliant?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes, Erazor AI is fully GDPR compliant. We respect your privacy rights including access, correction, deletion, and data portability rights.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'How can I delete my personal data?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'You can request deletion of your personal data by contacting us at privacy@erazor.app. We will respond within 30 days and delete your data as required by law.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What data do you collect about me?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'We collect minimal data including your email address for account creation, payment information for subscriptions, and usage analytics. We do not collect or store your processed images permanently.'
+                }
+              }
+            ]
+          })
+        }}
+      />
+
+      {/* Organization Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Erazor AI',
+            url: 'https://erazor.app',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              email: 'privacy@erazor.app',
+              contactType: 'Privacy Officer',
+              availableLanguage: 'English'
+            },
+            sameAs: [
+              'https://twitter.com/erazor_ai',
+              'https://linkedin.com/company/erazor'
+            ],
+            privacyPolicy: 'https://erazor.app/privacy'
+          })
+        }}
+      />
+
       <div className='bg-background min-h-screen'>
         {/* Header */}
         <div className='border-b border-gray-200/50 bg-gradient-to-br from-orange-50 to-purple-50 pt-20 dark:border-gray-800/50 dark:from-orange-950/20 dark:to-purple-950/20'>

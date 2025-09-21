@@ -1,69 +1,8 @@
 import FallingText from '@/components/FallingText';
 import { cn } from '@/lib/utils';
 import { SignIn as ClerkSignInForm } from '@clerk/nextjs';
-import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Sign In - Access Your Erazor AI Account | AI Background Remover',
-  description:
-    'Sign in to your Erazor AI account and continue using our AI-powered background removal tool. Access your projects, history, and premium features instantly.',
-  keywords: [
-    'sign in erazor',
-    'login erazor',
-    'access account',
-    'ai background remover login',
-    'photo editing login',
-    'image editor sign in',
-    'background removal tool login',
-    'erazor dashboard access',
-    'user account login',
-    'member login'
-  ],
-  authors: [{ name: 'Erazor AI Team', url: 'https://erazor.ai' }],
-  creator: 'Erazor AI',
-  publisher: 'Erazor AI',
-  robots: {
-    index: true,
-    follow: true,
-    nocache: true
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: '/auth/sign-in',
-    title: 'Sign In to Erazor AI - AI Background Remover Dashboard',
-    description:
-      'Access your Erazor AI account dashboard. Continue editing photos and removing backgrounds with our AI-powered tools.',
-    siteName: 'Erazor AI',
-    images: [
-      {
-        url: '/og-signin.png',
-        width: 1200,
-        height: 630,
-        alt: 'Sign in to Erazor AI - AI Background Remover',
-        type: 'image/png'
-      }
-    ]
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sign In to Erazor AI - AI Background Remover',
-    description:
-      'Access your account and continue using our AI-powered background removal tools. Professional photo editing made simple.',
-    images: ['/twitter-signin.png'],
-    creator: '@erazor_ai',
-    site: '@erazor_ai'
-  },
-  alternates: {
-    canonical: '/auth/sign-in'
-  },
-  other: {
-    'login-purpose': 'user-authentication',
-    'dashboard-access': 'member-portal'
-  }
-};
 
 export default function SignInViewPage() {
   return (
@@ -130,7 +69,7 @@ export default function SignInViewPage() {
       </div>
 
       <div className='flex min-h-screen w-full items-center justify-center px-10 py-10 lg:min-h-0'>
-        <ClerkSignInForm />
+        <ClerkSignInForm fallbackRedirectUrl={'/dashboard'} />
       </div>
     </div>
   );
