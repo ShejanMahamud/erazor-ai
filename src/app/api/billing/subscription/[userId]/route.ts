@@ -16,6 +16,5 @@ export async function GET(
       }
     }
   ).then((res) => res.json());
-  console.log('subscription', subscription);
   return NextResponse.json(subscription);
 }

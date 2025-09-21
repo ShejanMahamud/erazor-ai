@@ -5,13 +5,16 @@ import { forwardRef } from 'react';
 
 interface SubscriptionBannerProps {
     show: boolean;
+    type?: 'subscription' | 'usage-limit';
 }
 
 export const SubscriptionBanner = forwardRef<HTMLDivElement, SubscriptionBannerProps>(
-    ({ show }, ref) => {
+    ({ show, type = 'subscription' }, ref) => {
         const router = useRouter();
 
         if (!show) return null;
+
+        const isUsageLimit = type === 'usage-limit';
 
         return (
             <div
@@ -22,10 +25,16 @@ export const SubscriptionBanner = forwardRef<HTMLDivElement, SubscriptionBannerP
                     <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                     <div className="flex-1">
                         <p className="font-medium text-sm">
-                            You don't have an active subscription!
+                            {isUsageLimit
+                                ? 'Usage limit reached!'
+                                : 'You don\'t have an active subscription!'
+                            }
                         </p>
                         <p className="text-xs opacity-90">
-                            Subscribe to our plan to start removing backgrounds from your images.
+                            {isUsageLimit
+                                ? 'You\'ve reached your free usage limit. Subscribe to continue removing backgrounds.'
+                                : 'Subscribe to our plan to start removing backgrounds from your images.'
+                            }
                         </p>
                     </div>
                     <Button

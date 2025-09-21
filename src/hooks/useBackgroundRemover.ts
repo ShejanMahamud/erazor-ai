@@ -7,6 +7,7 @@ interface UseBackgroundRemoverProps {
     onAnimateReset: (onComplete: () => void) => void;
     onAnimateUploadAreaIn: () => void;
     onAnimateDownloadButton: () => void;
+    onUsageLimitReached?: () => void;
 }
 
 interface UseBackgroundRemoverReturn {
@@ -20,13 +21,16 @@ interface UseBackgroundRemoverReturn {
     handleDownload: () => void;
     imageUpdates: any[];
     clearImageUpdates: () => void;
+    error: string | null;
+    isUsageLimitReached: boolean;
 }
 
 export const useBackgroundRemover = ({
     hasActiveSubscription,
     onAnimateReset,
     onAnimateUploadAreaIn,
-    onAnimateDownloadButton
+    onAnimateDownloadButton,
+    onUsageLimitReached
 }: UseBackgroundRemoverProps): UseBackgroundRemoverReturn => {
     const { userId, getToken } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
@@ -34,6 +38,8 @@ export const useBackgroundRemover = ({
     const [isProcessing, setIsProcessing] = useState(false);
     const [currentImage, setCurrentImage] = useState<any>(null);
     const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
+    const [isUsageLimitReached, setIsUsageLimitReached] = useState(false);
 
     const { imageUpdates, clearImageUpdates } = useImageSocket(userId!);
 
@@ -51,21 +57,21 @@ export const useBackgroundRemover = ({
             const latestImage = readyImages[readyImages.length - 1];
             setCurrentImage(latestImage);
             setIsProcessing(false);
+
+            // Clear any errors since processing was successful
+            setError(null);
+            setIsUsageLimitReached(false);
         }
     }, [imageUpdates, isProcessing, files.length]);
 
     const handleFileUpload = useCallback(async (uploadFiles: File[]): Promise<void> => {
-        // Check subscription before allowing upload
-        if (!hasActiveSubscription) {
-            // Don't upload if no active subscription - banner will show the message
-            return;
-        }
-
         const file = uploadFiles[0];
         if (!file) return;
 
-        // Clear any previous state first
+        // Clear any previous state and errors first
         setCurrentImage(null);
+        setError(null);
+        setIsUsageLimitReached(false);
         clearImageUpdates();
 
         setFiles([file]);
@@ -99,16 +105,26 @@ export const useBackgroundRemover = ({
             );
 
             if (!response.ok) {
-                throw new Error('Failed to upload file');
+                const errorData = await response.json().catch(() => null);
+
+                // Check if it's a usage limit error
+                if (response.status === 429 || (errorData && errorData.code === 'USAGE_LIMIT_REACHED')) {
+                    setIsUsageLimitReached(true);
+                    setError('Usage limit reached');
+                    onUsageLimitReached?.();
+                } else {
+                    throw new Error(errorData?.message || 'Failed to upload file');
+                }
             }
-        } catch (error) {
-            console.error('File upload error:', error);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'File upload error';
+            console.error('File upload error:', err);
+            setError(errorMessage);
             setIsProcessing(false);
-            // Could add error state here if needed
         } finally {
             setIsUploading(false);
         }
-    }, [hasActiveSubscription, originalImageUrl, clearImageUpdates, getToken]);
+    }, [originalImageUrl, clearImageUpdates, getToken, onUsageLimitReached]);
 
     const handleReset = useCallback(() => {
         onAnimateReset(() => {
@@ -118,6 +134,8 @@ export const useBackgroundRemover = ({
             setOriginalImageUrl('');
             setIsUploading(false);
             setIsProcessing(false);
+            setError(null);
+            setIsUsageLimitReached(false);
             clearImageUpdates();
 
             // Clear any URLs to prevent memory leaks
@@ -163,6 +181,8 @@ export const useBackgroundRemover = ({
         handleReset,
         handleDownload,
         imageUpdates,
-        clearImageUpdates
+        clearImageUpdates,
+        error,
+        isUsageLimitReached
     };
 };

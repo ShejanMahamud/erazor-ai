@@ -10,9 +10,9 @@ import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useBackgroundRemover } from '@/hooks/useBackgroundRemover';
 import { useBackgroundRemoverAnimations } from '@/hooks/useBackgroundRemoverAnimations';
 import { useSubscription } from '@/hooks/useSubscription';
-import { Download, Loader2, RotateCcw } from 'lucide-react';
+import { AlertTriangle, Download, Loader2, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
-import { Suspense, useRef } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
 
 export default function BackgroundRemoverPage() {
   // Refs for animations
@@ -39,7 +39,13 @@ export default function BackgroundRemoverPage() {
   // Custom hooks
   const subscription = useSubscription();
 
-  const animations = useBackgroundRemoverAnimations({
+  // State to control banner visibility after usage limit is reached
+  const [showUsageLimitBanner, setShowUsageLimitBanner] = useState(false);
+
+  // Callback for when usage limit is reached
+  const handleUsageLimitReached = useCallback(() => {
+    setShowUsageLimitBanner(true);
+  }, []); const animations = useBackgroundRemoverAnimations({
     refs,
     isUploading: false, // Will be updated with actual values
     isProcessing: false, // Will be updated with actual values
@@ -50,9 +56,14 @@ export default function BackgroundRemoverPage() {
 
   const backgroundRemover = useBackgroundRemover({
     hasActiveSubscription: subscription.hasActiveSubscription,
-    onAnimateReset: animations.animateReset,
+    onAnimateReset: (onComplete) => {
+      // Clear the usage limit banner when resetting
+      setShowUsageLimitBanner(false);
+      animations.animateReset(onComplete);
+    },
     onAnimateUploadAreaIn: animations.animateUploadAreaIn,
-    onAnimateDownloadButton: animations.animateDownloadButton
+    onAnimateDownloadButton: animations.animateDownloadButton,
+    onUsageLimitReached: handleUsageLimitReached
   });
 
   // Update animations with actual values from backgroundRemover
@@ -65,13 +76,24 @@ export default function BackgroundRemoverPage() {
     subscriptionChecked: subscription.subscriptionChecked
   });
 
+  // Determine what banner to show and when
+  const shouldShowBanner = subscription.subscriptionChecked && (
+    // Show usage limit banner if user has reached limit (regardless of subscription status)
+    (showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ||
+    // Show subscription banner only if user has no subscription AND hasn't reached usage limit yet
+    (subscription.hasActiveSubscription === false && !showUsageLimitBanner && !backgroundRemover.isUsageLimitReached)
+  );
+
+  const bannerType = (showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ? 'usage-limit' : 'subscription';
+
   return (
     <PageContainer scrollable={false}>
       <div className='flex flex-1 flex-col space-y-4'>
         {/* Subscription Banner */}
         <SubscriptionBanner
           ref={bannerRef}
-          show={subscription.subscriptionChecked && subscription.hasActiveSubscription === false}
+          show={shouldShowBanner}
+          type={bannerType}
         />
 
         <div className='flex items-start justify-between'>
@@ -98,13 +120,15 @@ export default function BackgroundRemoverPage() {
                   ref={uploadAreaRef}
                   className='flex min-h-80 flex-col items-center justify-center'
                 >
-                  <div className={subscription.hasActiveSubscription === false ? 'opacity-50 pointer-events-none' : ''}>
+                  <div className={(showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ? 'opacity-50 pointer-events-none' : ''}>
                     <FileUpload onChange={backgroundRemover.handleFileUpload} preview={true} />
                   </div>
                   <p className='text-muted-foreground mt-4 text-sm'>
-                    {subscription.hasActiveSubscription === false
-                      ? 'Subscribe to start removing backgrounds from your images'
-                      : 'Upload an image to remove its background'
+                    {(showUsageLimitBanner || backgroundRemover.isUsageLimitReached)
+                      ? 'You have reached your usage limit. Subscribe to continue removing backgrounds.'
+                      : subscription.hasActiveSubscription === false
+                        ? 'Upload an image to remove its background'
+                        : 'Upload an image to remove its background'
                     }
                   </p>
                 </div>
@@ -136,6 +160,35 @@ export default function BackgroundRemoverPage() {
                     style={{ width: backgroundRemover.isUploading ? '30%' : '70%' }}
                   ></div>
                 </div>
+              </div>
+            )}
+
+            {/* Error Display */}
+            {backgroundRemover.error && !backgroundRemover.isUsageLimitReached && (
+              <div className='flex min-h-80 flex-col items-center justify-center space-y-4'>
+                <div className='rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950'>
+                  <div className='flex items-center space-x-3'>
+                    <div className='rounded-full bg-red-100 p-2 dark:bg-red-900'>
+                      <AlertTriangle className='h-5 w-5 text-red-600 dark:text-red-400' />
+                    </div>
+                    <div>
+                      <h3 className='font-medium text-red-800 dark:text-red-200'>
+                        Processing Failed
+                      </h3>
+                      <p className='text-sm text-red-600 dark:text-red-400'>
+                        {backgroundRemover.error}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant='outline'
+                  onClick={backgroundRemover.handleReset}
+                  className='flex items-center gap-2'
+                >
+                  <RotateCcw className='h-4 w-4' />
+                  Try Again
+                </Button>
               </div>
             )}
 
