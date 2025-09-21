@@ -41,10 +41,19 @@ export const useBackgroundRemover = ({
     const [error, setError] = useState<string | null>(null);
     const [isUsageLimitReached, setIsUsageLimitReached] = useState(false);
 
-    const { imageUpdates, clearImageUpdates } = useImageSocket(userId!);
+    // Only connect to socket when userId is available - use empty string to prevent connection if no userId
+    const socketUserId = userId || '';
+    const { imageUpdates, clearImageUpdates } = useImageSocket(socketUserId);
 
     // Process image updates from socket
     useEffect(() => {
+        console.log('🔍 Dashboard BG Remover - Processing updates:', {
+            imageUpdates: imageUpdates.length,
+            isProcessing,
+            filesLength: files.length,
+            userId: socketUserId
+        });
+
         // Only process image updates if we're currently processing or have files
         if (!isProcessing && !files.length) return;
 
@@ -52,17 +61,34 @@ export const useBackgroundRemover = ({
             (img: any) => img.status === 'ready'
         );
 
+        const failedImages = imageUpdates.filter(
+            (img: any) => img.status === 'failed' || img.status === 'error'
+        );
+
+        console.log('📊 Dashboard BG Remover - Image status:', {
+            ready: readyImages.length,
+            failed: failedImages.length,
+            allUpdates: imageUpdates
+        });
+
         if (readyImages.length > 0 && isProcessing) {
             // Get the most recent image that matches our current upload
             const latestImage = readyImages[readyImages.length - 1];
+            console.log('✅ Dashboard BG Remover - Setting current image:', latestImage);
             setCurrentImage(latestImage);
             setIsProcessing(false);
 
             // Clear any errors since processing was successful
             setError(null);
             setIsUsageLimitReached(false);
+        } else if (failedImages.length > 0 && isProcessing) {
+            // Handle failed processing
+            const failedImage = failedImages[failedImages.length - 1];
+            console.error('❌ Dashboard BG Remover - Image processing failed:', failedImage);
+            setError('Background removal failed. Please try again.');
+            setIsProcessing(false);
         }
-    }, [imageUpdates, isProcessing, files.length]);
+    }, [imageUpdates, isProcessing, files.length, socketUserId]);
 
     const handleFileUpload = useCallback(async (uploadFiles: File[]): Promise<void> => {
         const file = uploadFiles[0];

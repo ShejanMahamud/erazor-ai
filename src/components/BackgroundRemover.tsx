@@ -4,6 +4,7 @@ import PageContainer from '@/components/layout/page-container';
 import { FileUpload } from '@/components/ui/file-upload';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useAnonImageSocket } from '@/hooks/useAnonImageSocket';
+import { useAuth } from '@clerk/nextjs';
 import { gsap } from 'gsap';
 import { Download, Loader2, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
@@ -18,7 +19,7 @@ export function BackgroundRemover() {
     const [currentImage, setCurrentImage] = useState<any>(null);
     const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
     const [userId, setUserId] = useState<string | null>(null);
-
+    const { getToken, isSignedIn } = useAuth()
     // GSAP refs
     const containerRef = useRef<HTMLDivElement>(null);
     const uploadAreaRef = useRef<HTMLDivElement>(null);
@@ -255,6 +256,9 @@ export function BackgroundRemover() {
                     method: 'POST',
                     credentials: "include",
                     body: formData,
+                    headers: {
+                        Authorization: isSignedIn ? `Bearer ${await getToken()}` : ''
+                    }
                 }
             );
             if (!res.ok) {
