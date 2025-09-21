@@ -1,31 +1,21 @@
 'use client';
 
 import PageContainer from '@/components/layout/page-container';
+import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { useImageSocket } from '@/hooks/useImageSocket';
-import { SubscriptionResponse } from '@/types/billing';
-import { useAuth } from '@clerk/nextjs';
-import { gsap } from 'gsap';
+import { useBackgroundRemover } from '@/hooks/useBackgroundRemover';
+import { useBackgroundRemoverAnimations } from '@/hooks/useBackgroundRemoverAnimations';
+import { useSubscription } from '@/hooks/useSubscription';
 import { Download, Loader2, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useRef } from 'react';
 
 export default function BackgroundRemoverPage() {
-  const { userId, getToken } = useAuth();
-  const router = useRouter();
-  const token = getToken();
-  const [files, setFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [currentImage, setCurrentImage] = useState<any>(null);
-  const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
-
-  // GSAP refs
+  // Refs for animations
   const containerRef = useRef<HTMLDivElement>(null);
   const uploadAreaRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef<HTMLDivElement>(null);
@@ -33,307 +23,57 @@ export default function BackgroundRemoverPage() {
   const beforeImageRef = useRef<HTMLImageElement>(null);
   const afterImageRef = useRef<HTMLImageElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
-  const { imageUpdates, clearImageUpdates } = useImageSocket(userId!);
-
-  // Function to check if user has active subscription
-  const checkSubscription = async (): Promise<boolean> => {
-    if (!userId) return false;
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/subscription/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${await token}`
-        }
-      });
-
-      if (!response.ok) {
-        return false;
-      }
-
-      const data: SubscriptionResponse = await response.json();
-
-      if (!data.success || !data.data) {
-        return false;
-      }
-
-      const subscription = data.data;
-
-      // Check if subscription is active and not expired
-      const isActive = subscription.status === 'active' || subscription.status === 'trialing';
-      const isNotExpired = !subscription.endsAt || new Date(subscription.endsAt) > new Date();
-      const isNotCanceled = !subscription.canceledAt || new Date(subscription.canceledAt) > new Date();
-
-      return isActive && isNotExpired && isNotCanceled;
-    } catch (error) {
-      console.error('Failed to check subscription:', error);
-      return false;
-    }
+  const refs = {
+    containerRef,
+    uploadAreaRef,
+    processingRef,
+    resultsRef,
+    beforeImageRef,
+    afterImageRef,
+    buttonsRef,
+    bannerRef
   };
 
-  useEffect(() => {
-    // Only process image updates if we're currently processing or have files
-    if (!isProcessing && !files.length) return;
+  // Custom hooks
+  const subscription = useSubscription();
 
-    const readyImages = imageUpdates.filter(
-      (img: any) => img.status === 'ready'
-    );
+  const animations = useBackgroundRemoverAnimations({
+    refs,
+    isUploading: false, // Will be updated with actual values
+    isProcessing: false, // Will be updated with actual values
+    currentImage: null, // Will be updated with actual values
+    hasActiveSubscription: subscription.hasActiveSubscription,
+    subscriptionChecked: subscription.subscriptionChecked
+  });
 
-    if (readyImages.length > 0 && isProcessing) {
-      // Get the most recent image that matches our current upload
-      const latestImage = readyImages[readyImages.length - 1];
-      setCurrentImage(latestImage);
-      setIsProcessing(false);
-    }
-  }, [imageUpdates, isProcessing, files.length]);
+  const backgroundRemover = useBackgroundRemover({
+    hasActiveSubscription: subscription.hasActiveSubscription,
+    onAnimateReset: animations.animateReset,
+    onAnimateUploadAreaIn: animations.animateUploadAreaIn,
+    onAnimateDownloadButton: animations.animateDownloadButton
+  });
 
-  // GSAP Animation Effects
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isUploading || isProcessing) {
-      if (uploadAreaRef.current) {
-        gsap.to(uploadAreaRef.current, {
-          opacity: 0,
-          scale: 0.95,
-          duration: 0.3,
-          ease: 'power2.out'
-        });
-      }
-
-      if (processingRef.current) {
-        gsap.fromTo(
-          processingRef.current,
-          { opacity: 0, scale: 0.9, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
-        );
-
-        // Animated loading bar
-        const progressBar =
-          processingRef.current.querySelector('.progress-bar');
-        if (progressBar) {
-          gsap.fromTo(
-            progressBar,
-            { width: '0%' },
-            {
-              width: isUploading ? '30%' : '70%',
-              duration: 1.5,
-              ease: 'power2.inOut',
-              repeat: -1,
-              yoyo: true
-            }
-          );
-        }
-      }
-    }
-  }, [isUploading, isProcessing]);
-
-  useEffect(() => {
-    if (currentImage && !isProcessing && !isUploading) {
-      // Hide processing view
-      if (processingRef.current) {
-        gsap.to(processingRef.current, {
-          opacity: 0,
-          scale: 0.9,
-          duration: 0.3,
-          ease: 'power2.out'
-        });
-      }
-
-      // Show results with animation
-      if (resultsRef.current) {
-        gsap.fromTo(
-          resultsRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.2 }
-        );
-      }
-
-      // Animate buttons
-      if (buttonsRef.current) {
-        gsap.fromTo(
-          buttonsRef.current.children,
-          { opacity: 0, x: 20 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.4,
-            stagger: 0.1,
-            ease: 'power2.out',
-            delay: 0.5
-          }
-        );
-      }
-
-      // Animate images with reveal effect
-      if (beforeImageRef.current) {
-        gsap.fromTo(
-          beforeImageRef.current,
-          { opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0% 100%)' },
-          {
-            opacity: 1,
-            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
-            duration: 0.8,
-            ease: 'power2.out',
-            delay: 0.6
-          }
-        );
-      }
-
-      if (afterImageRef.current) {
-        gsap.fromTo(
-          afterImageRef.current,
-          {
-            opacity: 0,
-            clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)'
-          },
-          {
-            opacity: 1,
-            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
-            duration: 0.8,
-            ease: 'power2.out',
-            delay: 0.8
-          }
-        );
-      }
-    }
-  }, [currentImage, isProcessing, isUploading]);
-
-  const handleFileUpload = async (file: File[]) => {
-    // Check subscription before allowing upload
-    const hasActiveSubscription = await checkSubscription();
-
-    if (!hasActiveSubscription) {
-      router.push('/pricing');
-      return;
-    }
-
-    // Clear any previous state first
-    setCurrentImage(null);
-    clearImageUpdates(); // Clear socket updates
-
-    setFiles([file[0]]);
-    setIsUploading(true);
-
-    // Clear previous image URL to prevent memory leaks
-    if (originalImageUrl) {
-      URL.revokeObjectURL(originalImageUrl);
-    }
-
-    const imageUrl = URL.createObjectURL(file[0]);
-    setOriginalImageUrl(imageUrl);
-
-    const formData = new FormData();
-    formData.append('file', file[0]);
-    try {
-      setIsProcessing(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/images/process`,
-        {
-          method: 'POST',
-          credentials: "include",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${await token}`
-          }
-        }
-      );
-      if (!res.ok) {
-        throw new Error('Failed to upload file');
-      }
-    } catch (error) {
-      setIsProcessing(false);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleReset = () => {
-    // Animate out current content before reset
-    if (resultsRef.current) {
-      gsap.to(resultsRef.current, {
-        opacity: 0,
-        scale: 0.95,
-        duration: 0.3,
-        ease: 'power2.out',
-        onComplete: () => {
-          // Clear all state completely
-          setFiles([]);
-          setCurrentImage(null);
-          setOriginalImageUrl('');
-          setIsUploading(false);
-          setIsProcessing(false);
-          clearImageUpdates(); // Clear socket image updates
-
-          // Clear any URLs to prevent memory leaks
-          if (originalImageUrl) {
-            URL.revokeObjectURL(originalImageUrl);
-          }
-
-          // Animate in upload area
-          if (uploadAreaRef.current) {
-            gsap.fromTo(
-              uploadAreaRef.current,
-              { opacity: 0, scale: 0.95 },
-              { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }
-            );
-          }
-        }
-      });
-    } else {
-      // If no results are showing, just clear state immediately
-      setFiles([]);
-      setCurrentImage(null);
-      setOriginalImageUrl('');
-      setIsUploading(false);
-      setIsProcessing(false);
-      clearImageUpdates(); // Clear socket image updates
-
-      // Clear any URLs to prevent memory leaks
-      if (originalImageUrl) {
-        URL.revokeObjectURL(originalImageUrl);
-      }
-    }
-  };
-
-  const handleDownload = () => {
-    if (currentImage?.bgRemovedImageUrlHQ || currentImage?.bgRemovedImageUrlLQ) {
-      // Add download animation
-      if (buttonsRef.current) {
-        const downloadBtn = buttonsRef.current.querySelector('button');
-        if (downloadBtn) {
-          gsap.to(downloadBtn, {
-            scale: 0.95,
-            duration: 0.1,
-            yoyo: true,
-            repeat: 1,
-            ease: 'power2.inOut'
-          });
-        }
-      }
-
-      const link = document.createElement('a');
-      link.href = currentImage.bgRemovedImageUrlHQ || currentImage.bgRemovedImageUrlLQ;
-      link.download = `${currentImage.originalFileName}_no_bg.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  // Update animations with actual values from backgroundRemover
+  useBackgroundRemoverAnimations({
+    refs,
+    isUploading: backgroundRemover.isUploading,
+    isProcessing: backgroundRemover.isProcessing,
+    currentImage: backgroundRemover.currentImage,
+    hasActiveSubscription: subscription.hasActiveSubscription,
+    subscriptionChecked: subscription.subscriptionChecked
+  });
 
   return (
     <PageContainer scrollable={false}>
       <div className='flex flex-1 flex-col space-y-4'>
+        {/* Subscription Banner */}
+        <SubscriptionBanner
+          ref={bannerRef}
+          show={subscription.subscriptionChecked && subscription.hasActiveSubscription === false}
+        />
+
         <div className='flex items-start justify-between'>
           <Heading
             title='Remove Background'
@@ -350,22 +90,27 @@ export default function BackgroundRemoverPage() {
             ref={containerRef}
             className='mx-auto min-h-96 w-full max-w-4xl rounded-lg border border-dashed border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-black'
           >
-            {!files.length &&
-              !isUploading &&
-              !isProcessing &&
-              !currentImage && (
+            {!backgroundRemover.files.length &&
+              !backgroundRemover.isUploading &&
+              !backgroundRemover.isProcessing &&
+              !backgroundRemover.currentImage && (
                 <div
                   ref={uploadAreaRef}
                   className='flex min-h-80 flex-col items-center justify-center'
                 >
-                  <FileUpload onChange={handleFileUpload} preview={true} />
+                  <div className={subscription.hasActiveSubscription === false ? 'opacity-50 pointer-events-none' : ''}>
+                    <FileUpload onChange={backgroundRemover.handleFileUpload} preview={true} />
+                  </div>
                   <p className='text-muted-foreground mt-4 text-sm'>
-                    Upload an image to remove its background
+                    {subscription.hasActiveSubscription === false
+                      ? 'Subscribe to start removing backgrounds from your images'
+                      : 'Upload an image to remove its background'
+                    }
                   </p>
                 </div>
               )}
 
-            {(isUploading || isProcessing) && (
+            {(backgroundRemover.isUploading || backgroundRemover.isProcessing) && (
               <div
                 ref={processingRef}
                 className='flex min-h-80 flex-col items-center justify-center space-y-6'
@@ -375,12 +120,12 @@ export default function BackgroundRemoverPage() {
                 </div>
                 <div className='space-y-2 text-center'>
                   <h3 className='text-lg font-semibold'>
-                    {isUploading
+                    {backgroundRemover.isUploading
                       ? 'Uploading image...'
                       : 'Removing background...'}
                   </h3>
                   <p className='text-muted-foreground text-sm'>
-                    {isUploading
+                    {backgroundRemover.isUploading
                       ? 'Please wait while we upload your image'
                       : 'AI is processing your image, this may take a few moments'}
                   </p>
@@ -388,13 +133,13 @@ export default function BackgroundRemoverPage() {
                 <div className='bg-secondary h-2 w-full max-w-xs rounded-full'>
                   <div
                     className='progress-bar bg-primary h-2 animate-pulse rounded-full'
-                    style={{ width: isUploading ? '30%' : '70%' }}
+                    style={{ width: backgroundRemover.isUploading ? '30%' : '70%' }}
                   ></div>
                 </div>
               </div>
             )}
 
-            {currentImage && originalImageUrl && (
+            {backgroundRemover.currentImage && backgroundRemover.originalImageUrl && (
               <div ref={resultsRef} className='space-y-6'>
                 <div className='flex items-center justify-between'>
                   <h3 className='text-lg font-semibold'>
@@ -402,7 +147,7 @@ export default function BackgroundRemoverPage() {
                   </h3>
                   <div ref={buttonsRef} className='flex gap-2'>
                     <Button
-                      onClick={handleDownload}
+                      onClick={backgroundRemover.handleDownload}
                       className='flex items-center gap-2'
                     >
                       <Download className='h-4 w-4' />
@@ -410,7 +155,7 @@ export default function BackgroundRemoverPage() {
                     </Button>
                     <Button
                       variant='outline'
-                      onClick={handleReset}
+                      onClick={backgroundRemover.handleReset}
                       className='flex items-center gap-2 bg-transparent'
                     >
                       <RotateCcw className='h-4 w-4' />
@@ -426,7 +171,7 @@ export default function BackgroundRemoverPage() {
                     <div className='relative flex min-h-80 items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
                       <Image
                         ref={beforeImageRef}
-                        src={originalImageUrl || '/placeholder.svg'}
+                        src={backgroundRemover.originalImageUrl || '/placeholder.svg'}
                         alt='Original'
                         width={500}
                         height={400}
@@ -450,8 +195,8 @@ export default function BackgroundRemoverPage() {
                       <Image
                         ref={afterImageRef}
                         src={
-                          currentImage.bgRemovedImageUrlHQ ||
-                          currentImage.bgRemovedImageUrlLQ ||
+                          backgroundRemover.currentImage.bgRemovedImageUrlHQ ||
+                          backgroundRemover.currentImage.bgRemovedImageUrlLQ ||
                           '/placeholder.svg'
                         }
                         alt='Background Removed'
@@ -465,7 +210,7 @@ export default function BackgroundRemoverPage() {
                 </div>
 
                 <div className='text-muted-foreground text-center text-sm'>
-                  Original filename: {currentImage.originalFileName}
+                  Original filename: {backgroundRemover.currentImage.originalFileName}
                 </div>
               </div>
             )}

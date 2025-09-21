@@ -375,14 +375,14 @@ export const Pricing = () => {
                       <div className='h-4 w-4 rounded bg-gray-200 dark:bg-gray-700'></div>
                       <div
                         className={`bg-gray-150 h-3 rounded dark:bg-gray-600 ${featureIndex === 0
-                            ? 'w-28'
-                            : featureIndex === 1
-                              ? 'w-24'
-                              : featureIndex === 2
-                                ? 'w-32'
-                                : featureIndex === 3
-                                  ? 'w-20'
-                                  : 'w-16'
+                          ? 'w-28'
+                          : featureIndex === 1
+                            ? 'w-24'
+                            : featureIndex === 2
+                              ? 'w-32'
+                              : featureIndex === 3
+                                ? 'w-20'
+                                : 'w-16'
                           }`}
                       ></div>
                     </div>
@@ -426,7 +426,7 @@ export const Pricing = () => {
 
       {/* Pricing Cards */}
       <div className='flex w-full max-w-6xl justify-center'>
-        <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+        <div className='w-full mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 place-items-center'>
           {tiers.map((tier) => (
             <PricingCard
               key={tier.id}

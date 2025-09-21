@@ -12,10 +12,10 @@ export async function GET(
     {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       }
     }
   ).then((res) => res.json());
+  console.log('subscription', subscription);
   return NextResponse.json(subscription);
 }
