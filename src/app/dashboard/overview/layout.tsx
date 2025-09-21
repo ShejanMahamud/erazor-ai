@@ -28,7 +28,7 @@ export default function OverViewLayout({
   const { userId, getToken } = useAuth()
 
   const fetchData = async () => {
-    const response = await fetch(`${serverBaseUrl}/dashboard-stats/${userId}`, {
+    const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
       headers: {
         Authorization: `Bearer ${await getToken()}`
       }
