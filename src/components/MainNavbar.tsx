@@ -84,7 +84,7 @@ export function MainNavbar() {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            {navItems.map((item, idx) => (
+            {/* {navItems.map((item, idx) => (
               <a
                 key={`mobile-link-${idx}`}
                 href={item.link}
@@ -93,7 +93,7 @@ export function MainNavbar() {
               >
                 <span className='block'>{item.name}</span>
               </a>
-            ))}
+            ))} */}
             <div className='flex w-full flex-col gap-4'>
               {!isLoaded ? (
                 // Show loading state while auth is loading
