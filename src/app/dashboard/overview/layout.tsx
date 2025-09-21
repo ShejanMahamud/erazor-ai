@@ -93,90 +93,94 @@ export default function OverViewLayout({
         <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
           <Card className='@container/card'>
             <CardHeader>
-              <CardDescription>Total Revenue</CardDescription>
+              <CardDescription>Total Images Processed</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.totalRevenue || '$1,250.00')}
+                {isLoading ? '...' : (dashboardData?.data?.cards?.totalImagesProcessed || 0)}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingUp />
-                  {isLoading ? '...' : (dashboardData?.revenueChange || '+12.5%')}
+                  All Time
                 </Badge>
               </CardAction>
             </CardHeader>
             <CardFooter className='flex-col items-start gap-1.5 text-sm'>
               <div className='line-clamp-1 flex gap-2 font-medium'>
-                Trending up this month <IconTrendingUp className='size-4' />
+                Total background removals <IconTrendingUp className='size-4' />
               </div>
               <div className='text-muted-foreground'>
-                Visitors for the last 6 months
+                Since you joined on {dashboardData?.data?.userInfo?.joinedDate ? new Date(dashboardData.data.userInfo.joinedDate).toLocaleDateString() : 'N/A'}
               </div>
             </CardFooter>
           </Card>
+
           <Card className='@container/card'>
             <CardHeader>
-              <CardDescription>New Customers</CardDescription>
+              <CardDescription>This Month</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.newCustomers || '1,234')}
+                {isLoading ? '...' : (dashboardData?.data?.cards?.imagesThisMonth || 0)}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
-                  <IconTrendingDown />
-                  {isLoading ? '...' : (dashboardData?.customerChange || '-20%')}
+                  {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp /> : <IconTrendingDown />}
+                  {dashboardData?.data?.insights?.monthlyGrowth ? `${dashboardData.data.insights.monthlyGrowth > 0 ? '+' : ''}${dashboardData.data.insights.monthlyGrowth}%` : '0%'}
                 </Badge>
               </CardAction>
             </CardHeader>
             <CardFooter className='flex-col items-start gap-1.5 text-sm'>
               <div className='line-clamp-1 flex gap-2 font-medium'>
-                Down 20% this period <IconTrendingDown className='size-4' />
+                Monthly activity {(dashboardData?.data?.insights?.monthlyGrowth || 0) > 0 ? <IconTrendingUp className='size-4' /> : <IconTrendingDown className='size-4' />}
               </div>
               <div className='text-muted-foreground'>
-                Acquisition needs attention
+                Last month: {dashboardData?.data?.cards?.lastMonthImagesProcessed || 0}
               </div>
             </CardFooter>
           </Card>
+
           <Card className='@container/card'>
             <CardHeader>
-              <CardDescription>Active Accounts</CardDescription>
+              <CardDescription>Subscription Status</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.activeAccounts || '45,678')}
+                {isLoading ? '...' : (dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Active' : 'Free')}
+              </CardTitle>
+              <CardAction>
+                <Badge variant={dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'default' : 'outline'}>
+                  {dashboardData?.data?.cards?.subscriptionStatus?.status || 'none'}
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+              <div className='line-clamp-1 flex gap-2 font-medium'>
+                {dashboardData?.data?.cards?.subscriptionStatus?.isActive ? 'Premium features enabled' : 'Limited usage available'}
+              </div>
+              <div className='text-muted-foreground'>
+                {dashboardData?.data?.cards?.subscriptionStatus?.currentPeriodEnd
+                  ? `Expires: ${new Date(dashboardData.data.cards.subscriptionStatus.currentPeriodEnd).toLocaleDateString()}`
+                  : 'No active subscription'
+                }
+              </div>
+            </CardFooter>
+          </Card>
+
+          <Card className='@container/card'>
+            <CardHeader>
+              <CardDescription>Daily Average</CardDescription>
+              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                {isLoading ? '...' : (dashboardData?.data?.insights?.averageDailyProcessing?.toFixed(1) || '0.0')}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingUp />
-                  {isLoading ? '...' : (dashboardData?.accountsChange || '+12.5%')}
+                  Per Day
                 </Badge>
               </CardAction>
             </CardHeader>
             <CardFooter className='flex-col items-start gap-1.5 text-sm'>
               <div className='line-clamp-1 flex gap-2 font-medium'>
-                Strong user retention <IconTrendingUp className='size-4' />
+                Most active: {dashboardData?.data?.insights?.mostActiveDay?.date ? new Date(dashboardData.data.insights.mostActiveDay.date).toLocaleDateString() : 'N/A'}
               </div>
               <div className='text-muted-foreground'>
-                Engagement exceed targets
-              </div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Growth Rate</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {isLoading ? '...' : (dashboardData?.growthRate || '4.5%')}
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  {isLoading ? '...' : (dashboardData?.growthChange || '+4.5%')}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Steady performance increase{' '}
-                <IconTrendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Meets growth projections
+                {dashboardData?.data?.insights?.mostActiveDay?.count || 0} images processed
               </div>
             </CardFooter>
           </Card>
