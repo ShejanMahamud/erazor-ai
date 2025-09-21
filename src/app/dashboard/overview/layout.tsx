@@ -12,7 +12,7 @@ import {
 import { serverBaseUrl } from '@/config';
 import { useAuth } from '@clerk/nextjs';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function OverViewLayout({
   sales,
@@ -25,18 +25,51 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
-  const { userId, getToken } = useAuth()
+  const { userId, getToken } = useAuth();
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${await getToken()}`
+    if (!userId) {
+      console.log('No userId available');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const token = await getToken();
+      console.log('Fetching dashboard data for user:', userId);
+
+      const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    });
-    return response.json();
+
+      const data = await response.json();
+      console.log('Dashboard data received:', data);
+      setDashboardData(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch dashboard data';
+      console.error('Error fetching dashboard data:', err);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  console.log('Fetching data for user:', fetchData);
+  useEffect(() => {
+    fetchData();
+  }, [userId]); // Fetch data when userId changes
+
+  console.log('Current state:', { dashboardData, isLoading, error, userId });
 
   return (
     <PageContainer>
@@ -45,6 +78,16 @@ export default function OverViewLayout({
           <h2 className='text-2xl font-bold tracking-tight'>
             Hi, Welcome back 👋
           </h2>
+          {isLoading && (
+            <div className='text-sm text-muted-foreground'>
+              Loading dashboard data...
+            </div>
+          )}
+          {error && (
+            <div className='text-sm text-red-500'>
+              Error: {error}
+            </div>
+          )}
         </div>
 
         <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
@@ -52,12 +95,12 @@ export default function OverViewLayout({
             <CardHeader>
               <CardDescription>Total Revenue</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                $1,250.00
+                {isLoading ? '...' : (dashboardData?.totalRevenue || '$1,250.00')}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingUp />
-                  +12.5%
+                  {isLoading ? '...' : (dashboardData?.revenueChange || '+12.5%')}
                 </Badge>
               </CardAction>
             </CardHeader>
@@ -74,12 +117,12 @@ export default function OverViewLayout({
             <CardHeader>
               <CardDescription>New Customers</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                1,234
+                {isLoading ? '...' : (dashboardData?.newCustomers || '1,234')}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingDown />
-                  -20%
+                  {isLoading ? '...' : (dashboardData?.customerChange || '-20%')}
                 </Badge>
               </CardAction>
             </CardHeader>
@@ -96,12 +139,12 @@ export default function OverViewLayout({
             <CardHeader>
               <CardDescription>Active Accounts</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                45,678
+                {isLoading ? '...' : (dashboardData?.activeAccounts || '45,678')}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingUp />
-                  +12.5%
+                  {isLoading ? '...' : (dashboardData?.accountsChange || '+12.5%')}
                 </Badge>
               </CardAction>
             </CardHeader>
@@ -118,12 +161,12 @@ export default function OverViewLayout({
             <CardHeader>
               <CardDescription>Growth Rate</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                4.5%
+                {isLoading ? '...' : (dashboardData?.growthRate || '4.5%')}
               </CardTitle>
               <CardAction>
                 <Badge variant='outline'>
                   <IconTrendingUp />
-                  +4.5%
+                  {isLoading ? '...' : (dashboardData?.growthChange || '+4.5%')}
                 </Badge>
               </CardAction>
             </CardHeader>
