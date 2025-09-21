@@ -3,7 +3,9 @@
 import { CDN_URL } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
+import { Button } from './ui/button';
 import HeadingText from './ui/heading-text';
 
 export const UseCases = () => {
@@ -235,14 +237,14 @@ export const UseCases = () => {
             <div className='text-foreground/70'>
               Ready to transform your images?
             </div>
-            <div
+            <Button
               className={cn(
-                'rounded-xl bg-gradient-to-r px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105',
+                'rounded-xl bg-gradient-to-r px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 cursor-pointer',
                 activeColor
               )}
             >
-              Try It Free
-            </div>
+              <Link href='/dashboard'>Get Started - It&apos;s Free</Link>
+            </Button>
           </div>
         </div>
       </div>

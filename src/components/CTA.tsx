@@ -1,3 +1,5 @@
+"use client"
+import Link from 'next/link';
 import React from 'react';
 import { Button } from './ui/button';
 
@@ -89,8 +91,8 @@ const CTA: React.FC = () => {
         <br />
         Get Started in a journey with Erazor AI.
       </h1>
-      <Button className='relative z-20 border-0 bg-gradient-to-r from-orange-500 to-purple-600 px-6 text-sm shadow-lg transition-all duration-300 hover:from-orange-600 hover:to-purple-700 hover:shadow-xl'>
-        Get Started - It&apos;s Free
+      <Button className='relative z-20 border-0 bg-gradient-to-r from-orange-500 to-purple-600 px-6 text-sm shadow-lg transition-all duration-300 hover:from-orange-600 hover:to-purple-700 hover:shadow-xl cursor-pointer'>
+        <Link href='/dashboard'>Get Started - It&apos;s Free</Link>
       </Button>
     </div>
   );
