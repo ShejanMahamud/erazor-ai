@@ -2,12 +2,14 @@ import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   CardAction,
-  CardFooter
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
+import { serverBaseUrl } from '@/config';
+import { useAuth } from '@clerk/nextjs';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import React from 'react';
 
@@ -22,6 +24,19 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
+  const { userId, getToken } = useAuth()
+
+  const fetchData = async () => {
+    const response = await fetch(`${serverBaseUrl}/dashboard-stats/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${await getToken()}`
+      }
+    });
+    return response.json();
+  };
+
+  console.log('Fetching data for user:', fetchData);
+
   return (
     <PageContainer>
       <div className='flex flex-1 flex-col space-y-2'>
