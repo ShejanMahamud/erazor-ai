@@ -45,35 +45,40 @@ export default function BackgroundRemoverPage() {
   // Callback for when usage limit is reached
   const handleUsageLimitReached = useCallback(() => {
     setShowUsageLimitBanner(true);
-  }, []); const animations = useBackgroundRemoverAnimations({
-    refs,
-    isUploading: false, // Will be updated with actual values
-    isProcessing: false, // Will be updated with actual values
-    currentImage: null, // Will be updated with actual values
-    hasActiveSubscription: subscription.hasActiveSubscription,
-    subscriptionChecked: subscription.subscriptionChecked
-  });
+  }, []);
 
+  // Create backgroundRemover first
   const backgroundRemover = useBackgroundRemover({
     hasActiveSubscription: subscription.hasActiveSubscription,
     onAnimateReset: (onComplete) => {
       // Clear the usage limit banner when resetting
       setShowUsageLimitBanner(false);
-      animations.animateReset(onComplete);
+      onComplete(); // We'll handle animation separately
     },
-    onAnimateUploadAreaIn: animations.animateUploadAreaIn,
-    onAnimateDownloadButton: animations.animateDownloadButton,
+    onAnimateUploadAreaIn: () => {}, // Will be handled in animations
+    onAnimateDownloadButton: () => {}, // Will be handled in animations
     onUsageLimitReached: handleUsageLimitReached
   });
 
-  // Update animations with actual values from backgroundRemover
-  useBackgroundRemoverAnimations({
+  // Create animations with actual values from backgroundRemover
+  const animations = useBackgroundRemoverAnimations({
     refs,
     isUploading: backgroundRemover.isUploading,
     isProcessing: backgroundRemover.isProcessing,
     currentImage: backgroundRemover.currentImage,
     hasActiveSubscription: subscription.hasActiveSubscription,
     subscriptionChecked: subscription.subscriptionChecked
+  });
+
+  // Debug logging
+  console.log('🔍 Debug Background Remover State:', {
+    isUploading: backgroundRemover.isUploading,
+    isProcessing: backgroundRemover.isProcessing,
+    currentImage: backgroundRemover.currentImage,
+    originalImageUrl: backgroundRemover.originalImageUrl,
+    imageUpdates: backgroundRemover.imageUpdates?.length || 0,
+    error: backgroundRemover.error,
+    hasActiveSubscription: subscription.hasActiveSubscription
   });
 
   // Determine what banner to show and when
