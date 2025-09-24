@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { Button } from './ui/button';
 
 export function BackgroundRemover() {
+    const { userId: loggedUser } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -31,7 +32,7 @@ export function BackgroundRemover() {
     const [imageUpdates, setImageUpdates] = useState<any[]>([]);
 
     // Move hook call to top level - hooks cannot be called inside useEffect
-    const { imageUpdates: socketImageUpdates, clearImageUpdates } = useAnonImageSocket(userId || undefined);
+    const { imageUpdates: socketImageUpdates, clearImageUpdates } = useAnonImageSocket(userId || loggedUser || undefined);
 
 
     useEffect(() => {
