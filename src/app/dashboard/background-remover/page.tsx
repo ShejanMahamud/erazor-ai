@@ -55,8 +55,8 @@ export default function BackgroundRemoverPage() {
       setShowUsageLimitBanner(false);
       onComplete(); // We'll handle animation separately
     },
-    onAnimateUploadAreaIn: () => {}, // Will be handled in animations
-    onAnimateDownloadButton: () => {}, // Will be handled in animations
+    onAnimateUploadAreaIn: () => { }, // Will be handled in animations
+    onAnimateDownloadButton: () => { }, // Will be handled in animations
     onUsageLimitReached: handleUsageLimitReached
   });
 

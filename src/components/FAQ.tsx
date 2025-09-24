@@ -3,10 +3,11 @@
 import { cn } from '@/lib/utils';
 import { FAQItem as FAQItemData } from '@/types';
 import { ChevronDown } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import HeadingText from './ui/heading-text';
 
-const faqData: FAQItemData[] = [
+export const faqData: FAQItemData[] = [
   {
     id: '1',
     question: 'How accurate is the AI background removal?',
@@ -65,8 +66,9 @@ const faqData: FAQItemData[] = [
   }
 ];
 
-export const FAQ = () => {
+export const FAQ = ({ showHeading = true }: { showHeading?: boolean }) => {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
+  const pathname = usePathname();
 
   const toggleItem = (id: string) => {
     const newOpenItems = new Set(openItems);
@@ -83,12 +85,14 @@ export const FAQ = () => {
       {/* Background Pattern */}
       <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]' />
 
-      <HeadingText
-        heading='Frequently Asked '
-        focusText=' Questions'
-        headingStyles='font-manrope'
-        paragraph='Everything you need to know about our AI background removal service'
-      />
+      {showHeading && (
+        <HeadingText
+          heading='Frequently Asked '
+          focusText=' Questions'
+          headingStyles='font-manrope'
+          paragraph='Everything you need to know about our AI background removal service'
+        />
+      )}
 
       <FAQSection
         faqData={faqData}

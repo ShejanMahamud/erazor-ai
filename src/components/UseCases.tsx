@@ -243,7 +243,7 @@ export const UseCases = () => {
                 activeColor
               )}
             >
-              <Link href='/dashboard'>Get Started - It&apos;s Free</Link>
+              <Link className='cursor-pointer' href='/dashboard'>Get Started</Link>
             </Button>
           </div>
         </div>

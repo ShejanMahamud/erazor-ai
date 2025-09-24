@@ -40,7 +40,7 @@ export const SubscriptionBanner = forwardRef<HTMLDivElement, SubscriptionBannerP
                     <Button
                         size="sm"
                         variant="secondary"
-                        className=" font-medium flex-shrink-0"
+                        className=" font-medium flex-shrink-0 cursor-pointer"
                         onClick={() => router.push('/pricing')}
                     >
                         Subscribe Now

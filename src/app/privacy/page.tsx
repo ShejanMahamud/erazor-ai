@@ -1,4 +1,5 @@
 import MainLayout from '@/components/layout/main-layout';
+import HeadingText from '@/components/ui/heading-text';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -194,20 +195,14 @@ export default function PrivacyPolicyPage() {
         <div className='border-b border-gray-200/50 bg-gradient-to-br from-orange-50 to-purple-50 pt-20 dark:border-gray-800/50 dark:from-orange-950/20 dark:to-purple-950/20'>
           <div className='container mx-auto px-6 py-16'>
             <div className='mx-auto max-w-4xl space-y-4 text-center'>
-              <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>
-                Privacy{' '}
-                <span className='bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent'>
-                  Policy
-                </span>
-              </h1>
-              <p className='text-foreground/70 text-xl leading-relaxed'>
-                Your privacy is important to us. Learn how we collect, use, and
-                protect your information.
-              </p>
-              <div className='text-foreground/60 flex items-center justify-center gap-2 text-sm'>
-                <span>Last updated:</span>
-                <span className='font-medium'>September 14, 2025</span>
-              </div>
+              <HeadingText
+                heading='Privacy '
+                focusText=' Policy'
+                headingStyles='font-manrope'
+                paragraph="Your privacy is important to us. Learn how we collect, use, and
+                protect your information."
+                boxStyles='mb-16'
+              />
             </div>
           </div>
         </div>

@@ -85,9 +85,9 @@ export default function ContactPage() {
     <MainLayout>
       <div className='bg-background relative w-full overflow-hidden py-40'>
         {/* Background Pattern */}
-        <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]' />
+        <div className='pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]' />
 
-        <div className='container mx-auto px-6'>
+        <div className='container relative z-10 mx-auto px-6'>
           {/* Header Section */}
           <HeadingText
             heading='Get In '
