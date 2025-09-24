@@ -149,7 +149,7 @@ export const useBackgroundRemover = ({
             const token = await getToken();
 
             const response = await fetch(
-                `api/tools/background-remover`,
+                `/api/tools/background-remover`,
                 {
                     method: 'POST',
                     body: formData,
