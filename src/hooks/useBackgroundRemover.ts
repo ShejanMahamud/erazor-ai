@@ -32,7 +32,12 @@ export const useBackgroundRemover = ({
     onAnimateDownloadButton,
     onUsageLimitReached
 }: UseBackgroundRemoverProps): UseBackgroundRemoverReturn => {
+    console.log('🚀🚀🚀 useBackgroundRemover hook called');
+    console.warn('⚠️⚠️⚠️ THIS IS A WARNING FROM useBackgroundRemover');
+
     const { userId, getToken } = useAuth();
+    console.log('👤👤👤 Auth status:', { userId: userId ? 'exists' : 'null', isLoaded: !!userId });
+
     const [files, setFiles] = useState<File[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -40,9 +45,11 @@ export const useBackgroundRemover = ({
     const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [isUsageLimitReached, setIsUsageLimitReached] = useState(false);
+    const [processingTimeoutId, setProcessingTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-    // Only connect to socket when userId is available - use empty string to prevent connection if no userId
+    // Only connect to socket when userId is available
     const socketUserId = userId || '';
+    console.log('🔍 Background remover user status:', { userId, socketUserId, hasUser: !!userId });
     const { imageUpdates, clearImageUpdates } = useImageSocket(socketUserId);
 
     // Process image updates from socket
@@ -68,10 +75,17 @@ export const useBackgroundRemover = ({
         console.log('📊 Dashboard BG Remover - Image status:', {
             ready: readyImages.length,
             failed: failedImages.length,
-            allUpdates: imageUpdates
+            allUpdates: imageUpdates,
+            currentUserId: socketUserId
         });
 
         if (readyImages.length > 0 && isProcessing) {
+            // Clear the timeout since we got a response
+            if (processingTimeoutId) {
+                clearTimeout(processingTimeoutId);
+                setProcessingTimeoutId(null);
+            }
+
             // Get the most recent image that matches our current upload
             const latestImage = readyImages[readyImages.length - 1];
             console.log('✅ Dashboard BG Remover - Setting current image:', latestImage);
@@ -82,13 +96,19 @@ export const useBackgroundRemover = ({
             setError(null);
             setIsUsageLimitReached(false);
         } else if (failedImages.length > 0 && isProcessing) {
+            // Clear the timeout since we got a response (even if failed)
+            if (processingTimeoutId) {
+                clearTimeout(processingTimeoutId);
+                setProcessingTimeoutId(null);
+            }
+
             // Handle failed processing
             const failedImage = failedImages[failedImages.length - 1];
             console.error('❌ Dashboard BG Remover - Image processing failed:', failedImage);
             setError('Background removal failed. Please try again.');
             setIsProcessing(false);
         }
-    }, [imageUpdates, isProcessing, files.length, socketUserId]);
+    }, [imageUpdates, isProcessing, files.length, socketUserId, processingTimeoutId]);
 
     const handleFileUpload = useCallback(async (uploadFiles: File[]): Promise<void> => {
         const file = uploadFiles[0];
@@ -116,17 +136,23 @@ export const useBackgroundRemover = ({
 
         try {
             setIsProcessing(true);
+
+            // Set a timeout to prevent infinite processing
+            const timeoutId = setTimeout(() => {
+                console.warn('⏰ Processing timeout - no response received after 2 minutes');
+                setError('Processing timed out. Please try again.');
+                setIsProcessing(false);
+            }, 120000); // 2 minutes
+
+            setProcessingTimeoutId(timeoutId);
+
             const token = await getToken();
 
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/images/process`,
+                `api/tools/background-remover`,
                 {
                     method: 'POST',
-                    credentials: 'include',
                     body: formData,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
                 }
             );
 
@@ -143,6 +169,12 @@ export const useBackgroundRemover = ({
                 }
             }
         } catch (err) {
+            // Clear the timeout on error
+            if (processingTimeoutId) {
+                clearTimeout(processingTimeoutId);
+                setProcessingTimeoutId(null);
+            }
+
             const errorMessage = err instanceof Error ? err.message : 'File upload error';
             console.error('File upload error:', err);
             setError(errorMessage);
@@ -150,9 +182,15 @@ export const useBackgroundRemover = ({
         } finally {
             setIsUploading(false);
         }
-    }, [originalImageUrl, clearImageUpdates, getToken, onUsageLimitReached]);
+    }, [originalImageUrl, clearImageUpdates, getToken, onUsageLimitReached, processingTimeoutId]);
 
     const handleReset = useCallback(() => {
+        // Clear any existing timeout
+        if (processingTimeoutId) {
+            clearTimeout(processingTimeoutId);
+            setProcessingTimeoutId(null);
+        }
+
         onAnimateReset(() => {
             // Clear all state completely
             setFiles([]);
@@ -172,7 +210,7 @@ export const useBackgroundRemover = ({
             // Animate in upload area
             onAnimateUploadAreaIn();
         });
-    }, [onAnimateReset, onAnimateUploadAreaIn, originalImageUrl, clearImageUpdates]);
+    }, [onAnimateReset, onAnimateUploadAreaIn, originalImageUrl, clearImageUpdates, processingTimeoutId]);
 
     const handleDownload = useCallback(() => {
         if (currentImage?.bgRemovedImageUrlHQ || currentImage?.bgRemovedImageUrlLQ) {
@@ -191,11 +229,16 @@ export const useBackgroundRemover = ({
     // Cleanup effect
     useEffect(() => {
         return () => {
+            // Cleanup timeout on unmount
+            if (processingTimeoutId) {
+                clearTimeout(processingTimeoutId);
+            }
+
             if (originalImageUrl) {
                 URL.revokeObjectURL(originalImageUrl);
             }
         };
-    }, [originalImageUrl]);
+    }, [originalImageUrl, processingTimeoutId]);
 
     return {
         files,

@@ -15,6 +15,10 @@ import Image from 'next/image';
 import { Suspense, useCallback, useRef, useState } from 'react';
 
 export default function BackgroundRemoverPage() {
+  console.log('🎯🎯🎯 BackgroundRemoverPage component rendered');
+  console.warn('⚠️⚠️⚠️ THIS IS A WARNING FROM PAGE COMPONENT');
+  console.error('❌❌❌ THIS IS AN ERROR FROM PAGE COMPONENT');
+
   // Refs for animations
   const containerRef = useRef<HTMLDivElement>(null);
   const uploadAreaRef = useRef<HTMLDivElement>(null);
@@ -78,7 +82,8 @@ export default function BackgroundRemoverPage() {
     originalImageUrl: backgroundRemover.originalImageUrl,
     imageUpdates: backgroundRemover.imageUpdates?.length || 0,
     error: backgroundRemover.error,
-    hasActiveSubscription: subscription.hasActiveSubscription
+    hasActiveSubscription: subscription.hasActiveSubscription,
+    userId: subscription.subscriptionChecked ? 'user-exists' : 'no-user'
   });
 
   // Determine what banner to show and when

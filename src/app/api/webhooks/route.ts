@@ -1,9 +1,11 @@
 import { serverBaseUrl } from '@/config';
 
 import { verifyWebhook } from '@clerk/nextjs/webhooks';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
+  const cookieStore = await cookies()
   try {
     const evt = await verifyWebhook(req);
 
@@ -40,6 +42,16 @@ export async function POST(req: NextRequest) {
 
       const data = await res.json();
       return NextResponse.json(data);
+    }
+    else if (evt.type === 'session.created') {
+      cookieStore.set({
+        name: 'clerkId',
+        value: evt.data.user_id,
+        httpOnly: true,
+        sameSite: 'lax',
+      })
+    } else if (evt.type === 'session.ended') {
+      cookieStore.delete('clerkId');
     }
     return new Response('Webhook received', { status: 200 });
   } catch (err) {
