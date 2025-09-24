@@ -268,7 +268,11 @@ export function BackgroundRemover() {
                 throw new Error(errorMessage);
             }
             const data = await res.json();
-            setUserId(data.data.anonId);
+            if (!isSignedIn) {
+                setUserId(data.data.anonId);
+            } else if (loggedUser) {
+                setUserId(loggedUser);
+            }
             // Show upload success toast
             toast.success('Image uploaded successfully!', {
                 description: 'Processing background removal...'
