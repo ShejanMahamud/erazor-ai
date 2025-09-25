@@ -1,6 +1,5 @@
 "use client";
 
-import { serverBaseUrl } from '@/config';
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -14,7 +13,7 @@ export function useImageSocket(userId: string) {
     if (!userId) return;
 
     if (!socket) {
-      socket = io(`${serverBaseUrl}/images`, {
+      socket = io(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}`, {
         transports: ["websocket"],
       });
     }

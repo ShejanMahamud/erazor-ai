@@ -60,6 +60,7 @@ export default function BackgroundRemoverPage() {
     }
   }, [imageUpdate])
 
+
   const handleFileUpload = async (files: File[]) => {
     if (!connected) {
       toast.error("Connection error", {
