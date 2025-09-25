@@ -1,4 +1,4 @@
-import { serverBaseUrl } from '@/config';
+import { useImageSocket } from '@/hooks/useImageSocket';
 import { useAuth } from '@clerk/nextjs';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -23,10 +23,7 @@ interface UseBackgroundRemoverReturn {
     clearImageUpdates: () => void;
     error: string | null;
     isUsageLimitReached: boolean;
-    closeSSEConnection: () => void;
-    reconnectSSE: () => void;
-    isSSEConnected: boolean;
-    reconnectAttempts: number;
+    isSocketConnected: boolean;
 }
 
 export const useBackgroundRemover = ({
@@ -36,11 +33,9 @@ export const useBackgroundRemover = ({
     onAnimateDownloadButton,
     onUsageLimitReached
 }: UseBackgroundRemoverProps): UseBackgroundRemoverReturn => {
-    console.log('🚀🚀🚀 useBackgroundRemover hook called');
-    console.warn('⚠️⚠️⚠️ THIS IS A WARNING FROM useBackgroundRemover');
 
     const { userId, getToken } = useAuth();
-    console.log('👤👤👤 Auth status:', { userId: userId ? 'exists' : 'null', isLoaded: !!userId });
+    const { connected: isSocketConnected, imageUpdate } = useImageSocket(userId || '');
 
     const [files, setFiles] = useState<File[]>([]);
     const [isUploading, setIsUploading] = useState(false);
@@ -51,110 +46,56 @@ export const useBackgroundRemover = ({
     const [isUsageLimitReached, setIsUsageLimitReached] = useState(false);
     const [processingTimeoutId, setProcessingTimeoutId] = useState<NodeJS.Timeout | null>(null);
     const [imageUpdates, setImageUpdates] = useState<any[]>([]);
-    const [eventSource, setEventSource] = useState<EventSource | null>(null);
-    const [reconnectAttempts, setReconnectAttempts] = useState(0);
-    const [maxReconnectAttempts] = useState(3);
 
     // Function to clear image updates
     const clearImageUpdates = useCallback(() => {
         setImageUpdates([]);
     }, []);
 
-    // SSE connection setup with reconnection logic
-    const connectSSE = useCallback(() => {
-        if (!userId) return;
-
-        console.log('🔌 Setting up SSE connection for user:', userId, `(attempt ${reconnectAttempts + 1})`);
-
-        const es = new EventSource(`${serverBaseUrl}/images/updates/${userId}`);
-        setEventSource(es);
-
-        es.onopen = () => {
-            console.log('✅ SSE connection opened');
-            setReconnectAttempts(0); // Reset reconnection attempts on successful connection
-        };
-
-        es.onmessage = (event) => {
-            try {
-                const update = JSON.parse(event.data);
-                console.log('📨 SSE Update received:', update);
-
-                // Add the update to the updates array
-                setImageUpdates(prev => [...prev, update]);
-
-                // Handle different types of updates
-                switch (update.type) {
-                    case 'heartbeat':
-                        // Just a keep-alive message, no action needed
-                        console.log('💓 SSE heartbeat received');
-                        break;
-                    case 'processing':
-                        console.log('🔄 Image processing update:', update.message);
-                        break;
-                    case 'completed':
-                        console.log('✅ Image processing completed:', update);
-                        setCurrentImage(update.image);
-                        setIsProcessing(false);
-
-                        // Clear the processing timeout
-                        if (processingTimeoutId) {
-                            clearTimeout(processingTimeoutId);
-                            setProcessingTimeoutId(null);
-                        }
-                        break;
-                    case 'error':
-                        console.error('❌ Image processing error:', update.error);
-                        setError(update.error);
-                        setIsProcessing(false);
-
-                        // Clear the processing timeout
-                        if (processingTimeoutId) {
-                            clearTimeout(processingTimeoutId);
-                            setProcessingTimeoutId(null);
-                        }
-                        break;
-                    default:
-                        console.log('🔄 General update:', update);
-                }
-            } catch (err) {
-                console.error('❌ Error parsing SSE message:', err);
-            }
-        };
-
-        es.onerror = (error) => {
-            console.error('❌ SSE error:', error);
-            es.close();
-            setEventSource(null);
-
-            // Attempt reconnection if we haven't exceeded max attempts
-            if (reconnectAttempts < maxReconnectAttempts) {
-                console.log(`🔄 Attempting to reconnect SSE in 2 seconds... (${reconnectAttempts + 1}/${maxReconnectAttempts})`);
-                setTimeout(() => {
-                    setReconnectAttempts(prev => prev + 1);
-                }, 2000);
-            } else {
-                console.error('❌ Max reconnection attempts reached. Please refresh the page.');
-                setError('Connection lost. Please refresh the page.');
-            }
-        };
-
-        return es;
-    }, [userId, reconnectAttempts, maxReconnectAttempts, processingTimeoutId]);
-
-    // Initial SSE connection and reconnection effect
+    // Handle socket image updates
     useEffect(() => {
-        if (!userId) return;
+        if (!imageUpdate) return;
 
-        const es = connectSSE();
+        console.log('📨 Socket Update received:', imageUpdate);
 
-        return () => {
-            if (es) {
-                console.log('🔌 Cleaning up SSE connection');
-                es.close();
-                setEventSource(null);
-            }
-        };
-    }, [userId, reconnectAttempts]);
+        // Add the update to the updates array
+        setImageUpdates(prev => [...prev, imageUpdate]);
+
+        // Handle different types of updates based on your socket implementation
+        switch (imageUpdate.type || imageUpdate.status) {
+            case 'processing':
+                console.log('🔄 Image processing update:', imageUpdate.message || imageUpdate.data);
+                break;
+            case 'completed':
+            case 'success':
+                console.log('✅ Image processing completed:', imageUpdate);
+                if (imageUpdate.image || imageUpdate.data) {
+                    setCurrentImage(imageUpdate.image || imageUpdate.data);
+                }
+                setIsProcessing(false);
+
+                // Clear the processing timeout
+                if (processingTimeoutId) {
+                    clearTimeout(processingTimeoutId);
+                    setProcessingTimeoutId(null);
+                }
+                break;
+            case 'error':
+            case 'failed':
+                console.error('❌ Image processing error:', imageUpdate.error || imageUpdate.message);
+                setError(imageUpdate.error || imageUpdate.message || 'Processing failed');
+                setIsProcessing(false);
+
+                // Clear the processing timeout
+                if (processingTimeoutId) {
+                    clearTimeout(processingTimeoutId);
+                    setProcessingTimeoutId(null);
+                }
+                break;
+            default:
+                console.log('🔄 General socket update:', imageUpdate);
+        }
+    }, [imageUpdate, processingTimeoutId]);
 
     const handleFileUpload = useCallback(async (uploadFiles: File[]): Promise<void> => {
         const file = uploadFiles[0];
@@ -164,7 +105,6 @@ export const useBackgroundRemover = ({
         setCurrentImage(null);
         setError(null);
         setIsUsageLimitReached(false);
-        setReconnectAttempts(0); // Reset reconnection attempts for new upload
         clearImageUpdates();
 
         setFiles([file]);
@@ -193,10 +133,16 @@ export const useBackgroundRemover = ({
 
             setProcessingTimeoutId(timeoutId);
 
+            // Get auth token for the request
+            const token = await getToken();
+
             const response = await fetch(
                 `/api/tools/background-remover`,
                 {
                     method: 'POST',
+                    headers: {
+                        ...(token && { Authorization: `Bearer ${token}` })
+                    },
                     body: formData,
                 }
             );
@@ -248,7 +194,6 @@ export const useBackgroundRemover = ({
             setIsProcessing(false);
             setError(null);
             setIsUsageLimitReached(false);
-            setReconnectAttempts(0); // Reset reconnection attempts
             clearImageUpdates();
 
             // Clear any URLs to prevent memory leaks
@@ -275,26 +220,6 @@ export const useBackgroundRemover = ({
         }
     }, [currentImage, onAnimateDownloadButton]);
 
-    // Function to manually close SSE connection
-    const closeSSEConnection = useCallback(() => {
-        if (eventSource) {
-            eventSource.close();
-            setEventSource(null);
-            console.log('🔌 SSE connection closed manually');
-        }
-    }, [eventSource]);
-
-    // Function to manually reconnect SSE
-    const reconnectSSE = useCallback(() => {
-        if (eventSource) {
-            eventSource.close();
-        }
-        setEventSource(null);
-        setReconnectAttempts(0);
-        connectSSE();
-        console.log('🔄 Manual SSE reconnection triggered');
-    }, [eventSource, connectSSE]);
-
     // Cleanup effect
     useEffect(() => {
         return () => {
@@ -303,16 +228,11 @@ export const useBackgroundRemover = ({
                 clearTimeout(processingTimeoutId);
             }
 
-            // Close EventSource connection
-            if (eventSource) {
-                eventSource.close();
-            }
-
             if (originalImageUrl) {
                 URL.revokeObjectURL(originalImageUrl);
             }
         };
-    }, [originalImageUrl, processingTimeoutId, eventSource]);
+    }, [originalImageUrl, processingTimeoutId]);
 
     return {
         files,
@@ -327,9 +247,6 @@ export const useBackgroundRemover = ({
         clearImageUpdates,
         error,
         isUsageLimitReached,
-        closeSSEConnection,
-        reconnectSSE,
-        isSSEConnected: !!eventSource,
-        reconnectAttempts
+        isSocketConnected
     };
 };
