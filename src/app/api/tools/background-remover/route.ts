@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/images/process`, {
         method: 'POST',
         body: req.body,
+        ...({ duplex: 'half' } as any),
         credentials: 'include',
         headers: {
             'Authorization': `Bearer ${token}`
