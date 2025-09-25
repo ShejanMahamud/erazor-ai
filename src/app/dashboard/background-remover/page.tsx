@@ -20,7 +20,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
-import { Download, ImageIcon, Loader2, RotateCcw, Upload } from "lucide-react"
+import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -198,13 +198,6 @@ export default function BackgroundRemoverPage() {
         {/* Upload Section */}
         {!originalImage && (
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-            <div className="text-center space-y-2 mb-6">
-              <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
-              <h3 className="text-lg font-semibold">Upload Your Image</h3>
-              <p className="text-muted-foreground text-sm">
-                Supports JPG, PNG, and WebP files up to 20MB
-              </p>
-            </div>
             <Suspense>
               <FileUpload onChange={handleFileUpload} />
             </Suspense>

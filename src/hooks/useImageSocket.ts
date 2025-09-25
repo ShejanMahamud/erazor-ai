@@ -14,7 +14,7 @@ export function useImageSocket(userId: string) {
     if (!userId) return;
 
     if (!socket) {
-      socket = io(`${serverBaseUrl}/image-update`, {
+      socket = io(`${serverBaseUrl}/images`, {
         transports: ["websocket"],
       });
     }
