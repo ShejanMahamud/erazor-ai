@@ -10,16 +10,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { BeforeAfterSlider } from "@/components/ui/before-after-slider"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUpload } from "@/components/ui/file-upload"
 import { Heading } from "@/components/ui/heading"
+import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
-import { Download, ImageIcon, Loader2 } from "lucide-react"
+import { Download, ImageIcon, Loader2, RotateCcw, Upload } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export default function BackgroundRemoverPage() {
   const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
@@ -28,6 +31,8 @@ export default function BackgroundRemoverPage() {
   const [processedImage, setProcessedImage] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [showResults, setShowResults] = useState(false)
 
   const { userId } = useAuth()
   const { imageUpdate, connected } = useImageSocket(userId!)
@@ -36,35 +41,76 @@ export default function BackgroundRemoverPage() {
     if (imageUpdate) {
       if (imageUpdate.status === "processing") {
         setProgress(imageUpdate.progress || 0)
+        setIsProcessing(true)
       } else if (imageUpdate.status === "completed") {
         setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ)
         setIsProcessing(false)
         setProgress(100)
+        setShowResults(true)
+        toast.success("Background removed successfully!", {
+          description: "Your image is ready for download."
+        })
       } else if (imageUpdate.status === "error") {
         setError(imageUpdate.error || "Processing failed")
         setIsProcessing(false)
+        toast.error("Processing failed", {
+          description: imageUpdate.error || "Something went wrong while processing your image."
+        })
       }
     }
   }, [imageUpdate])
 
   const handleFileUpload = async (files: File[]) => {
-    if (!connected) return
+    if (!connected) {
+      toast.error("Connection error", {
+        description: "Please wait for the connection to establish and try again."
+      })
+      return
+    }
     if (files.length === 0) return
 
+    const file = files[0]
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid file type', {
+        description: 'Please upload a JPG, PNG, or WebP image file.'
+      })
+      return
+    }
+
+    // Validate file size (max 20MB)
+    const maxSize = 20 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('File too large', {
+        description: 'Please upload an image smaller than 20MB.'
+      })
+      return
+    }
+
+    // Reset states
     setError(null)
     setProcessedImage(null)
     setProgress(0)
-    setIsProcessing(true)
+    setIsProcessing(false)
+    setShowResults(false)
+    setIsUploading(true)
 
-    // Create preview of original image
+    // Create preview of original image immediately
     const reader = new FileReader()
     reader.onload = (e) => {
       setOriginalImage(e.target?.result as string)
+      setIsUploading(false)
+      setIsProcessing(true)
+      toast.success('Image uploaded successfully!', {
+        description: 'Processing background removal...'
+      })
     }
-    reader.readAsDataURL(files[0])
+    reader.readAsDataURL(file)
 
     const formData = new FormData()
-    formData.append("file", files[0])
+    formData.append("file", file)
 
     try {
       const response = await fetch("/api/tools/background-remover", {
@@ -86,8 +132,13 @@ export default function BackgroundRemoverPage() {
       const data = await response.json()
       return data
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
+      const errorMessage = err instanceof Error ? err.message : "An error occurred"
+      setError(errorMessage)
       setIsProcessing(false)
+      setIsUploading(false)
+      toast.error("Upload failed", {
+        description: errorMessage
+      })
     }
   }
 
@@ -105,87 +156,210 @@ export default function BackgroundRemoverPage() {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
+      toast.success("Image downloaded successfully!")
     } catch (err) {
       setError("Failed to download image")
+      toast.error("Download failed", {
+        description: "Failed to download the processed image."
+      })
     }
+  }
+
+  const handleReset = () => {
+    setOriginalImage(null)
+    setProcessedImage(null)
+    setProgress(0)
+    setError(null)
+    setIsProcessing(false)
+    setIsUploading(false)
+    setShowResults(false)
+    toast.info("Ready for new image")
   }
 
   return (
     <PageContainer scrollable={false}>
-      <div className="flex flex-1 flex-col space-y-4">
+      <div className="flex flex-1 flex-col space-y-6">
         <div className="flex items-start justify-between">
-          <Heading title="Background Remover" description="Remove the background from your images." />
+          <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
+          {originalImage && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="flex items-center gap-2"
+            >
+              <RotateCcw className="h-4 w-4" />
+              New Image
+            </Button>
+          )}
         </div>
         <Separator />
 
-        <Suspense>
-          <FileUpload onChange={handleFileUpload} />
-        </Suspense>
-
-        {isProcessing && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <Loader2 className="h-6 w-6 animate-spin" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Processing your image...</p>
-                  <Progress value={progress} className="mt-2" />
-                  <p className="text-xs text-muted-foreground mt-1">{progress}% complete</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Upload Section */}
+        {!originalImage && (
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <div className="text-center space-y-2 mb-6">
+              <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
+              <h3 className="text-lg font-semibold">Upload Your Image</h3>
+              <p className="text-muted-foreground text-sm">
+                Supports JPG, PNG, and WebP files up to 20MB
+              </p>
+            </div>
+            <Suspense>
+              <FileUpload onChange={handleFileUpload} />
+            </Suspense>
+          </div>
         )}
 
-        {error && (
-          <Card className="border-destructive">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2 text-destructive">
-                <ImageIcon className="h-5 w-5" />
-                <p className="text-sm font-medium">Error: {error}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {(originalImage || processedImage) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {originalImage && (
+        {/* Processing or Results Section */}
+        {originalImage && (
+          <div className="space-y-6">
+            {/* Upload Loading State */}
+            {isUploading && (
               <Card>
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-medium mb-3">Original Image</h3>
-                  <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                    <img
-                      src={originalImage || "/placeholder.svg"}
-                      alt="Original"
-                      className="w-full h-full object-contain"
-                    />
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center space-x-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                    <div>
+                      <p className="text-sm font-medium">Uploading image...</p>
+                      <p className="text-xs text-muted-foreground">Preparing for background removal</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {processedImage && (
+            {/* Processing State */}
+            {isProcessing && !showResults && (
               <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-medium">Background Removed</h3>
-                    <Button size="sm" onClick={handleDownload} className="h-8">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                    Processing Your Image
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Original Image */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-muted-foreground">Original Image</h4>
+                      <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                        <img
+                          src={originalImage}
+                          alt="Original"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Processing Overlay */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
+                      <ProcessingOverlay
+                        image={originalImage}
+                        progress={progress}
+                      />
+                    </div>
                   </div>
-                  <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                    <img
-                      src={processedImage || "/placeholder.svg"}
-                      alt="Background removed"
-                      className="w-full h-full object-contain"
+
+                  {/* Progress Bar */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{Math.round(progress)}%</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Results State */}
+            {showResults && originalImage && processedImage && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-green-600">Background Removed Successfully!</CardTitle>
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleDownload} className="flex items-center gap-2">
+                        <Download className="h-4 w-4" />
+                        Download
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Before/After Slider */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Interactive Comparison - Drag to compare
+                    </h4>
+                    <BeforeAfterSlider
+                      beforeImage={originalImage}
+                      afterImage={processedImage}
+                      beforeLabel="Original"
+                      afterLabel="Background Removed"
+                      className="max-w-2xl mx-auto"
                     />
+                  </div>
+
+                  {/* Separate Images */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium">Original Image</h4>
+                      <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                        <img
+                          src={originalImage}
+                          alt="Original"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium">Background Removed</h4>
+                      <div
+                        className="aspect-square relative overflow-hidden rounded-lg"
+                        style={{
+                          backgroundImage: `
+                            linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                            linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                            linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                            linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
+                          `,
+                          backgroundSize: '20px 20px',
+                          backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                        }}
+                      >
+                        <img
+                          src={processedImage}
+                          alt="Background removed"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             )}
           </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <Card className="border-destructive">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2 text-destructive">
+                <ImageIcon className="h-5 w-5" />
+                <div>
+                  <p className="text-sm font-medium">Error: {error}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Please try again or contact support if the problem persists.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
