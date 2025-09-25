@@ -1,8 +1,6 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { IconUpload } from "@tabler/icons-react";
 import { motion } from "motion/react";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -77,7 +75,7 @@ export const FileUpload = ({
           className="hidden"
         />
         <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
-          {/* <GridPattern /> */}
+          <GridPattern />
         </div>
         <div className="flex flex-col items-center justify-center">
           <p className="relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base">
@@ -175,28 +173,6 @@ export const FileUpload = ({
           </div>
         </div>
       </motion.div>
-
-      {preview && previewUrl && (
-        <Card className="relative z-50 mt-6 mb-10 flex flex-col items-center justify-center max-w-xs mx-auto">
-          <CardHeader className="flex flex-col items-center justify-center w-full">
-            <CardTitle className="text-center w-full">{files[0]?.name}</CardTitle>
-            <CardDescription>{(files[0]?.size / (1024 * 1024)).toFixed(2)} MB</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Image
-              src={previewUrl}
-              alt={files[0]?.name || 'Preview'}
-              width={400}
-              height={192}
-              className="w-full h-48 object-contain rounded-md border border-gray-200 dark:border-neutral-800 mb-2"
-              priority
-            />
-          </CardContent>
-          <CardFooter>
-            <span className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">{files[0]?.type}</span>
-          </CardFooter>
-        </Card>
-      )}
     </div>
   );
 };
@@ -213,8 +189,8 @@ export function GridPattern() {
             <div
               key={`${col}-${row}`}
               className={`w-10 h-10 flex shrink-0 rounded-[2px] ${index % 2 === 0
-                ? "bg-gray-50 dark:bg-neutral-950"
-                : "bg-gray-50 dark:bg-neutral-950 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
+                  ? "bg-gray-50 dark:bg-neutral-950"
+                  : "bg-gray-50 dark:bg-neutral-950 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
                 }`}
             />
           );

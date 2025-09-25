@@ -1,285 +1,208 @@
-'use client';
-
-import PageContainer from '@/components/layout/page-container';
-import { SubscriptionBanner } from '@/components/SubscriptionBanner';
-import { Button } from '@/components/ui/button';
-import { FileUpload } from '@/components/ui/file-upload';
-import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { useBackgroundRemover } from '@/hooks/useBackgroundRemover';
-import { useBackgroundRemoverAnimations } from '@/hooks/useBackgroundRemoverAnimations';
-import { useSubscription } from '@/hooks/useSubscription';
-import { AlertTriangle, Download, Loader2, RotateCcw } from 'lucide-react';
-import Image from 'next/image';
-import { Suspense, useCallback, useRef, useState } from 'react';
+"use client"
+import PageContainer from "@/components/layout/page-container"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { FileUpload } from "@/components/ui/file-upload"
+import { Heading } from "@/components/ui/heading"
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
+import { useImageSocket } from "@/hooks/useImageSocket"
+import { useAuth } from "@clerk/nextjs"
+import { Download, ImageIcon, Loader2 } from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
 
 export default function BackgroundRemoverPage() {
-  console.log('🎯🎯🎯 BackgroundRemoverPage component rendered');
-  console.warn('⚠️⚠️⚠️ THIS IS A WARNING FROM PAGE COMPONENT');
-  console.error('❌❌❌ THIS IS AN ERROR FROM PAGE COMPONENT');
+  const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [originalImage, setOriginalImage] = useState<string | null>(null)
+  const [processedImage, setProcessedImage] = useState<string | null>(null)
+  const [progress, setProgress] = useState(0)
+  const [error, setError] = useState<string | null>(null)
 
-  // Refs for animations
-  const containerRef = useRef<HTMLDivElement>(null);
-  const uploadAreaRef = useRef<HTMLDivElement>(null);
-  const processingRef = useRef<HTMLDivElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const beforeImageRef = useRef<HTMLImageElement>(null);
-  const afterImageRef = useRef<HTMLImageElement>(null);
-  const buttonsRef = useRef<HTMLDivElement>(null);
-  const bannerRef = useRef<HTMLDivElement>(null);
+  const { userId } = useAuth()
+  const { imageUpdate, connected } = useImageSocket(userId!)
 
-  const refs = {
-    containerRef,
-    uploadAreaRef,
-    processingRef,
-    resultsRef,
-    beforeImageRef,
-    afterImageRef,
-    buttonsRef,
-    bannerRef
-  };
+  useEffect(() => {
+    if (imageUpdate) {
+      if (imageUpdate.status === "processing") {
+        setProgress(imageUpdate.progress || 0)
+      } else if (imageUpdate.status === "completed") {
+        setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ)
+        setIsProcessing(false)
+        setProgress(100)
+      } else if (imageUpdate.status === "error") {
+        setError(imageUpdate.error || "Processing failed")
+        setIsProcessing(false)
+      }
+    }
+  }, [imageUpdate])
 
-  // Custom hooks
-  const subscription = useSubscription();
+  const handleFileUpload = async (files: File[]) => {
+    if (!connected) return
+    if (files.length === 0) return
 
-  // State to control banner visibility after usage limit is reached
-  const [showUsageLimitBanner, setShowUsageLimitBanner] = useState(false);
+    setError(null)
+    setProcessedImage(null)
+    setProgress(0)
+    setIsProcessing(true)
 
-  // Callback for when usage limit is reached
-  const handleUsageLimitReached = useCallback(() => {
-    setShowUsageLimitBanner(true);
-  }, []);
+    // Create preview of original image
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setOriginalImage(e.target?.result as string)
+    }
+    reader.readAsDataURL(files[0])
 
-  // Create backgroundRemover first
-  const backgroundRemover = useBackgroundRemover({
-    hasActiveSubscription: subscription.hasActiveSubscription,
-    onAnimateReset: (onComplete) => {
-      // Clear the usage limit banner when resetting
-      setShowUsageLimitBanner(false);
-      onComplete(); // We'll handle animation separately
-    },
-    onAnimateUploadAreaIn: () => { }, // Will be handled in animations
-    onAnimateDownloadButton: () => { }, // Will be handled in animations
-    onUsageLimitReached: handleUsageLimitReached
-  });
+    const formData = new FormData()
+    formData.append("file", files[0])
 
-  // Create animations with actual values from backgroundRemover
-  const animations = useBackgroundRemoverAnimations({
-    refs,
-    isUploading: backgroundRemover.isUploading,
-    isProcessing: backgroundRemover.isProcessing,
-    currentImage: backgroundRemover.currentImage,
-    hasActiveSubscription: subscription.hasActiveSubscription,
-    subscriptionChecked: subscription.subscriptionChecked
-  });
+    try {
+      const response = await fetch("/api/tools/background-remover", {
+        method: "POST",
+        body: formData,
+      })
 
-  // Debug logging
-  console.log('🔍 Debug Background Remover State:', {
-    isUploading: backgroundRemover.isUploading,
-    isProcessing: backgroundRemover.isProcessing,
-    currentImage: backgroundRemover.currentImage,
-    originalImageUrl: backgroundRemover.originalImageUrl,
-    imageUpdates: backgroundRemover.imageUpdates?.length || 0,
-    error: backgroundRemover.error,
-    hasActiveSubscription: subscription.hasActiveSubscription,
-    userId: subscription.subscriptionChecked ? 'user-exists' : 'no-user'
-  });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        if (response.status === 429 || (errorData && errorData.code === "USAGE_LIMIT_REACHED")) {
+          setShowUsageLimitDialog(true)
+          setIsProcessing(false)
+          return
+        } else {
+          throw new Error(errorData?.message || "Failed to upload file")
+        }
+      }
 
-  // Determine what banner to show and when
-  const shouldShowBanner = subscription.subscriptionChecked && (
-    // Show usage limit banner if user has reached limit (regardless of subscription status)
-    (showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ||
-    // Show subscription banner only if user has no subscription AND hasn't reached usage limit yet
-    (subscription.hasActiveSubscription === false && !showUsageLimitBanner && !backgroundRemover.isUsageLimitReached)
-  );
+      const data = await response.json()
+      return data
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+      setIsProcessing(false)
+    }
+  }
 
-  const bannerType = (showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ? 'usage-limit' : 'subscription';
+  const handleDownload = async () => {
+    if (!processedImage) return
+
+    try {
+      const response = await fetch(processedImage)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "background-removed.png"
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err) {
+      setError("Failed to download image")
+    }
+  }
 
   return (
     <PageContainer scrollable={false}>
-      <div className='flex flex-1 flex-col space-y-4'>
-        {/* Subscription Banner */}
-        <SubscriptionBanner
-          ref={bannerRef}
-          show={shouldShowBanner}
-          type={bannerType}
-        />
-
-        <div className='flex items-start justify-between'>
-          <Heading
-            title='Remove Background'
-            description='Easily remove backgrounds from images.'
-          />
+      <div className="flex flex-1 flex-col space-y-4">
+        <div className="flex items-start justify-between">
+          <Heading title="Background Remover" description="Remove the background from your images." />
         </div>
         <Separator />
-        <Suspense
-          fallback={
-            <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-          }
-        >
-          <div
-            ref={containerRef}
-            className='mx-auto min-h-96 w-full max-w-4xl rounded-lg border border-dashed border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-black'
-          >
-            {!backgroundRemover.files.length &&
-              !backgroundRemover.isUploading &&
-              !backgroundRemover.isProcessing &&
-              !backgroundRemover.currentImage && (
-                <div
-                  ref={uploadAreaRef}
-                  className='flex min-h-80 flex-col items-center justify-center'
-                >
-                  <div className={(showUsageLimitBanner || backgroundRemover.isUsageLimitReached) ? 'opacity-50 pointer-events-none' : ''}>
-                    <FileUpload onChange={backgroundRemover.handleFileUpload} preview={true} />
-                  </div>
-                  <p className='text-muted-foreground mt-4 text-sm'>
-                    {(showUsageLimitBanner || backgroundRemover.isUsageLimitReached)
-                      ? 'You have reached your usage limit. Subscribe to continue removing backgrounds.'
-                      : subscription.hasActiveSubscription === false
-                        ? 'Upload an image to remove its background'
-                        : 'Upload an image to remove its background'
-                    }
-                  </p>
-                </div>
-              )}
 
-            {(backgroundRemover.isUploading || backgroundRemover.isProcessing) && (
-              <div
-                ref={processingRef}
-                className='flex min-h-80 flex-col items-center justify-center space-y-6'
-              >
-                <div className='relative'>
-                  <Loader2 className='text-primary h-16 w-16 animate-spin' />
-                </div>
-                <div className='space-y-2 text-center'>
-                  <h3 className='text-lg font-semibold'>
-                    {backgroundRemover.isUploading
-                      ? 'Uploading image...'
-                      : 'Removing background...'}
-                  </h3>
-                  <p className='text-muted-foreground text-sm'>
-                    {backgroundRemover.isUploading
-                      ? 'Please wait while we upload your image'
-                      : 'AI is processing your image, this may take a few moments'}
-                  </p>
-                </div>
-                <div className='bg-secondary h-2 w-full max-w-xs rounded-full'>
-                  <div
-                    className='progress-bar bg-primary h-2 animate-pulse rounded-full'
-                    style={{ width: backgroundRemover.isUploading ? '30%' : '70%' }}
-                  ></div>
+        <Suspense>
+          <FileUpload onChange={handleFileUpload} />
+        </Suspense>
+
+        {isProcessing && (
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Processing your image...</p>
+                  <Progress value={progress} className="mt-2" />
+                  <p className="text-xs text-muted-foreground mt-1">{progress}% complete</p>
                 </div>
               </div>
-            )}
+            </CardContent>
+          </Card>
+        )}
 
-            {/* Error Display */}
-            {backgroundRemover.error && !backgroundRemover.isUsageLimitReached && (
-              <div className='flex min-h-80 flex-col items-center justify-center space-y-4'>
-                <div className='rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950'>
-                  <div className='flex items-center space-x-3'>
-                    <div className='rounded-full bg-red-100 p-2 dark:bg-red-900'>
-                      <AlertTriangle className='h-5 w-5 text-red-600 dark:text-red-400' />
-                    </div>
-                    <div>
-                      <h3 className='font-medium text-red-800 dark:text-red-200'>
-                        Processing Failed
-                      </h3>
-                      <p className='text-sm text-red-600 dark:text-red-400'>
-                        {backgroundRemover.error}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <Button
-                  variant='outline'
-                  onClick={backgroundRemover.handleReset}
-                  className='flex items-center gap-2'
-                >
-                  <RotateCcw className='h-4 w-4' />
-                  Try Again
-                </Button>
+        {error && (
+          <Card className="border-destructive">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2 text-destructive">
+                <ImageIcon className="h-5 w-5" />
+                <p className="text-sm font-medium">Error: {error}</p>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {(originalImage || processedImage) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {originalImage && (
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-medium mb-3">Original Image</h3>
+                  <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                    <img
+                      src={originalImage || "/placeholder.svg"}
+                      alt="Original"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            {backgroundRemover.currentImage && backgroundRemover.originalImageUrl && (
-              <div ref={resultsRef} className='space-y-6'>
-                <div className='flex items-center justify-between'>
-                  <h3 className='text-lg font-semibold'>
-                    Background Removed Successfully!
-                  </h3>
-                  <div ref={buttonsRef} className='flex gap-2'>
-                    <Button
-                      onClick={backgroundRemover.handleDownload}
-                      className='flex items-center gap-2'
-                    >
-                      <Download className='h-4 w-4' />
+            {processedImage && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-medium">Background Removed</h3>
+                    <Button size="sm" onClick={handleDownload} className="h-8">
+                      <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
-                    <Button
-                      variant='outline'
-                      onClick={backgroundRemover.handleReset}
-                      className='flex items-center gap-2 bg-transparent'
-                    >
-                      <RotateCcw className='h-4 w-4' />
-                      New Image
-                    </Button>
                   </div>
-                </div>
-
-                <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                  {/* Before */}
-                  <div className='space-y-3'>
-                    <h4 className='text-center text-sm font-medium'>Before</h4>
-                    <div className='relative flex min-h-80 items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
-                      <Image
-                        ref={beforeImageRef}
-                        src={backgroundRemover.originalImageUrl || '/placeholder.svg'}
-                        alt='Original'
-                        width={500}
-                        height={400}
-                        className='max-h-72 max-w-full rounded-lg object-contain shadow-sm'
-                        priority
-                      />
-                    </div>
+                  <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                    <img
+                      src={processedImage || "/placeholder.svg"}
+                      alt="Background removed"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-
-                  {/* After */}
-                  <div className='space-y-3'>
-                    <h4 className='text-center text-sm font-medium'>After</h4>
-                    <div
-                      className='relative flex min-h-80 items-center justify-center rounded-lg bg-transparent p-4'
-                      style={{
-                        backgroundImage: `linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)`,
-                        backgroundSize: '20px 20px',
-                        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-                      }}
-                    >
-                      <Image
-                        ref={afterImageRef}
-                        src={
-                          backgroundRemover.currentImage.bgRemovedImageUrlHQ ||
-                          backgroundRemover.currentImage.bgRemovedImageUrlLQ ||
-                          '/placeholder.svg'
-                        }
-                        alt='Background Removed'
-                        width={500}
-                        height={400}
-                        className='max-h-72 max-w-full rounded-lg object-contain shadow-sm'
-                        priority
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className='text-muted-foreground text-center text-sm'>
-                  Original filename: {backgroundRemover.currentImage.originalFileName}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </div>
-        </Suspense>
+        )}
+
+        <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Usage Limit Reached</AlertDialogTitle>
+              <AlertDialogDescription>
+                You have reached your usage limit for background removal. Please upgrade your plan or try again later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Upgrade Plan</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageContainer>
-  );
+  )
 }
