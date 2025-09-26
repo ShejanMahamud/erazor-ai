@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
                 body: errorText
             });
             return NextResponse.json(
-                { error: 'Failed to fetch images' },
+                { error: `Failed to fetch images,reason: ${errorText}, token:${token},userId:${userId}` },
                 { status: res.status }
             );
         }
