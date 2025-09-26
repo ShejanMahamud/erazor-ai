@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
+import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -209,6 +210,12 @@ export default function BackgroundRemoverPage() {
           )}
         </div>
         <Separator />
+
+        {
+          imageUpdate && (
+            <Image src={imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ} height={500} width={500} alt="" />
+          )
+        }
 
         {/* Upload Section */}
         {!originalImage && (
