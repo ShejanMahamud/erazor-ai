@@ -18,9 +18,13 @@ export function useImageSocket(userIdentifier: string | null) {
     }
 
     subscribers++;
-    if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_IMAGE_WS_URL!, { transports: ["websocket"] });
+    const wsUrl = process.env.NEXT_PUBLIC_IMAGE_WS_URL;
+    if (!wsUrl) {
+      throw new Error("NEXT_PUBLIC_IMAGE_WS_URL is not defined. Please check your environment variables.");
     }
+    socket = io(wsUrl, {
+      transports: ["websocket"],
+    });
 
     const onConnect = () => {
       setConnected(true);
@@ -47,10 +51,12 @@ export function useImageSocket(userIdentifier: string | null) {
       socket?.off("image-status-update", onImageUpdate);
       socket?.off("disconnect", onDisconnect);
 
-      if (subscribers <= 0 && socket) {
-        socket.disconnect();
-        socket = null;
-      }
+      setTimeout(() => {
+        if (subscribers <= 0 && socket) {
+          socket.disconnect();
+          socket = null;
+        }
+      }, 0);
     };
   }, [userIdentifier]);
 
