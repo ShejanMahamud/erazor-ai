@@ -10,16 +10,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Extract filters from query params in the request URL
     const { searchParams } = new URL(req.url);
-    const filters = searchParams.toString(); // e.g. limit=10&cursor=123&status=done
-
-    console.log('API Route - userId:', userId);
-    console.log('API Route - filters:', filters);
-    console.log('API Route - serverBaseUrl:', serverBaseUrl);
+    const filters = searchParams.toString();
 
     if (!serverBaseUrl) {
-        console.error('serverBaseUrl is not configured');
         return NextResponse.json(
             { error: 'Server configuration error' },
             { status: 500 }
@@ -29,9 +23,7 @@ export async function GET(req: NextRequest) {
     try {
         const token = await getToken();
 
-        const apiUrl = `${serverBaseUrl}/images/${userId}?${filters}`;
-        console.log('API Route - Making request to:', apiUrl);
-
+        const apiUrl = `${serverBaseUrl}/images/user/${userId}?${filters}`;
         const res = await fetch(apiUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -40,26 +32,16 @@ export async function GET(req: NextRequest) {
 
         if (!res.ok) {
             const errorText = await res.text();
-            console.error('External API Error:', {
-                status: res.status,
-                statusText: res.statusText,
-                body: errorText
-            });
             return NextResponse.json(
-                { error: `Failed to fetch images,reason: ${errorText}, token:${token},userId:${userId}` },
+                { error: `Failed to fetch images` },
                 { status: res.status }
             );
         }
 
         const data = await res.json();
-        console.log('API Route - Received data:', {
-            success: data.success,
-            dataLength: data.data?.length || 0,
-            meta: data.meta
-        });
+
         return NextResponse.json(data, { status: 200 });
     } catch (error) {
-        console.error('Error fetching images:', error);
         return NextResponse.json(
             { error: 'Server error while fetching images' },
             { status: 500 }

@@ -24,17 +24,12 @@ export default function ImageListingPage() {
   useEffect(() => {
     const fetchImages = async () => {
       if (!userId) {
-        console.log('No userId available, skipping fetch');
         setLoading(false);
         return;
       }
 
-      console.log('Starting to fetch images for userId:', userId);
-
       try {
         const token = await getToken();
-        console.log('Got token:', token ? 'Token received' : 'No token');
-
         const limit = perPage;
         const searchQuery = search || originalFileName;
 
@@ -43,19 +38,14 @@ export default function ImageListingPage() {
           ...(cursor && { cursor: String(cursor) }),
           ...(searchQuery && { search: String(searchQuery) }),
           ...(status && { status: String(status) })
-        }); console.log('Fetching images with filters:', filters.toString());
-        console.log('Request URL:', `/api/images/history?${filters}`);
+        });
 
         const res = await fetch(
           `/api/images/history?${filters}`
         );
 
-        console.log('API Response status:', res.status);
-        console.log('API Response headers:', res.headers);
-
         if (!res.ok) {
           const errorData = await res.text();
-          console.error('API Error:', errorData);
           toast.error('Failed to fetch images', {
             description: errorData
           });
@@ -63,17 +53,11 @@ export default function ImageListingPage() {
         }
 
         const responseData: ApiResponse = await res.json();
-        console.log('Client - Received data:', {
-          success: responseData.success,
-          dataLength: responseData.data?.length || 0,
-          meta: responseData.meta
-        });
         setData(responseData);
       } catch (error) {
         toast.error('Failed to fetch images', {
           description: (error as Error).message
         });
-        console.error('Error fetching images:', error);
       } finally {
         setLoading(false);
       }
