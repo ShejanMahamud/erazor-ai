@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
+import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -153,7 +154,7 @@ export default function BackgroundRemoverPage() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = "background-removed.png"
+      a.download = "erazor_ai_bg-removed.png"
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -200,8 +201,7 @@ export default function BackgroundRemoverPage() {
         {
           imageUpdate && (
             <div className="text-sm text-muted-foreground">
-              <p>{
-                imageUpdate} </p>
+              <Image src={imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ} height={500} width={500} alt="" />
             </div>
           )
         }
