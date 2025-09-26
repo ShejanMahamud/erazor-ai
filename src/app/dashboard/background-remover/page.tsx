@@ -21,7 +21,6 @@ import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
-import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -39,28 +38,32 @@ export default function BackgroundRemoverPage() {
   const { imageUpdate, connected } = useImageSocket(userId!)
 
   useEffect(() => {
-    if (imageUpdate) {
-      console.log("📸 Image update received in page:", imageUpdate)
-      if (imageUpdate.status === "processing") {
-        setProgress(imageUpdate.progress || 0)
-        setIsProcessing(true)
-      } else if (imageUpdate.status === "completed") {
-        setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ)
-        setIsProcessing(false)
-        setProgress(100)
-        setShowResults(true)
-        toast.success("Background removed successfully!", {
-          description: "Your image is ready for download."
-        })
-      } else if (imageUpdate.status === "error") {
-        setError(imageUpdate.error || "Processing failed")
-        setIsProcessing(false)
-        toast.error("Processing failed", {
-          description: imageUpdate.error || "Something went wrong while processing your image."
-        })
+    if (!imageUpdate) return;
+    console.log("📸 Image update received in page:", imageUpdate);
+    if (imageUpdate.status === "processing") {
+      // Simulate progress: if not already started, start at 30%, then 60%, then 90% (for demo)
+      setIsProcessing(true);
+      setShowResults(false);
+      if (progress < 90) {
+        const nextProgress = progress < 30 ? 30 : progress < 60 ? 60 : 90;
+        setProgress(nextProgress);
       }
+    } else if (imageUpdate.status === "ready") {
+      setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
+      setIsProcessing(false);
+      setProgress(100);
+      setShowResults(true);
+      toast.success("Background removed successfully!", {
+        description: "Your image is ready for download."
+      });
+    } else if (imageUpdate.status === "error") {
+      setError("Processing failed");
+      setIsProcessing(false);
+      toast.error("Processing failed", {
+        description: "Something went wrong while processing your image."
+      });
     }
-  }, [imageUpdate])
+  }, [imageUpdate]);
 
 
   const handleFileUpload = async (files: File[]) => {
@@ -198,14 +201,6 @@ export default function BackgroundRemoverPage() {
         </div>
         <Separator />
 
-        {
-          imageUpdate && (
-            <div className="text-sm text-muted-foreground">
-              <Image src={imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ} height={500} width={500} alt="" />
-            </div>
-          )
-        }
-
         {/* Upload Section */}
         {!originalImage && (
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -279,7 +274,7 @@ export default function BackgroundRemoverPage() {
             )}
 
             {/* Results State */}
-            {showResults && originalImage && processedImage && (
+            {imageUpdate?.status === "ready" && originalImage && processedImage && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
