@@ -5,43 +5,57 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
-export function useImageSocket(userId: string) {
+export function useImageSocket(userIdentifier: string | null) {
   const [connected, setConnected] = useState(false);
   const [imageUpdate, setImageUpdate] = useState<any>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userIdentifier) {
+      console.log("🔌 No user identifier, skipping socket connection");
+      setConnected(false);
+      return;
+    }
+
+    console.log("🔌 Initializing socket connection for:", userIdentifier);
 
     if (!socket) {
+      console.log("🔌 Creating new socket instance");
       socket = io(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}`, {
         transports: ["websocket"],
       });
+    } else {
+      console.log("🔌 Reusing existing socket instance");
     }
 
     socket.on("connect", () => {
-      console.log("✅ Connected:", socket?.id);
+      console.log("✅ Socket connected:", socket?.id);
       setConnected(true);
-      socket?.emit("join", userId);
+      console.log("🔌 Emitting join event for:", userIdentifier);
+      socket?.emit("join", userIdentifier);
     });
 
     socket.on("image-status-update", (data) => {
-      console.log("📸 Image update:", data);
+      console.log("📸 Image update received:", data);
       setImageUpdate(data);
     });
 
     socket.on("disconnect", () => {
-      console.log("❌ Disconnected");
+      console.log("❌ Socket disconnected");
       setConnected(false);
     });
 
     return () => {
+      console.log("🔌 Cleaning up socket for:", userIdentifier);
       socket?.off("connect");
       socket?.off("image-status-update");
       socket?.off("disconnect");
-      socket?.disconnect();
-      socket = null;
+      if (socket) {
+        socket.disconnect();
+        socket = null;
+        console.log("🔌 Socket instance destroyed");
+      }
     };
-  }, [userId]);
+  }, [userIdentifier]);
 
   return { connected, imageUpdate };
 }
