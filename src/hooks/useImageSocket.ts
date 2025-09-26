@@ -60,5 +60,11 @@ export function useImageSocket(userIdentifier: string | null) {
     };
   }, [userIdentifier]);
 
+  useEffect(() => {
+    if (socket && socket.connected && userIdentifier) {
+      socket.emit("join", userIdentifier);
+    }
+  }, [userIdentifier]);
+
   return { connected, imageUpdate };
 }
