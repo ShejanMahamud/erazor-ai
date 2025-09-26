@@ -12,11 +12,8 @@ export async function POST(req: NextRequest) {
         let headers: HeadersInit = {}
 
         if (token) {
-            headers = {
-                ...headers,
-                'Authorization': `Bearer ${token}`
-            }
-        };
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
 
         if (contentType.includes('multipart/form-data')) {
