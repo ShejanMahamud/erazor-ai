@@ -69,7 +69,7 @@ const Testimonials: React.FC = () => {
   const firstRow = reviews.slice(0, reviews.length / 2);
   const secondRow = reviews.slice(reviews.length / 2);
   return (
-    <div className='bg-background w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] px-10 py-20 lg:px-20'>
+    <div id='testimonials' className='bg-background w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] px-10 py-20 lg:px-20'>
       <HeadingText
         heading='What our users '
         focusText=' say'
