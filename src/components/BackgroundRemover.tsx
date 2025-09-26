@@ -37,22 +37,14 @@ export function BackgroundRemover() {
     useEffect(() => {
         if (!imageUpdate) return;
 
-        if (imageUpdate.status === "ready") {
-            setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
-            setIsProcessing(false);
-            setProgress(100);
-            setShowResults(true);
-            toast.success("Background removed successfully!", {
-                description: "Your image is ready for download."
-            });
-        } else if (imageUpdate.status === "error") {
-            setError("Processing failed");
-            setIsProcessing(false);
-            setShowResults(false);
-            toast.error("Processing failed", {
-                description: "Something went wrong while processing your image."
-            });
-        }
+        // Server ensures imageUpdate is always "ready" status
+        setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
+        setIsProcessing(false);
+        setProgress(100);
+        setShowResults(true);
+        toast.success("Background removed successfully!", {
+            description: "Your image is ready for download."
+        });
     }, [imageUpdate]);
 
     // Simulate progress when processing starts
