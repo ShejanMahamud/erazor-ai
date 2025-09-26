@@ -37,10 +37,12 @@ export function BackgroundRemover({
     const [showResults, setShowResults] = useState(false)
     const [anonUser, setAnonUser] = useState<any>(null)
     const { userId } = useAuth()
+    // Only connect socket when we have a userId OR after we get anonUser
     const { imageUpdate, connected } = useImageSocket(userId || anonUser)
 
     useEffect(() => {
         if (!imageUpdate) return;
+
         // Server ensures imageUpdate is always "ready" status
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
 
@@ -71,9 +73,9 @@ export function BackgroundRemover({
         }
     }, [isProcessing, showResults]);
 
-
     const handleFileUpload = async (files: File[]) => {
-        if (!connected) {
+        // For logged-in users, check connection. For anonymous users, we'll get connection after API call
+        if (userId && !connected) {
             toast.error("Connection error", {
                 description: "Please wait for the connection to establish and try again."
             })
