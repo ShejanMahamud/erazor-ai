@@ -20,8 +20,13 @@ import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
+import { Heading } from "./ui/heading"
 
-export function BackgroundRemover() {
+export function BackgroundRemover({
+    showHeader
+}: {
+    showHeader?: boolean
+}) {
     const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [originalImage, setOriginalImage] = useState<string | null>(null)
@@ -123,7 +128,7 @@ export function BackgroundRemover() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null)
-                if (response.status === 429 || (errorData && errorData.code === "USAGE_LIMIT_REACHED")) {
+                if (response.status === 429 || (errorData && errorData.message === "USAGE_LIMIT_REACHED")) {
                     setShowUsageLimitDialog(true)
                     setIsProcessing(false)
                     return
@@ -185,18 +190,12 @@ export function BackgroundRemover() {
     return (
         <PageContainer scrollable={false}>
             <div className="flex flex-1 flex-col space-y-6">
-                <div className="flex items-start justify-between">
-                    {originalImage && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleReset}
-                            className="flex items-center gap-2"
-                        >
-                            <RotateCcw className="h-4 w-4" />
-                            New Image
-                        </Button>
-                    )}
+                <div className="flex items-end justify-between">
+                    {
+                        showHeader && <div className="flex-1">
+                            <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
+                        </div>
+                    }
                 </div>
 
                 {!originalImage && (
@@ -272,12 +271,39 @@ export function BackgroundRemover() {
 
                         {/* Results State */}
                         {showResults && originalImage && imageUpdate && processedImage && (
-                            <Card>
-                                <CardHeader>
+                            <Card className="border-green-200 shadow-lg">
+                                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
                                     <div className="flex items-center justify-between">
-                                        <CardTitle className="text-green-600">Background Removed Successfully!</CardTitle>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                                                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <CardTitle className="text-green-700 text-lg font-bold">
+                                                    Background Removed Successfully!
+                                                </CardTitle>
+                                                <p className="text-sm text-green-600 mt-1">
+                                                    Your image is ready for download
+                                                </p>
+                                            </div>
+                                        </div>
                                         <div className="flex gap-2">
-                                            <Button size="sm" onClick={handleDownload} className="flex items-center gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleReset}
+                                                className="flex items-center gap-2 flex-shrink-0"
+                                            >
+                                                <RotateCcw className="h-4 w-4" />
+                                                New Image
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={handleDownload}
+                                                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md"
+                                            >
                                                 <Download className="h-4 w-4" />
                                                 Download
                                             </Button>

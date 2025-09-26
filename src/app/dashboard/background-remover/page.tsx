@@ -192,7 +192,7 @@ export default function BackgroundRemoverPage() {
   return (
     <PageContainer scrollable={false}>
       <div className="flex flex-1 flex-col space-y-6">
-        <div className="flex items-start justify-between">
+        <div className="flex items-end justify-between">
           <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
           {originalImage && (
             <Button
