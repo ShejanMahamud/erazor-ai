@@ -68,7 +68,9 @@ export default function ImageListingPage() {
         });
         setData(responseData);
       } catch (error) {
-        toast.error('Failed to fetch images');
+        toast.error('Failed to fetch images', {
+          description: (error as Error).message
+        });
         console.error('Error fetching images:', error);
       } finally {
         setLoading(false);
