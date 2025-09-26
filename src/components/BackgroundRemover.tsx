@@ -1,528 +1,378 @@
-'use client';
-
-import PageContainer from '@/components/layout/page-container';
-import { FileUpload } from '@/components/ui/file-upload';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { useAnonImageSocket } from '@/hooks/useAnonImageSocket';
-import { useAuth } from '@clerk/nextjs';
-import { gsap } from 'gsap';
-import { Download, Loader2, RotateCcw } from 'lucide-react';
-import Image from 'next/image';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from './ui/button';
+"use client"
+import PageContainer from "@/components/layout/page-container"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { FileUpload } from "@/components/ui/file-upload"
+import { Heading } from "@/components/ui/heading"
+import { ProcessingOverlay } from "@/components/ui/processing-overlay"
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
+import { useImageSocket } from "@/hooks/useImageSocket"
+import { useAuth } from "@clerk/nextjs"
+import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export function BackgroundRemover() {
-    const { userId: loggedUser } = useAuth();
-    const [files, setFiles] = useState<File[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [currentImage, setCurrentImage] = useState<any>(null);
-    const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
-    const [userId, setUserId] = useState<string | null>(null);
-    const { getToken, isSignedIn } = useAuth()
-    // GSAP refs
-    const containerRef = useRef<HTMLDivElement>(null);
-    const uploadAreaRef = useRef<HTMLDivElement>(null);
-    const processingRef = useRef<HTMLDivElement>(null);
-    const resultsRef = useRef<HTMLDivElement>(null);
-    const beforeImageRef = useRef<HTMLImageElement>(null);
-    const afterImageRef = useRef<HTMLImageElement>(null);
-    const buttonsRef = useRef<HTMLDivElement>(null);
-    const [imageUpdates, setImageUpdates] = useState<any[]>([]);
-
-    // Move hook call to top level - hooks cannot be called inside useEffect
-    const { imageUpdates: socketImageUpdates, clearImageUpdates } = useAnonImageSocket(userId || loggedUser || undefined);
-
+    const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [originalImage, setOriginalImage] = useState<string | null>(null)
+    const [processedImage, setProcessedImage] = useState<string | null>(null)
+    const [progress, setProgress] = useState(0)
+    const [error, setError] = useState<string | null>(null)
+    const [isUploading, setIsUploading] = useState(false)
+    const [showResults, setShowResults] = useState(false)
+    const [anonUser, setAnonUser] = useState<any>(null)
+    const { userId } = useAuth()
+    const { imageUpdate, connected } = useImageSocket(userId || anonUser)
 
     useEffect(() => {
-        setImageUpdates(socketImageUpdates);
-    }, [socketImageUpdates]);
+        if (!imageUpdate) return;
 
-    useEffect(() => {
-
-        if (!isProcessing && !files.length) return;
-
-        const readyImages = imageUpdates.filter(
-            (img: any) => img.status === 'ready'
-        );
-
-        const failedImages = imageUpdates.filter(
-            (img: any) => img.status === 'failed' || img.status === 'error'
-        );
-
-        if (readyImages.length > 0 && isProcessing) {
-            // Get the most recent image that matches our current upload
-            const latestImage = readyImages[readyImages.length - 1];
-            setCurrentImage(latestImage);
+        if (imageUpdate.status === "ready") {
+            setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
             setIsProcessing(false);
-            // Show success toast
-            toast.success('Background removed successfully!', {
-                description: 'Your image is ready for download.'
+            setProgress(100);
+            setShowResults(true);
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
             });
-        } else if (failedImages.length > 0 && isProcessing) {
-            // Handle failed processing
-            const failedImage = failedImages[failedImages.length - 1];
-            console.error('Image processing failed:', failedImage);
-
-            toast.error('Background removal failed', {
-                description: failedImage.error || 'Unable to process the image. Please try again with a different image.'
-            });
-
+        } else if (imageUpdate.status === "error") {
+            setError("Processing failed");
             setIsProcessing(false);
-            // Reset states on processing failure
-            setFiles([]);
-            if (originalImageUrl) {
-                URL.revokeObjectURL(originalImageUrl);
-            }
-            setOriginalImageUrl('');
-        }
-    }, [imageUpdates, isProcessing, files.length, originalImageUrl]);
-
-    // GSAP Animation Effects
-    useEffect(() => {
-        if (containerRef.current) {
-            gsap.fromTo(
-                containerRef.current,
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
-            );
-        }
-    }, []);
-
-    useEffect(() => {
-        if (isUploading || isProcessing) {
-            if (uploadAreaRef.current) {
-                gsap.to(uploadAreaRef.current, {
-                    opacity: 0,
-                    scale: 0.95,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            }
-
-            if (processingRef.current) {
-                gsap.fromTo(
-                    processingRef.current,
-                    { opacity: 0, scale: 0.9, y: 20 },
-                    { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
-                );
-
-                // Animated loading bar
-                const progressBar =
-                    processingRef.current.querySelector('.progress-bar');
-                if (progressBar) {
-                    gsap.fromTo(
-                        progressBar,
-                        { width: '0%' },
-                        {
-                            width: isUploading ? '30%' : '70%',
-                            duration: 1.5,
-                            ease: 'power2.inOut',
-                            repeat: -1,
-                            yoyo: true
-                        }
-                    );
-                }
-            }
-        }
-    }, [isUploading, isProcessing]);
-
-    useEffect(() => {
-        if (currentImage && !isProcessing && !isUploading) {
-            // Hide processing view
-            if (processingRef.current) {
-                gsap.to(processingRef.current, {
-                    opacity: 0,
-                    scale: 0.9,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            }
-
-            // Show results with animation
-            if (resultsRef.current) {
-                gsap.fromTo(
-                    resultsRef.current,
-                    { opacity: 0, y: 30 },
-                    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.2 }
-                );
-            }
-
-            // Animate buttons
-            if (buttonsRef.current) {
-                gsap.fromTo(
-                    buttonsRef.current.children,
-                    { opacity: 0, x: 20 },
-                    {
-                        opacity: 1,
-                        x: 0,
-                        duration: 0.4,
-                        stagger: 0.1,
-                        ease: 'power2.out',
-                        delay: 0.5
-                    }
-                );
-            }
-
-            // Animate images with reveal effect
-            if (beforeImageRef.current) {
-                gsap.fromTo(
-                    beforeImageRef.current,
-                    { opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0% 100%)' },
-                    {
-                        opacity: 1,
-                        clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
-                        duration: 0.8,
-                        ease: 'power2.out',
-                        delay: 0.6
-                    }
-                );
-            }
-
-            if (afterImageRef.current) {
-                gsap.fromTo(
-                    afterImageRef.current,
-                    {
-                        opacity: 0,
-                        clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)'
-                    },
-                    {
-                        opacity: 1,
-                        clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
-                        duration: 0.8,
-                        ease: 'power2.out',
-                        delay: 0.8
-                    }
-                );
-            }
-        }
-    }, [currentImage, isProcessing, isUploading]);
-
-    const handleFileUpload = async (file: File[]) => {
-        // Validate file
-        if (!file || file.length === 0) {
-            toast.error('No file selected', {
-                description: 'Please select an image file to upload.'
+            setShowResults(false);
+            toast.error("Processing failed", {
+                description: "Something went wrong while processing your image."
             });
-            return;
         }
+    }, [imageUpdate]);
 
-        const selectedFile = file[0];
+    // Simulate progress when processing starts
+    useEffect(() => {
+        if (isProcessing && !showResults) {
+            const progressInterval = setInterval(() => {
+                setProgress(prev => {
+                    if (prev >= 90) return prev; // Don't go to 100 until we get "ready" status
+                    return prev + 10;
+                });
+            }, 500);
+
+            return () => clearInterval(progressInterval);
+        }
+    }, [isProcessing, showResults]);
+
+
+    const handleFileUpload = async (files: File[]) => {
+        if (!connected) {
+            toast.error("Connection error", {
+                description: "Please wait for the connection to establish and try again."
+            })
+            return
+        }
+        if (files.length === 0) return
+
+        const file = files[0]
 
         // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-        if (!allowedTypes.includes(selectedFile.type)) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
             toast.error('Invalid file type', {
                 description: 'Please upload a JPG, PNG, or WebP image file.'
-            });
-            return;
+            })
+            return
         }
 
-        // Validate file size (e.g., max 10MB)
-        const maxSize = 20 * 1024 * 1024; // 10MB in bytes
-        if (selectedFile.size > maxSize) {
+        // Validate file size (max 20MB)
+        const maxSize = 20 * 1024 * 1024
+        if (file.size > maxSize) {
             toast.error('File too large', {
-                description: 'Please upload an image smaller than 10MB.'
-            });
-            return;
+                description: 'Please upload an image smaller than 20MB.'
+            })
+            return
         }
 
-        // Clear any previous state first
-        setCurrentImage(null);
-        setFiles([selectedFile]);
-        setIsUploading(true);
-        setImageUpdates([]); // Clear previous image updates
+        // Reset states
+        setError(null)
+        setProcessedImage(null)
+        setProgress(0)
+        setIsProcessing(false)
+        setShowResults(false)
+        setIsUploading(true)
 
-        // Clear socket updates if available
-        if (clearImageUpdates) {
-            clearImageUpdates();
-        }
-
-        // Clear previous image URL to prevent memory leaks
-        if (originalImageUrl) {
-            URL.revokeObjectURL(originalImageUrl);
-        }
-
-        const imageUrl = URL.createObjectURL(selectedFile);
-        setOriginalImageUrl(imageUrl);
-
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        try {
-            setIsProcessing(true);
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/images/process`,
-                {
-                    method: 'POST',
-                    credentials: "include",
-                    body: formData,
-                    headers: {
-                        Authorization: isSignedIn ? `Bearer ${await getToken()}` : ''
-                    }
-                }
-            );
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                const errorMessage = errorData.message || `Server error: ${res.status}`;
-                throw new Error(errorMessage);
-            }
-            const data = await res.json();
-            if (!isSignedIn) {
-                setUserId(data.data.anonId);
-            } else if (loggedUser) {
-                setUserId(loggedUser);
-            }
-            // Show upload success toast
+        // Create preview of original image immediately
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            setOriginalImage(e.target?.result as string)
+            setIsUploading(false)
+            setIsProcessing(true)
+            setProgress(10) // Start with initial progress
             toast.success('Image uploaded successfully!', {
                 description: 'Processing background removal...'
-            });
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
-            console.error('Upload error:', error);
-            toast.error('Upload failed', {
-                description: errorMessage
-            });
-            setIsProcessing(false);
-            // Reset states on error
-            setFiles([]);
-            if (originalImageUrl) {
-                URL.revokeObjectURL(originalImageUrl);
-            }
-            setOriginalImageUrl('');
-        } finally {
-            setIsUploading(false);
+            })
         }
-    };
+        reader.readAsDataURL(file)
+
+        const formData = new FormData()
+        formData.append("file", file)
+
+        try {
+            const response = await fetch("/api/tools/background-remover", {
+                method: "POST",
+                body: formData,
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null)
+                if (response.status === 429 || (errorData && errorData.code === "USAGE_LIMIT_REACHED")) {
+                    setShowUsageLimitDialog(true)
+                    setIsProcessing(false)
+                    return
+                } else {
+                    throw new Error(errorData?.message || "Failed to upload file")
+                }
+            }
+
+            const data = await response.json()
+            if (data.data.anonId) {
+                setAnonUser(data.data.anonId)
+            }
+            return data
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "An error occurred"
+            setError(errorMessage)
+            setIsProcessing(false)
+            setIsUploading(false)
+            toast.error("Upload failed", {
+                description: errorMessage
+            })
+        }
+    }
+
+    const handleDownload = async () => {
+        if (!processedImage) return
+
+        try {
+            const response = await fetch(processedImage)
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = "erazor_ai_bg-removed.png"
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+            toast.success("Image downloaded successfully!")
+        } catch (err) {
+            setError("Failed to download image")
+            toast.error("Download failed", {
+                description: "Failed to download the processed image."
+            })
+        }
+    }
 
     const handleReset = () => {
-        // Store the current URL for cleanup before state changes
-        const currentUrl = originalImageUrl;
-
-        // Clear state immediately to prevent showing previous results
-        setFiles([]);
-        setCurrentImage(null);
-        setOriginalImageUrl('');
-        setIsUploading(false);
-        setIsProcessing(false);
-        setUserId(null);
-        setImageUpdates([]);
-
-        // Clear socket updates if available
-        if (clearImageUpdates) {
-            clearImageUpdates();
-        }
-
-        // Clear any URLs to prevent memory leaks
-        if (currentUrl) {
-            URL.revokeObjectURL(currentUrl);
-        }
-
-        // Animate out current content before reset
-        if (resultsRef.current) {
-            gsap.to(resultsRef.current, {
-                opacity: 0,
-                scale: 0.95,
-                duration: 0.3,
-                ease: 'power2.out',
-                onComplete: () => {
-                    // Animate in upload area
-                    if (uploadAreaRef.current) {
-                        gsap.fromTo(
-                            uploadAreaRef.current,
-                            { opacity: 0, scale: 0.95 },
-                            { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }
-                        );
-                    }
-
-                    // Show reset success toast
-                    toast.success('Ready for new image!', {
-                        description: 'You can now upload another image to process.'
-                    });
-                }
-            });
-        } else {
-            // Show reset success toast
-            toast.success('Ready for new image!', {
-                description: 'You can now upload another image to process.'
-            });
-        }
-    };
-
-    const handleDownload = () => {
-        if (currentImage?.bgRemovedImageUrlHQ || currentImage?.bgRemovedImageUrlLQ) {
-            try {
-                // Add download animation
-                if (buttonsRef.current) {
-                    const downloadBtn = buttonsRef.current.querySelector('button');
-                    if (downloadBtn) {
-                        gsap.to(downloadBtn, {
-                            scale: 0.95,
-                            duration: 0.1,
-                            yoyo: true,
-                            repeat: 1,
-                            ease: 'power2.inOut'
-                        });
-                    }
-                }
-
-                const link = document.createElement('a');
-                link.href = currentImage.bgRemovedImageUrlHQ || currentImage.bgRemovedImageUrlLQ;
-                link.download = `${currentImage.originalFileName}_no_bg.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // Show success toast
-                toast.success('Download started!', {
-                    description: 'Your image with removed background is being downloaded.'
-                });
-            } catch (error) {
-                console.error('Download error:', error);
-                toast.error('Download failed', {
-                    description: 'Unable to download the image. Please try again.'
-                });
-            }
-        } else {
-            toast.error('Download unavailable', {
-                description: 'No processed image available for download.'
-            });
-        }
-    };
+        setOriginalImage(null)
+        setProcessedImage(null)
+        setProgress(0)
+        setError(null)
+        setIsProcessing(false)
+        setIsUploading(false)
+        setShowResults(false)
+        toast.info("Ready for new image")
+    }
 
     return (
         <PageContainer scrollable={false}>
-            <div className='flex flex-1 flex-col space-y-4'>
-                <Suspense
-                    fallback={
-                        <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-                    }
-                >
-                    <div
-                        ref={containerRef}
-                        className='mx-auto min-h-96 w-full max-w-4xl rounded-lg border border-dashed border-neutral-200 p-8 dark:border-neutral-800'
-                    >
-                        {!files.length &&
-                            !isUploading &&
-                            !isProcessing &&
-                            !currentImage && (
-                                <div
-                                    ref={uploadAreaRef}
-                                    className='flex min-h-80 flex-col items-center justify-center'
-                                >
-                                    <FileUpload onChange={handleFileUpload} preview={true} />
-                                    <p className='text-muted-foreground mt-4 text-sm'>
-                                        Upload an image to remove its background
-                                    </p>
-                                </div>
-                            )}
+            <div className="flex flex-1 flex-col space-y-6">
+                <div className="flex items-start justify-between">
+                    <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
+                    {originalImage && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleReset}
+                            className="flex items-center gap-2"
+                        >
+                            <RotateCcw className="h-4 w-4" />
+                            New Image
+                        </Button>
+                    )}
+                </div>
+                <Separator />
 
-                        {(isUploading || isProcessing) && (
-                            <div
-                                ref={processingRef}
-                                className='flex min-h-80 flex-col items-center justify-center space-y-6'
-                            >
-                                <div className='relative'>
-                                    <Loader2 className='text-primary h-16 w-16 animate-spin' />
-                                </div>
-                                <div className='space-y-2 text-center'>
-                                    <h3 className='text-lg font-semibold'>
-                                        {isUploading
-                                            ? 'Uploading image...'
-                                            : 'Removing background...'}
-                                    </h3>
-                                    <p className='text-muted-foreground text-sm'>
-                                        {isUploading
-                                            ? 'Please wait while we upload your image'
-                                            : 'AI is processing your image, this may take a few moments'}
-                                    </p>
-                                </div>
-                                <div className='bg-secondary h-2 w-full max-w-xs rounded-full'>
-                                    <div
-                                        className='progress-bar bg-primary h-2 animate-pulse rounded-full'
-                                        style={{ width: isUploading ? '30%' : '70%' }}
-                                    ></div>
-                                </div>
-                            </div>
+                {/* Upload Section */}
+                {!originalImage && (
+                    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                        <Suspense>
+                            <FileUpload onChange={handleFileUpload} />
+                        </Suspense>
+                    </div>
+                )}
+
+                {/* Processing or Results Section */}
+                {originalImage && (
+                    <div className="space-y-6">
+                        {/* Upload Loading State */}
+                        {isUploading && (
+                            <Card>
+                                <CardContent className="p-6">
+                                    <div className="flex items-center justify-center space-x-4">
+                                        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                                        <div>
+                                            <p className="text-sm font-medium">Uploading image...</p>
+                                            <p className="text-xs text-muted-foreground">Preparing for background removal</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         )}
 
-                        {currentImage && originalImageUrl && (
-                            <div ref={resultsRef} className='space-y-6'>
+                        {/* Processing State */}
+                        {isProcessing && !showResults && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                                        Processing Your Image
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Original Image */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-sm font-medium text-muted-foreground">Original Image</h4>
+                                            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                                                <img
+                                                    src={originalImage}
+                                                    alt="Original"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            </div>
+                                        </div>
 
-
-                                <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                                    {/* Before */}
-                                    <div className='space-y-3'>
-                                        <h4 className='text-center text-sm font-medium'>Before</h4>
-                                        <div className='relative flex min-h-80 items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
-                                            <Image
-                                                ref={beforeImageRef}
-                                                src={originalImageUrl || '/placeholder.svg'}
-                                                alt='Original'
-                                                width={500}
-                                                height={400}
-                                                className='max-h-72 max-w-full rounded-lg object-contain shadow-sm'
-                                                priority
+                                        {/* Processing Overlay */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
+                                            <ProcessingOverlay
+                                                image={originalImage}
+                                                progress={progress}
                                             />
                                         </div>
                                     </div>
 
-                                    {/* After */}
-                                    <div className='space-y-3'>
-                                        <h4 className='text-center text-sm font-medium'>After</h4>
-                                        <div
-                                            className='relative flex min-h-80 items-center justify-center rounded-lg bg-transparent p-4'
-                                            style={{
-                                                backgroundImage: `linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)`,
-                                                backgroundSize: '20px 20px',
-                                                backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-                                            }}
-                                        >
-                                            <Image
-                                                ref={afterImageRef}
-                                                src={
-                                                    currentImage.bgRemovedImageUrlHQ ||
-                                                    currentImage.bgRemovedImageUrlLQ ||
-                                                    '/placeholder.svg'
-                                                }
-                                                alt='Background Removed'
-                                                width={500}
-                                                height={400}
-                                                className='max-h-72 max-w-full rounded-lg object-contain shadow-sm'
-                                                priority
-                                            />
+                                    {/* Progress Bar */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Progress</span>
+                                            <span className="font-medium">{Math.round(progress)}%</span>
+                                        </div>
+                                        <Progress value={progress} className="h-2" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Results State */}
+                        {showResults && originalImage && imageUpdate && processedImage && (
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-green-600">Background Removed Successfully!</CardTitle>
+                                        <div className="flex gap-2">
+                                            <Button size="sm" onClick={handleDownload} className="flex items-center gap-2">
+                                                <Download className="h-4 w-4" />
+                                                Download
+                                            </Button>
                                         </div>
                                     </div>
-                                </div>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
 
-                                <div className='text-muted-foreground text-center text-sm'>
-                                    Original filename: {currentImage.originalFileName}
-                                </div>
-                                <div className='w-full mx-auto flex items-center justify-between'>
+                                    {/* Separate Images */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-3">
+                                            <h4 className="text-sm font-medium">Original Image</h4>
+                                            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                                                <img
+                                                    src={originalImage}
+                                                    alt="Original"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            </div>
+                                        </div>
 
-                                    <div ref={buttonsRef} className='flex gap-2 w-full justify-center'>
-                                        <Button
-                                            onClick={handleDownload}
-                                            className='flex items-center gap-2'
-                                        >
-                                            <Download className='h-4 w-4' />
-                                            Download
-                                        </Button>
-                                        <Button
-                                            variant='outline'
-                                            onClick={handleReset}
-                                            className='flex items-center gap-2 bg-transparent'
-                                        >
-                                            <RotateCcw className='h-4 w-4' />
-                                            New Image
-                                        </Button>
+                                        <div className="space-y-3">
+                                            <h4 className="text-sm font-medium">Background Removed</h4>
+                                            <div
+                                                className="aspect-square relative overflow-hidden rounded-lg"
+                                                style={{
+                                                    backgroundImage: `
+                            linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                            linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                            linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                            linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
+                          `,
+                                                    backgroundSize: '20px 20px',
+                                                    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                                                }}
+                                            >
+                                                <img
+                                                    src={processedImage}
+                                                    alt="Background removed"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
                         )}
                     </div>
-                </Suspense>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <Card className="border-destructive">
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-2 text-destructive">
+                                <ImageIcon className="h-5 w-5" />
+                                <div>
+                                    <p className="text-sm font-medium">Error: {error}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Please try again or contact support if the problem persists.
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Usage Limit Reached</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                You have reached your usage limit for background removal. Please upgrade your plan or try again later.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction>Upgrade Plan</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </PageContainer>
-    );
+    )
 }

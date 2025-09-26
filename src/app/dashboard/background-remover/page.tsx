@@ -38,7 +38,6 @@ export default function BackgroundRemoverPage() {
 
   useEffect(() => {
     if (!imageUpdate) return;
-    console.log("📸 Image update received in page:", imageUpdate);
 
     if (imageUpdate.status === "ready") {
       setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
@@ -208,12 +207,6 @@ export default function BackgroundRemoverPage() {
           )}
         </div>
         <Separator />
-
-        {/* {
-          imageUpdate && (
-            <Image src={imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ} height={500} width={500} alt="" />
-          )
-        } */}
 
         {/* Upload Section */}
         {!originalImage && (
