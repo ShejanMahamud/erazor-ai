@@ -23,7 +23,7 @@ import { toast } from "sonner"
 import { Heading } from "./ui/heading"
 
 export function BackgroundRemover({
-    showHeader
+    showHeader = true,
 }: {
     showHeader?: boolean
 }) {
