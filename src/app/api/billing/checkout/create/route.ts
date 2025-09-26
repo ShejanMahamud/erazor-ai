@@ -1,3 +1,4 @@
+import { serverBaseUrl } from '@/config';
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Make request to your backend
-    const response = await fetch(`${backendUrl}/billing/checkout/create`, {
+    const response = await fetch(`${serverBaseUrl}/billing/checkout/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
