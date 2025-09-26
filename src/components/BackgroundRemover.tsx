@@ -276,7 +276,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Results State */}
-                        {showResults && processedImage && (
+                        {showResults && originalImage && processedImage && (
                             <Card className="border-green-200 shadow-lg">
                                 <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
                                     <div className="flex items-center justify-between">
