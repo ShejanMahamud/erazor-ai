@@ -16,10 +16,18 @@ export default function ImageListingPage() {
 
   useEffect(() => {
     const fetchImages = async () => {
-      if (!userId) return;
+      if (!userId) {
+        console.log('No userId available, skipping fetch');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Starting to fetch images for userId:', userId);
 
       try {
         const token = await getToken();
+        console.log('Got token:', token ? 'Token received' : 'No token');
+
         const limit = searchParamsCache.get('perPage') ?? 10;
         const cursor = searchParamsCache.get('cursor');
         const search = searchParamsCache.get('search');
@@ -35,16 +43,29 @@ export default function ImageListingPage() {
           ...(status && { status: String(status) })
         });
 
+        console.log('Fetching images with filters:', filters.toString());
+        console.log('Request URL:', `/api/images/history?${filters}`);
+
         const res = await fetch(
-          `/api/images/history/${filters}`
+          `/api/images/history?${filters}`
         );
 
+        console.log('API Response status:', res.status);
+        console.log('API Response headers:', res.headers);
+
         if (!res.ok) {
+          const errorData = await res.text();
+          console.error('API Error:', errorData);
           toast.error('Failed to fetch images');
           return;
         }
 
         const responseData: ApiResponse = await res.json();
+        console.log('Client - Received data:', {
+          success: responseData.success,
+          dataLength: responseData.data?.length || 0,
+          meta: responseData.meta
+        });
         setData(responseData);
       } catch (error) {
         toast.error('Failed to fetch images');
@@ -61,7 +82,13 @@ export default function ImageListingPage() {
     return <div>Loading...</div>;
   }
 
-  if (!data) {
+  if (!data || !data.data) {
+    console.log('No data available:', data);
+    return <DataNotFound />;
+  }
+
+  if (data.data.length === 0) {
+    console.log('Data array is empty');
     return <DataNotFound />;
   }
 
