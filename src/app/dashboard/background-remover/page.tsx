@@ -39,6 +39,7 @@ export default function BackgroundRemoverPage() {
 
   useEffect(() => {
     if (imageUpdate) {
+      console.log("📸 Image update received in page:", imageUpdate)
       if (imageUpdate.status === "processing") {
         setProgress(imageUpdate.progress || 0)
         setIsProcessing(true)
@@ -195,6 +196,15 @@ export default function BackgroundRemoverPage() {
           )}
         </div>
         <Separator />
+
+        {
+          imageUpdate && (
+            <div className="text-sm text-muted-foreground">
+              <p>{
+                imageUpdate} </p>
+            </div>
+          )
+        }
 
         {/* Upload Section */}
         {!originalImage && (
