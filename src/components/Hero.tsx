@@ -194,7 +194,7 @@ export const Hero = () => {
               <div className='absolute top-1/4 -left-12 h-32 w-32 rounded-full bg-orange-500/10 blur-2xl' />
               <div className='absolute -right-12 bottom-1/4 h-40 w-40 rounded-full bg-purple-600/10 blur-2xl' />
             </div> */}
-            <BackgroundRemover />
+            <BackgroundRemover showHeader={false} />
           </div>
         </div>
         <CurvedLoop
