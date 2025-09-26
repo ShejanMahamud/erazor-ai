@@ -1,13 +1,12 @@
 'use client';
 
-import { TrendingUp } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import * as React from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
@@ -17,215 +16,248 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
-import { serverBaseUrl } from '@/config';
-import { useAuth } from '@clerk/nextjs';
-import * as React from 'react';
+
+export const description = 'An interactive bar chart';
+
+const chartData = [
+  { date: '2024-04-01', desktop: 222, mobile: 150 },
+  { date: '2024-04-02', desktop: 97, mobile: 180 },
+  { date: '2024-04-03', desktop: 167, mobile: 120 },
+  { date: '2024-04-04', desktop: 242, mobile: 260 },
+  { date: '2024-04-05', desktop: 373, mobile: 290 },
+  { date: '2024-04-06', desktop: 301, mobile: 340 },
+  { date: '2024-04-07', desktop: 245, mobile: 180 },
+  { date: '2024-04-08', desktop: 409, mobile: 320 },
+  { date: '2024-04-09', desktop: 59, mobile: 110 },
+  { date: '2024-04-10', desktop: 261, mobile: 190 },
+  { date: '2024-04-11', desktop: 327, mobile: 350 },
+  { date: '2024-04-12', desktop: 292, mobile: 210 },
+  { date: '2024-04-13', desktop: 342, mobile: 380 },
+  { date: '2024-04-14', desktop: 137, mobile: 220 },
+  { date: '2024-04-15', desktop: 120, mobile: 170 },
+  { date: '2024-04-16', desktop: 138, mobile: 190 },
+  { date: '2024-04-17', desktop: 446, mobile: 360 },
+  { date: '2024-04-18', desktop: 364, mobile: 410 },
+  { date: '2024-04-19', desktop: 243, mobile: 180 },
+  { date: '2024-04-20', desktop: 89, mobile: 150 },
+  { date: '2024-04-21', desktop: 137, mobile: 200 },
+  { date: '2024-04-22', desktop: 224, mobile: 170 },
+  { date: '2024-04-23', desktop: 138, mobile: 230 },
+  { date: '2024-04-24', desktop: 387, mobile: 290 },
+  { date: '2024-04-25', desktop: 215, mobile: 250 },
+  { date: '2024-04-26', desktop: 75, mobile: 130 },
+  { date: '2024-04-27', desktop: 383, mobile: 420 },
+  { date: '2024-04-28', desktop: 122, mobile: 180 },
+  { date: '2024-04-29', desktop: 315, mobile: 240 },
+  { date: '2024-04-30', desktop: 454, mobile: 380 },
+  { date: '2024-05-01', desktop: 165, mobile: 220 },
+  { date: '2024-05-02', desktop: 293, mobile: 310 },
+  { date: '2024-05-03', desktop: 247, mobile: 190 },
+  { date: '2024-05-04', desktop: 385, mobile: 420 },
+  { date: '2024-05-05', desktop: 481, mobile: 390 },
+  { date: '2024-05-06', desktop: 498, mobile: 520 },
+  { date: '2024-05-07', desktop: 388, mobile: 300 },
+  { date: '2024-05-08', desktop: 149, mobile: 210 },
+  { date: '2024-05-09', desktop: 227, mobile: 180 },
+  { date: '2024-05-10', desktop: 293, mobile: 330 },
+  { date: '2024-05-11', desktop: 335, mobile: 270 },
+  { date: '2024-05-12', desktop: 197, mobile: 240 },
+  { date: '2024-05-13', desktop: 197, mobile: 160 },
+  { date: '2024-05-14', desktop: 448, mobile: 490 },
+  { date: '2024-05-15', desktop: 473, mobile: 380 },
+  { date: '2024-05-16', desktop: 338, mobile: 400 },
+  { date: '2024-05-17', desktop: 499, mobile: 420 },
+  { date: '2024-05-18', desktop: 315, mobile: 350 },
+  { date: '2024-05-19', desktop: 235, mobile: 180 },
+  { date: '2024-05-20', desktop: 177, mobile: 230 },
+  { date: '2024-05-21', desktop: 82, mobile: 140 },
+  { date: '2024-05-22', desktop: 81, mobile: 120 },
+  { date: '2024-05-23', desktop: 252, mobile: 290 },
+  { date: '2024-05-24', desktop: 294, mobile: 220 },
+  { date: '2024-05-25', desktop: 201, mobile: 250 },
+  { date: '2024-05-26', desktop: 213, mobile: 170 },
+  { date: '2024-05-27', desktop: 420, mobile: 460 },
+  { date: '2024-05-28', desktop: 233, mobile: 190 },
+  { date: '2024-05-29', desktop: 78, mobile: 130 },
+  { date: '2024-05-30', desktop: 340, mobile: 280 },
+  { date: '2024-05-31', desktop: 178, mobile: 230 },
+  { date: '2024-06-01', desktop: 178, mobile: 200 },
+  { date: '2024-06-02', desktop: 470, mobile: 410 },
+  { date: '2024-06-03', desktop: 103, mobile: 160 },
+  { date: '2024-06-04', desktop: 439, mobile: 380 },
+  { date: '2024-06-05', desktop: 88, mobile: 140 },
+  { date: '2024-06-06', desktop: 294, mobile: 250 },
+  { date: '2024-06-07', desktop: 323, mobile: 370 },
+  { date: '2024-06-08', desktop: 385, mobile: 320 },
+  { date: '2024-06-09', desktop: 438, mobile: 480 },
+  { date: '2024-06-10', desktop: 155, mobile: 200 },
+  { date: '2024-06-11', desktop: 92, mobile: 150 },
+  { date: '2024-06-12', desktop: 492, mobile: 420 },
+  { date: '2024-06-13', desktop: 81, mobile: 130 },
+  { date: '2024-06-14', desktop: 426, mobile: 380 },
+  { date: '2024-06-15', desktop: 307, mobile: 350 },
+  { date: '2024-06-16', desktop: 371, mobile: 310 },
+  { date: '2024-06-17', desktop: 475, mobile: 520 },
+  { date: '2024-06-18', desktop: 107, mobile: 170 },
+  { date: '2024-06-19', desktop: 341, mobile: 290 },
+  { date: '2024-06-20', desktop: 408, mobile: 450 },
+  { date: '2024-06-21', desktop: 169, mobile: 210 },
+  { date: '2024-06-22', desktop: 317, mobile: 270 },
+  { date: '2024-06-23', desktop: 480, mobile: 530 },
+  { date: '2024-06-24', desktop: 132, mobile: 180 },
+  { date: '2024-06-25', desktop: 141, mobile: 190 },
+  { date: '2024-06-26', desktop: 434, mobile: 380 },
+  { date: '2024-06-27', desktop: 448, mobile: 490 },
+  { date: '2024-06-28', desktop: 149, mobile: 200 },
+  { date: '2024-06-29', desktop: 103, mobile: 160 },
+  { date: '2024-06-30', desktop: 446, mobile: 400 }
+];
 
 const chartConfig = {
-  images: {
-    label: 'Images Processed',
-    color: 'hsl(var(--chart-1))'
+  views: {
+    label: 'Page Views'
+  },
+  desktop: {
+    label: 'Desktop',
+    color: 'var(--primary)'
+  },
+  mobile: {
+    label: 'Mobile',
+    color: 'var(--primary)'
+  },
+  error: {
+    label: 'Error',
+    color: 'var(--primary)'
   }
 } satisfies ChartConfig;
 
 export function BarGraph() {
-  const { userId, getToken } = useAuth();
-  const [chartData, setChartData] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [totalImages, setTotalImages] = React.useState(0);
+  const [activeChart, setActiveChart] =
+    React.useState<keyof typeof chartConfig>('desktop');
+
+  const total = React.useMemo(
+    () => ({
+      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
+      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
+    }),
+    []
+  );
+
+  const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) return;
+    setIsClient(true);
+  }, []);
 
-      try {
-        const token = await getToken();
-        const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+  React.useEffect(() => {
+    if (activeChart === 'error') {
+      throw new Error('Mocking Error');
+    }
+  }, [activeChart]);
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Dashboard data:', data);
-
-          if (data.success && data.data?.reports?.imageActivity?.data) {
-            // Use the correct API structure
-            const activityData = data.data.reports.imageActivity.data.map((item: any) => ({
-              date: new Date(item.date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              }),
-              images: item.count
-            }));
-
-            setChartData(activityData);
-            setTotalImages(data.data.reports.imageActivity.totalCount || 0);
-          } else {
-            // Fallback for empty data
-            setChartData([]);
-            setTotalImages(0);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching chart data:', error);
-        setChartData([]);
-        setTotalImages(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId, getToken]);
-
-  if (isLoading) {
-    return (
-      <Card className="h-full border-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950/20 dark:via-background dark:to-slate-950/20 shadow-lg animate-pulse">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 via-transparent to-purple-400/5 rounded-xl" />
-
-        <CardHeader className="relative z-10">
-          <div className="h-6 bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600 rounded w-2/3"></div>
-          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mt-2"></div>
-        </CardHeader>
-
-        <CardContent className="relative z-10">
-          <div className="flex items-center justify-center h-[280px]">
-            <div className="flex flex-col items-center space-y-3">
-              <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-              <div className="text-slate-500 dark:text-slate-400 font-medium">Loading chart data...</div>
-            </div>
-          </div>
-        </CardContent>
-
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-t-xl" />
-      </Card>
-    );
-  }
-
-  if (chartData.length === 0) {
-    return (
-      <Card className="h-full border-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950/20 dark:via-background dark:to-slate-950/20 shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 via-transparent to-purple-400/5 rounded-xl" />
-
-        <CardHeader className="relative z-10">
-          <CardTitle className="text-xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white bg-clip-text text-transparent">
-            Image Processing Activity
-          </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-400 font-medium">
-            Last 30 days of activity
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="relative z-10">
-          <div className="flex items-center justify-center h-[250px]">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center">
-                <TrendingUp className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <div className="text-slate-600 dark:text-slate-400 font-medium text-lg mb-2">No activity data available</div>
-                <div className="text-sm text-muted-foreground">Start processing images to see your activity here</div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-t-xl" />
-      </Card>
-    );
+  if (!isClient) {
+    return null;
   }
 
   return (
-    <Card className="h-full border-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950/20 dark:via-background dark:to-slate-950/20 shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 via-transparent to-purple-400/5 rounded-xl" />
-
-      <CardHeader className="relative z-10 pb-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white bg-clip-text text-transparent">
-              Image Processing Activity
-            </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400 font-medium mt-1">
-              Daily processing activity over the last 30 days
-            </CardDescription>
-          </div>
-          <div className="p-3 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
-            <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          </div>
+    <Card className='@container/card !pt-3'>
+      <CardHeader className='flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row'>
+        <div className='flex flex-1 flex-col justify-center gap-1 px-6 !py-0'>
+          <CardTitle>Bar Chart - Interactive</CardTitle>
+          <CardDescription>
+            <span className='hidden @[540px]/card:block'>
+              Total for the last 3 months
+            </span>
+            <span className='@[540px]/card:hidden'>Last 3 months</span>
+          </CardDescription>
+        </div>
+        <div className='flex'>
+          {['desktop', 'mobile', 'error'].map((key) => {
+            const chart = key as keyof typeof chartConfig;
+            if (!chart || total[key as keyof typeof total] === 0) return null;
+            return (
+              <button
+                key={chart}
+                data-active={activeChart === chart}
+                className='data-[active=true]:bg-primary/5 hover:bg-primary/5 relative flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left transition-colors duration-200 even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6'
+                onClick={() => setActiveChart(chart)}
+              >
+                <span className='text-muted-foreground text-xs'>
+                  {chartConfig[chart].label}
+                </span>
+                <span className='text-lg leading-none font-bold sm:text-3xl'>
+                  {total[key as keyof typeof total]?.toLocaleString()}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </CardHeader>
-
-      <CardContent className="relative z-10">
-        <ChartContainer config={chartConfig} className="h-[280px] w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+      <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6'>
+        <ChartContainer
+          config={chartConfig}
+          className='aspect-auto h-[250px] w-full'
+        >
+          <BarChart
+            data={chartData}
+            margin={{
+              left: 12,
+              right: 12
+            }}
+          >
             <defs>
-              <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="rgb(147, 51, 234)" stopOpacity={0.6} />
+              <linearGradient id='fillBar' x1='0' y1='0' x2='0' y2='1'>
+                <stop
+                  offset='0%'
+                  stopColor='var(--primary)'
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset='100%'
+                  stopColor='var(--primary)'
+                  stopOpacity={0.2}
+                />
               </linearGradient>
             </defs>
-            <CartesianGrid
-              vertical={false}
-              strokeDasharray="3 3"
-              stroke="currentColor"
-              className="opacity-20"
-            />
+            <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="date"
-              tickLine={false}
-              tickMargin={12}
-              axisLine={false}
-              fontSize={11}
-              className="text-slate-600 dark:text-slate-400"
-            />
-            <YAxis
+              dataKey='date'
               tickLine={false}
               axisLine={false}
-              tickMargin={12}
-              fontSize={11}
-              className="text-slate-600 dark:text-slate-400"
+              tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric'
+                });
+              }}
             />
             <ChartTooltip
-              cursor={false}
+              cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
               content={
                 <ChartTooltipContent
-                  indicator="dashed"
-                  labelFormatter={(value) => `Date: ${value}`}
-                  formatter={(value, name) => [`${value} images`, 'Processed']}
-                  className="bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow-xl rounded-lg backdrop-blur-sm"
+                  className='w-[150px]'
+                  nameKey='views'
+                  labelFormatter={(value) => {
+                    return new Date(value).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    });
+                  }}
                 />
               }
             />
             <Bar
-              dataKey="images"
-              fill="url(#barGradient)"
+              dataKey={activeChart}
+              fill='url(#fillBar)'
               radius={[4, 4, 0, 0]}
-              className="drop-shadow-sm"
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
-
-      <CardFooter className="flex-col items-start gap-3 text-sm relative z-10 border-t border-slate-100 dark:border-slate-800/50 pt-4">
-        <div className="flex gap-2 font-semibold leading-none text-slate-700 dark:text-slate-300">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-            Total: {totalImages.toLocaleString()} images processed
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </div>
-        </div>
-        <div className="leading-none text-muted-foreground">
-          {totalImages > 0
-            ? `Most active day: ${chartData.reduce((max, item) => item.images > max.images ? item : max, { images: 0, date: 'None' }).date}`
-            : 'Start processing images to see your activity trends'
-          }
-        </div>
-      </CardFooter>
-
-      {/* Accent border */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-t-xl" />
     </Card>
   );
 }
