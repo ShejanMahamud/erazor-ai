@@ -1,7 +1,7 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import ImageListingPage from '@/features/images/components/image-listing';
 import { searchParamsCache } from '@/lib/searchparams';
 import { SearchParams } from 'nuqs/server';
@@ -31,13 +31,11 @@ export default async function Page(props: pageProps) {
         <Separator />
         <Suspense
           // key={key}
-          fallback={
-            <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-          }
+          fallback={<LoadingScreen />}
         >
           <ImageListingPage />
         </Suspense>
       </div>
-    </PageContainer>
+    </PageContainer >
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { DataNotFound } from '@/components/ui/not-found';
 import { ApiResponse } from '@/types/image';
 import { useAuth } from '@clerk/nextjs';
@@ -67,7 +68,7 @@ export default function ImageListingPage() {
   }, [userId, getToken, perPage, cursor, search, originalFileName, status]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   if (!data || !data.data) {

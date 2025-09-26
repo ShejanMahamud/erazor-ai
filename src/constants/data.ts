@@ -33,7 +33,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Billing',
-    url: '/api/portal',
+    url: '/dashboard/billing',
     icon: 'billing',
     shortcut: ['b', 'b'],
     isActive: false,

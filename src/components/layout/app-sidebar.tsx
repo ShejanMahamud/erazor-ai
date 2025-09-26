@@ -56,12 +56,6 @@ export default function AppSidebar() {
     // Tenant switching functionality would be implemented here
   };
 
-
-  const handleRedirect = () => {
-    // Redirect to your API route
-    window.location.href = '/api/portal';
-  };
-
   const activeTenant = tenants[0];
 
   React.useEffect(() => {
@@ -183,10 +177,7 @@ export default function AppSidebar() {
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      handleRedirect();
-                    }}
+                    onClick={() => router.push('/dashboard/billing')}
                   >
                     <IconCreditCard className='mr-2 h-4 w-4' />
                     Billing

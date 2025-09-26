@@ -51,7 +51,9 @@ export async function GET() {
         externalCustomerId: userId
       });
 
-      return NextResponse.redirect(session.customerPortalUrl);
+      return NextResponse.json({
+        url: session.customerPortalUrl
+      });
     } catch (sessionError) {
 
       // Try with customer ID instead if externalCustomerId fails
@@ -60,7 +62,7 @@ export async function GET() {
           const sessionRetry = await polar.customerSessions.create({
             customerId: customer.id
           });
-          return NextResponse.redirect(sessionRetry.customerPortalUrl);
+          return NextResponse.json({ url: sessionRetry.customerPortalUrl });
         } catch (retryError) {
           throw retryError;
         }
