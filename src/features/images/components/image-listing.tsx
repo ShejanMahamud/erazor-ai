@@ -36,8 +36,7 @@ export default function ImageListingPage() {
         });
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/images/user/${userId}?${filters}`,
-          { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } }
+          `/api/images/history/${filters}`
         );
 
         if (!res.ok) {
