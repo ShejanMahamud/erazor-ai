@@ -7,7 +7,8 @@ import {
   Navbar,
   NavbarButton,
   NavbarLogo,
-  NavBody
+  NavBody,
+  NavItems
 } from '@/components/ui/resizable-navbar';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { IconHome } from '@tabler/icons-react';
@@ -46,7 +47,7 @@ export function MainNavbar() {
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
-          {/* <NavItems items={navItems} /> */}
+          <NavItems items={navItems} />
           <div className='flex items-center gap-4'>
             {!isLoaded ? (
               // Show loading state or nothing while auth is loading
