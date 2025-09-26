@@ -10,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { BeforeAfterSlider } from "@/components/ui/before-after-slider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUpload } from "@/components/ui/file-upload"
@@ -21,7 +20,6 @@ import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
-import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -211,11 +209,11 @@ export default function BackgroundRemoverPage() {
         </div>
         <Separator />
 
-        {
+        {/* {
           imageUpdate && (
             <Image src={imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ} height={500} width={500} alt="" />
           )
-        }
+        } */}
 
         {/* Upload Section */}
         {!originalImage && (
@@ -290,7 +288,7 @@ export default function BackgroundRemoverPage() {
             )}
 
             {/* Results State */}
-            {showResults && originalImage && processedImage && (
+            {showResults && originalImage && imageUpdate && processedImage && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -304,19 +302,6 @@ export default function BackgroundRemoverPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Before/After Slider */}
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Interactive Comparison - Drag to compare
-                    </h4>
-                    <BeforeAfterSlider
-                      beforeImage={originalImage}
-                      afterImage={processedImage}
-                      beforeLabel="Original"
-                      afterLabel="Background Removed"
-                      className="max-w-2xl mx-auto"
-                    />
-                  </div>
 
                   {/* Separate Images */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
