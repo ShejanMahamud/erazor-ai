@@ -16,21 +16,25 @@ import { useState } from 'react';
 export function MainNavbar() {
   const navItems = [
     {
-      name: 'How to use',
-      link: '/how-to-use'
+      name: 'Use Cases',
+      link: '#use-cases'
     },
     {
-      name: 'Tools & API',
-      link: '/tools-api'
+      name: 'Testimonials',
+      link: '#testimonials'
     },
     {
       name: 'Pricing',
       link: '/pricing'
     },
     {
+      name: 'FAQ',
+      link: '#faq'
+    },
+    {
       name: 'Contact',
       link: '/contact'
-    }
+    },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -84,7 +88,7 @@ export function MainNavbar() {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            {/* {navItems.map((item, idx) => (
+            {navItems.map((item, idx) => (
               <a
                 key={`mobile-link-${idx}`}
                 href={item.link}
@@ -93,7 +97,7 @@ export function MainNavbar() {
               >
                 <span className='block'>{item.name}</span>
               </a>
-            ))} */}
+            ))}
             <div className='flex w-full flex-col gap-4'>
               {!isLoaded ? (
                 // Show loading state while auth is loading

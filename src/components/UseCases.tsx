@@ -101,7 +101,7 @@ export const UseCases = () => {
     'from-orange-500 to-purple-600';
 
   return (
-    <section className='bg-background relative overflow-hidden bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] py-24'>
+    <section id='use-cases' className='bg-background relative overflow-hidden bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] py-24'>
       {/* Background Pattern */}
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-purple-600/5' />
 

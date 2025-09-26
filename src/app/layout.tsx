@@ -5,6 +5,7 @@ import ClickSpark from '@/components/ui/click-spark';
 import { Toaster } from '@/components/ui/sonner';
 import { fontVariables } from '@/lib/font';
 import { cn } from '@/lib/utils';
+import { Databuddy } from '@databuddy/sdk';
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
@@ -337,6 +338,10 @@ export default async function RootLayout({
               >
                 {children}
               </ClickSpark>
+              <Databuddy
+                clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
+                enableBatching={true}
+              />
             </Providers>
           </ThemeProvider>
         </NuqsAdapter>
