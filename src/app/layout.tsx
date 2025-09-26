@@ -213,7 +213,7 @@ export default async function RootLayout({
               ],
               contactPoint: {
                 '@type': 'ContactPoint',
-                telephone: '+1-XXX-XXX-XXXX',
+                telephone: '+1-256-555-0123',
                 contactType: 'customer service',
                 availableLanguage: ['English', 'Spanish']
               }

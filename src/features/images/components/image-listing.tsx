@@ -1,6 +1,5 @@
 'use client';
 
-import { LoadingScreen } from '@/components/ui/loading-screen';
 import { DataNotFound } from '@/components/ui/not-found';
 import { ApiResponse } from '@/types/image';
 import { useAuth } from '@clerk/nextjs';
@@ -30,7 +29,6 @@ export default function ImageListingPage() {
       }
 
       try {
-        const token = await getToken();
         const limit = perPage;
         const searchQuery = search || originalFileName;
 
@@ -68,16 +66,14 @@ export default function ImageListingPage() {
   }, [userId, getToken, perPage, cursor, search, originalFileName, status]);
 
   if (loading) {
-    return <LoadingScreen />;
+    return <p className='w-full min-h-screen h-screen flex items-center justify-center dark:text-white text-black font-medium text-xl'>Something Awesome Loading...</p>;
   }
 
   if (!data || !data.data) {
-    console.log('No data available:', data);
     return <DataNotFound />;
   }
 
   if (data.data.length === 0) {
-    console.log('Data array is empty');
     return <DataNotFound />;
   }
 

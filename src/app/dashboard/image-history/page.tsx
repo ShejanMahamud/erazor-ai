@@ -1,6 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
-import { LoadingScreen } from '@/components/ui/loading-screen';
 import { Separator } from '@/components/ui/separator';
 import ImageListingPage from '@/features/images/components/image-listing';
 import { searchParamsCache } from '@/lib/searchparams';
@@ -31,7 +30,7 @@ export default async function Page(props: pageProps) {
         <Separator />
         <Suspense
           // key={key}
-          fallback={<LoadingScreen />}
+          fallback={<p className='w-full min-h-screen h-screen flex items-center justify-center dark:text-white text-black font-medium text-xl'>Something Awesome Loading...</p>}
         >
           <ImageListingPage />
         </Suspense>
