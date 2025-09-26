@@ -4,7 +4,7 @@ import PageContainer from "@/components/layout/page-container"
 
 export default function BackgroundRemoverPage() {
   return (
-    <PageContainer>
+    <PageContainer scrollable={false}>
       <BackgroundRemover showHeader={true} />
     </PageContainer>
   )

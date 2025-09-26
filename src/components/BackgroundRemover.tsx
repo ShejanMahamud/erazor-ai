@@ -41,15 +41,18 @@ export function BackgroundRemover({
 
     useEffect(() => {
         if (!imageUpdate) return;
-
         // Server ensures imageUpdate is always "ready" status
-        setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
-        setIsProcessing(false);
-        setProgress(100);
-        setShowResults(true);
-        toast.success("Background removed successfully!", {
-            description: "Your image is ready for download."
-        });
+        const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
+
+        if (processedImageUrl) {
+            setProcessedImage(processedImageUrl);
+            setIsProcessing(false);
+            setProgress(100);
+            setShowResults(true);
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
+            });
+        }
     }, [imageUpdate]);
 
     // Simulate progress when processing starts
@@ -57,12 +60,14 @@ export function BackgroundRemover({
         if (isProcessing && !showResults) {
             const progressInterval = setInterval(() => {
                 setProgress(prev => {
-                    if (prev >= 90) return prev; // Don't go to 100 until we get "ready" status
-                    return prev + 10;
+                    const newProgress = prev >= 90 ? prev : prev + 10;
+                    return newProgress;
                 });
             }, 500);
 
-            return () => clearInterval(progressInterval);
+            return () => {
+                clearInterval(progressInterval);
+            };
         }
     }, [isProcessing, showResults]);
 
@@ -107,7 +112,8 @@ export function BackgroundRemover({
         // Create preview of original image immediately
         const reader = new FileReader()
         reader.onload = (e) => {
-            setOriginalImage(e.target?.result as string)
+            const imageDataUrl = e.target?.result as string;
+            setOriginalImage(imageDataUrl)
             setIsUploading(false)
             setIsProcessing(true)
             setProgress(10) // Start with initial progress
@@ -270,7 +276,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Results State */}
-                        {showResults && originalImage && imageUpdate && processedImage && (
+                        {showResults && originalImage && processedImage && (
                             <Card className="border-green-200 shadow-lg">
                                 <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
                                     <div className="flex items-center justify-between">
