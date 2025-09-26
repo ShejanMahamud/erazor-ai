@@ -40,15 +40,8 @@ export default function BackgroundRemoverPage() {
   useEffect(() => {
     if (!imageUpdate) return;
     console.log("📸 Image update received in page:", imageUpdate);
-    if (imageUpdate.status === "processing") {
-      // Simulate progress: if not already started, start at 30%, then 60%, then 90% (for demo)
-      setIsProcessing(true);
-      setShowResults(false);
-      if (progress < 90) {
-        const nextProgress = progress < 30 ? 30 : progress < 60 ? 60 : 90;
-        setProgress(nextProgress);
-      }
-    } else if (imageUpdate.status === "ready") {
+
+    if (imageUpdate.status === "ready") {
       setProcessedImage(imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ);
       setIsProcessing(false);
       setProgress(100);
@@ -59,11 +52,26 @@ export default function BackgroundRemoverPage() {
     } else if (imageUpdate.status === "error") {
       setError("Processing failed");
       setIsProcessing(false);
+      setShowResults(false);
       toast.error("Processing failed", {
         description: "Something went wrong while processing your image."
       });
     }
   }, [imageUpdate]);
+
+  // Simulate progress when processing starts
+  useEffect(() => {
+    if (isProcessing && !showResults) {
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) return prev; // Don't go to 100 until we get "ready" status
+          return prev + 10;
+        });
+      }, 500);
+
+      return () => clearInterval(progressInterval);
+    }
+  }, [isProcessing, showResults]);
 
 
   const handleFileUpload = async (files: File[]) => {
@@ -109,6 +117,7 @@ export default function BackgroundRemoverPage() {
       setOriginalImage(e.target?.result as string)
       setIsUploading(false)
       setIsProcessing(true)
+      setProgress(10) // Start with initial progress
       toast.success('Image uploaded successfully!', {
         description: 'Processing background removal...'
       })
@@ -274,7 +283,7 @@ export default function BackgroundRemoverPage() {
             )}
 
             {/* Results State */}
-            {imageUpdate?.status === "ready" && originalImage && processedImage && (
+            {showResults && originalImage && processedImage && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
