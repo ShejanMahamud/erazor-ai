@@ -7,10 +7,11 @@ let socket: Socket | null = null;
 let subscribers = 0;
 
 export function useImageSocket(userIdentifier: string | null) {
-  const [connected, setConnected] = useState(socket?.connected || false);
+  const [connected, setConnected] = useState<boolean>(!!socket?.connected);
   const [imageUpdate, setImageUpdate] = useState<any>(null);
 
   useEffect(() => {
+    // If no identifier, reflect disconnected UI and exit early.
     if (!userIdentifier) {
       setConnected(false);
       return;
@@ -18,31 +19,24 @@ export function useImageSocket(userIdentifier: string | null) {
 
     subscribers++;
     if (!socket) {
-      socket = io(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}`, {
-        transports: ["websocket"],
-      });
+      socket = io(process.env.NEXT_PUBLIC_IMAGE_WS_URL!, { transports: ["websocket"] });
     }
 
     const onConnect = () => {
       setConnected(true);
-      socket?.emit("join", userIdentifier);
+      // emit join for the current identifier (closure captures the current value)
+      if (userIdentifier) socket?.emit("join", userIdentifier);
     };
 
-    const onImageUpdate = (data: any) => {
-      setImageUpdate(data);
-    };
-
-    const onDisconnect = () => {
-      setConnected(false);
-    };
+    const onImageUpdate = (data: any) => setImageUpdate(data);
+    const onDisconnect = () => setConnected(false);
 
     socket.on("connect", onConnect);
     socket.on("image-status-update", onImageUpdate);
     socket.on("disconnect", onDisconnect);
 
-    // If socket is already connected when this component mounts,
-    // the 'connect' event might have been missed.
-    // Manually trigger the connect logic.
+    // If the socket already connected before listeners were attached,
+    // call onConnect() to sync state and emit join (once).
     if (socket.connected) {
       onConnect();
     }
@@ -53,17 +47,11 @@ export function useImageSocket(userIdentifier: string | null) {
       socket?.off("image-status-update", onImageUpdate);
       socket?.off("disconnect", onDisconnect);
 
-      if (subscribers === 0 && socket) {
+      if (subscribers <= 0 && socket) {
         socket.disconnect();
         socket = null;
       }
     };
-  }, [userIdentifier]);
-
-  useEffect(() => {
-    if (socket && socket.connected && userIdentifier) {
-      socket.emit("join", userIdentifier);
-    }
   }, [userIdentifier]);
 
   return { connected, imageUpdate };
