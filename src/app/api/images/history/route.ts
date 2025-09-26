@@ -66,8 +66,3 @@ export async function GET(req: NextRequest) {
         );
     }
 }
-
-export async function HEAD() {
-    // Just confirm the route exists (no heavy work needed)
-    return new NextResponse(null, { status: 200 });
-}

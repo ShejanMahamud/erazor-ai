@@ -56,7 +56,9 @@ export default function ImageListingPage() {
         if (!res.ok) {
           const errorData = await res.text();
           console.error('API Error:', errorData);
-          toast.error('Failed to fetch images');
+          toast.error('Failed to fetch images', {
+            description: errorData
+          });
           return;
         }
 
