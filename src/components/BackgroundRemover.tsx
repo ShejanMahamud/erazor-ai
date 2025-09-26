@@ -38,8 +38,7 @@ export function BackgroundRemover({
     const [anonUser, setAnonUser] = useState<any>(null)
     const { userId } = useAuth()
     // Only connect socket when we have a userId OR after we get anonUser
-    const shouldConnect = userId || anonUser
-    const { imageUpdate, connected } = useImageSocket(shouldConnect ? (userId || anonUser) : null)
+    const { imageUpdate, connected } = useImageSocket(userId || anonUser)
 
     useEffect(() => {
         if (!imageUpdate) return;
