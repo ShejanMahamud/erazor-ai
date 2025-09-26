@@ -3,12 +3,13 @@
 import { CDN_URL } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import HeadingText from './ui/heading-text';
 
 export const UseCases = () => {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('branding');
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
@@ -238,12 +239,13 @@ export const UseCases = () => {
               Ready to transform your images?
             </div>
             <Button
+              onClick={() => router.push('/dashboard')}
               className={cn(
                 'rounded-xl bg-gradient-to-r px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 cursor-pointer',
                 activeColor
               )}
             >
-              <Link className='cursor-pointer' href='/dashboard'>Get Started</Link>
+              Get Started
             </Button>
           </div>
         </div>

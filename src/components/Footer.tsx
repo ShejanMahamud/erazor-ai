@@ -5,19 +5,21 @@ import { NavbarLogo } from './ui/resizable-navbar';
 
 export const Footer = () => {
   return (
-    <footer className='bg-background relative py-16 '>
+    <footer className='bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] bg-background relative py-16 '>
       {/* Main Footer Container */}
       <div className='container mx-auto px-6'>
         {/* Main Footer Content */}
-        <div className='mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
+        <div className='mb-12 flex items-center justify-center'>
           {/* Company Info */}
-          <div className='space-y-4'>
-            <NavbarLogo />
+          <div className='space-y-4 text-center'>
+            <div className='flex justify-center'>
+              <NavbarLogo />
+            </div>
 
-            <p className='text-foreground/60 text-sm leading-relaxed'>
+            <p className='text-foreground/60 text-sm leading-relaxed max-w-md'>
               AI-powered background remover that delivers professional results in seconds. Remove backgrounds from any image with precision and ease.
             </p>
-            <div className='flex gap-3'>
+            <div className='flex gap-3 justify-center'>
               <SocialButton href='https://twitter.com/erazor_ai' icon={Twitter} />
               <SocialButton href='https://github.com/erazor-ai' icon={Github} />
               <SocialButton href='https://linkedin.com/company/erazor' icon={Linkedin} />
@@ -25,41 +27,6 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* Background Removal Tools */}
-          <div className='space-y-4'>
-            <h4 className='text-foreground font-medium'>Background Removal</h4>
-            <ul className='space-y-2'>
-              <FooterLink href='/'>Free Background Remover</FooterLink>
-              <FooterLink href='/dashboard'>Dashboard</FooterLink>
-              <FooterLink href='/dashboard/background-remover'>
-                Advanced Editor
-              </FooterLink>
-              <FooterLink href='/dashboard/image-history'>
-                Image History
-              </FooterLink>
-              <FooterLink href='/pricing'>Pricing Plans</FooterLink>
-            </ul>
-          </div>
-
-          {/* Legal & Support */}
-          <div className='space-y-4'>
-            <h4 className='text-foreground font-medium'>Legal & Support</h4>
-            <ul className='space-y-2'>
-              <FooterLink href='/contact'>Contact Support</FooterLink>
-              <FooterLink href='/privacy'>Privacy Policy</FooterLink>
-              <FooterLink href='/terms'>Terms of Service</FooterLink>
-              <FooterLink href='/cookie-policy'>Cookie Policy</FooterLink>
-            </ul>
-
-            <div className='space-y-2 pt-4'>
-              <div className='text-foreground/60 flex items-center gap-2 text-sm'>
-                <Mail size={14} />
-                <a href='mailto:support@erazor.app' className='hover:text-foreground transition-colors'>
-                  support@erazor.app
-                </a>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Bottom Section */}
@@ -74,6 +41,12 @@ export const Footer = () => {
             © 2025 Erazor AI. All rights reserved.
           </div>
           <div className='relative z-10 flex items-center gap-4 text-sm'>
+            <Link
+              href='/contact'
+              className='text-foreground/60 hover:text-foreground transition-colors'
+            >
+              Contact
+            </Link>
             <Link
               href='/privacy'
               className='text-foreground/60 hover:text-foreground transition-colors'

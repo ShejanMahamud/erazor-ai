@@ -13,10 +13,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUpload } from "@/components/ui/file-upload"
-import { Heading } from "@/components/ui/heading"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
@@ -196,7 +194,6 @@ export function BackgroundRemover() {
         <PageContainer scrollable={false}>
             <div className="flex flex-1 flex-col space-y-6">
                 <div className="flex items-start justify-between">
-                    <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
                     {originalImage && (
                         <Button
                             variant="outline"
@@ -209,8 +206,6 @@ export function BackgroundRemover() {
                         </Button>
                     )}
                 </div>
-                <Separator />
-
                 {/* Upload Section */}
                 {!originalImage && (
                     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">

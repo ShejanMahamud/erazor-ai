@@ -248,8 +248,8 @@ export const PricingCard = ({
         disabled={isLoading || !!isCurrentPlan}
         className={cn(
           'h-fit w-full rounded-lg',
+          (isLoading || isCurrentPlan) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           isHighlighted && 'bg-accent text-foreground hover:bg-accent/95',
-          (isLoading || isCurrentPlan) && 'cursor-not-allowed opacity-50',
           isCurrentPlan && 'bg-green-600 text-white hover:bg-green-600'
         )}
       >
