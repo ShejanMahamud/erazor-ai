@@ -44,7 +44,7 @@ export function useImageSocket(userIdentifier: string | null) {
     // the 'connect' event might have been missed.
     // Manually trigger the connect logic.
     if (socket.connected) {
-      socket.emit("join", userIdentifier);
+      onConnect();
     }
 
     return () => {
