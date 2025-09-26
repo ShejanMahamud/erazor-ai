@@ -4,55 +4,58 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
+let subscribers = 0;
 
 export function useImageSocket(userIdentifier: string | null) {
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(socket?.connected || false);
   const [imageUpdate, setImageUpdate] = useState<any>(null);
 
   useEffect(() => {
     if (!userIdentifier) {
-      console.log("🔌 No user identifier, skipping socket connection");
       setConnected(false);
       return;
     }
 
-    console.log("🔌 Initializing socket connection for:", userIdentifier);
-
+    subscribers++;
     if (!socket) {
-      console.log("🔌 Creating new socket instance");
       socket = io(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}`, {
         transports: ["websocket"],
       });
-    } else {
-      console.log("🔌 Reusing existing socket instance");
     }
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected:", socket?.id);
+    const onConnect = () => {
       setConnected(true);
-      console.log("🔌 Emitting join event for:", userIdentifier);
       socket?.emit("join", userIdentifier);
-    });
+    };
 
-    socket.on("image-status-update", (data) => {
-      console.log("📸 Image update received:", data);
+    const onImageUpdate = (data: any) => {
       setImageUpdate(data);
-    });
+    };
 
-    socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
+    const onDisconnect = () => {
       setConnected(false);
-    });
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("image-status-update", onImageUpdate);
+    socket.on("disconnect", onDisconnect);
+
+    // If socket is already connected when this component mounts,
+    // the 'connect' event might have been missed.
+    // Manually trigger the connect logic.
+    if (socket.connected) {
+      onConnect();
+    }
 
     return () => {
-      console.log("🔌 Cleaning up socket for:", userIdentifier);
-      socket?.off("connect");
-      socket?.off("image-status-update");
-      socket?.off("disconnect");
-      if (socket) {
+      subscribers--;
+      socket?.off("connect", onConnect);
+      socket?.off("image-status-update", onImageUpdate);
+      socket?.off("disconnect", onDisconnect);
+
+      if (subscribers === 0 && socket) {
         socket.disconnect();
         socket = null;
-        console.log("🔌 Socket instance destroyed");
       }
     };
   }, [userIdentifier]);
