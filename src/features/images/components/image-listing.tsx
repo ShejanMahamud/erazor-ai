@@ -1,9 +1,9 @@
 'use client';
 
 import { DataNotFound } from '@/components/ui/not-found';
-import { searchParamsCache } from '@/lib/searchparams';
 import { ApiResponse } from '@/types/image';
 import { useAuth } from '@clerk/nextjs';
+import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ImageTable } from './image-tables';
@@ -13,6 +13,13 @@ export default function ImageListingPage() {
   const { userId, getToken } = useAuth();
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Use client-side nuqs hooks
+  const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10));
+  const [cursor] = useQueryState('cursor', parseAsString);
+  const [search] = useQueryState('search', parseAsString);
+  const [originalFileName] = useQueryState('originalFileName', parseAsString);
+  const [status] = useQueryState('status', parseAsString);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -28,12 +35,7 @@ export default function ImageListingPage() {
         const token = await getToken();
         console.log('Got token:', token ? 'Token received' : 'No token');
 
-        const limit = searchParamsCache.get('perPage') ?? 10;
-        const cursor = searchParamsCache.get('cursor');
-        const search = searchParamsCache.get('search');
-        const originalFileName = searchParamsCache.get('originalFileName');
-        const status = searchParamsCache.get('status');
-
+        const limit = perPage;
         const searchQuery = search || originalFileName;
 
         const filters = new URLSearchParams({
@@ -41,9 +43,7 @@ export default function ImageListingPage() {
           ...(cursor && { cursor: String(cursor) }),
           ...(searchQuery && { search: String(searchQuery) }),
           ...(status && { status: String(status) })
-        });
-
-        console.log('Fetching images with filters:', filters.toString());
+        }); console.log('Fetching images with filters:', filters.toString());
         console.log('Request URL:', `/api/images/history?${filters}`);
 
         const res = await fetch(
@@ -78,7 +78,7 @@ export default function ImageListingPage() {
     };
 
     fetchImages();
-  }, [userId, getToken]);
+  }, [userId, getToken, perPage, cursor, search, originalFileName, status]);
 
   if (loading) {
     return <div>Loading...</div>;
