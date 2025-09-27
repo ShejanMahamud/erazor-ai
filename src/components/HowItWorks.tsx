@@ -68,7 +68,7 @@ export const HowItWorks = () => {
           <div className='absolute top-1/2 right-0 left-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-emerald-500 via-orange-500 to-blue-500 opacity-30 lg:block' />
 
           <div className='grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-4'>
-            {steps.map((step, index) => {
+            {steps.map((step) => {
               const isHovered = hoveredStep === step.id;
 
               return (
@@ -87,7 +87,7 @@ export const HowItWorks = () => {
                       'hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10',
                       'hover:-translate-y-2 hover:scale-[1.02]',
                       isHovered &&
-                        '-translate-y-2 scale-[1.02] border-orange-500/50 shadow-2xl shadow-orange-500/20'
+                      '-translate-y-2 scale-[1.02] border-orange-500/50 shadow-2xl shadow-orange-500/20'
                     )}
                   >
                     {/* Background Pattern */}

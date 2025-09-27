@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 const mainVariant = {
   initial: {
@@ -35,7 +36,7 @@ export const FileUpload = ({
   preview?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [_previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname()
   const handleFileChange = (newFiles: File[]) => {
@@ -58,7 +59,9 @@ export const FileUpload = ({
     noClick: true,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
-      console.error("File drop rejected:", error);
+      toast.error("File Rejected", {
+        description: error && error.length > 0 ? error[0].errors[0].message : "File type not accepted"
+      });
     },
   });
 

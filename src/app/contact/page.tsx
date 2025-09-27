@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Mail, Phone } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ContactForm {
   name: string;
@@ -55,9 +56,9 @@ export default function ContactPage() {
         throw new Error(data.error || 'Failed to send message');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      // You might want to show an error toast or message here
-      alert('Failed to send message. Please try again later.');
+      toast.error("Something Went Wrong", {
+        description: "There was an error sending your message. Please try again later."
+      });
     } finally {
       setIsSubmitting(false);
     }

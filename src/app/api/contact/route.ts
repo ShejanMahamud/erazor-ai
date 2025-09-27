@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, subject, message } = body;
 
-    // Validate required fields
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { error: 'All fields are required' },
@@ -17,7 +16,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
@@ -28,7 +26,6 @@ export async function POST(request: NextRequest) {
 
     // Check for Resend API key
     if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY is not configured');
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
@@ -44,7 +41,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error('Resend error:', error);
       return NextResponse.json(
         { error: 'Failed to send email' },
         { status: 500 }
@@ -57,7 +53,6 @@ export async function POST(request: NextRequest) {
       data
     });
   } catch (error) {
-    console.error('Contact form error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

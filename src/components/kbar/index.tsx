@@ -1,6 +1,5 @@
 'use client';
 import { navItems } from '@/constants/data';
-import { useUser } from '@clerk/nextjs';
 import {
   KBarAnimator,
   KBarPortal,
@@ -15,19 +14,14 @@ import useThemeSwitching from './use-theme-switching';
 
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { user } = useUser();
 
-
-  // These action are for the navigation
   const actions = useMemo(() => {
-    // Define navigateTo inside the useMemo callback to avoid dependency array issues
     const navigateTo = (url: string) => {
       router.push(url);
     };
 
 
     return navItems.flatMap((navItem) => {
-      // Only include base action if the navItem has a real URL and is not just a container
       const baseAction =
         navItem.url !== '#'
           ? {

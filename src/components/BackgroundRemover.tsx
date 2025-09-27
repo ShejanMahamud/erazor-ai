@@ -18,6 +18,7 @@ import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
 import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
+import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Heading } from "./ui/heading"
@@ -247,7 +248,7 @@ export function BackgroundRemover({
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium text-muted-foreground">Original Image</h4>
                                             <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                                                <img
+                                                <Image
                                                     src={originalImage}
                                                     alt="Original"
                                                     className="w-full h-full object-contain"
@@ -325,7 +326,7 @@ export function BackgroundRemover({
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium">Original Image</h4>
                                             <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                                                <img
+                                                <Image
                                                     src={originalImage}
                                                     alt="Original"
                                                     className="w-full h-full object-contain"
@@ -348,7 +349,7 @@ export function BackgroundRemover({
                                                     backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
                                                 }}
                                             >
-                                                <img
+                                                <Image
                                                     src={processedImage}
                                                     alt="Background removed"
                                                     className="w-full h-full object-contain"

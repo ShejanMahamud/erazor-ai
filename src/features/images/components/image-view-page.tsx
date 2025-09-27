@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Image, SingleImageApiResponse } from '@/types/image';
-import { useAuth } from '@clerk/nextjs';
 import { IconAlertCircle, IconArrowLeft, IconCheck, IconClock, IconDownload } from '@tabler/icons-react';
 import NextImage from 'next/image';
 import Link from 'next/link';
@@ -16,7 +15,6 @@ interface ImageViewPageProps {
 }
 
 export default function ImageViewPage({ imageId }: ImageViewPageProps) {
-    const { userId } = useAuth();
     const router = useRouter();
     const [image, setImage] = useState<Image | null>(null);
     const [loading, setLoading] = useState(true);

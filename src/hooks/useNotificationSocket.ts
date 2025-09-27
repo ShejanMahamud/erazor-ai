@@ -2,6 +2,7 @@ import { Notification } from '@/types/notification';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
+import { toast } from 'sonner';
 
 // Define the actual API response structure
 interface NotificationApiResponse {
@@ -47,7 +48,7 @@ export function useNotifications(userId: string) {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error('❌ Failed to fetch notifications from:', fullUrl, error);
+        toast.error('Failed to load notifications');
         setNotifications([]);
         setError('Failed to load notifications');
         setIsLoading(false);

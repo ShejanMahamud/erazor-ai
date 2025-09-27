@@ -45,6 +45,8 @@ export default function OverViewLayout({
       console.log('Fetching dashboard data for user:', userId);
 
       const response = await fetch(`${serverBaseUrl}/users/dashboard-stats/${userId}`, {
+        credentials: 'include',
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { Loader2, Sparkles, Zap } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 
 interface ProcessingOverlayProps {
@@ -28,7 +29,7 @@ export function ProcessingOverlay({ image, progress, className }: ProcessingOver
         <div className={cn("relative aspect-square overflow-hidden rounded-lg bg-muted", className)}>
             {/* Background Image */}
             {image && (
-                <img
+                <Image
                     src={image}
                     alt="Processing"
                     className="w-full h-full object-contain opacity-80"
