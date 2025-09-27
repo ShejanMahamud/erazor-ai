@@ -30,7 +30,6 @@ export function BackgroundRemover({
     showHeader?: boolean
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
-    const [editorClose, setEditorClose] = useState<boolean>(false)
     const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [originalImage, setOriginalImage] = useState<string | null>(null)
@@ -203,7 +202,7 @@ export function BackgroundRemover({
     }
 
     const handleEditorClose = () => {
-        setEditorClose(true)
+        setEditorOpen(false)
     }
 
     return (
