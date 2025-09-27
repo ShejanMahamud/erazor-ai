@@ -10,7 +10,7 @@ import { PinturaEditor } from '@pqina/react-pintura';
 // get default properties
 const editorConfig = getEditorDefaults();
 
-function ImageEditor() {
+export default function ImageEditor() {
     return (
         <div className="App" style={{ height: '600px' }}>
             <PinturaEditor
@@ -21,5 +21,3 @@ function ImageEditor() {
         </div>
     );
 }
-
-export default ImageEditor;
