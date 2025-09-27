@@ -7,6 +7,7 @@ import NumberFlow from '@number-flow/react';
 import { ArrowRight, BadgeCheck, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const PricingCard = ({
   tier,
@@ -107,8 +108,9 @@ export const PricingCard = ({
       }
     }
     catch (error) {
-      console.error('Error handling plan action:', error);
-      // You might want to show a toast notification here
+      toast.error('Something went wrong. Please try again.', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred.'
+      });
     } finally {
       setIsLoading(false);
     }

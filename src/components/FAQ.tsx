@@ -3,7 +3,6 @@
 import { cn } from '@/lib/utils';
 import { FAQItem as FAQItemData } from '@/types';
 import { ChevronDown } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import HeadingText from './ui/heading-text';
 
@@ -68,7 +67,6 @@ export const faqData: FAQItemData[] = [
 
 export const FAQ = ({ showHeading = true }: { showHeading?: boolean }) => {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
-  const pathname = usePathname();
 
   const toggleItem = (id: string) => {
     const newOpenItems = new Set(openItems);

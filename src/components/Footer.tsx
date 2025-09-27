@@ -93,23 +93,6 @@ const SocialButton = ({
   </Link>
 );
 
-// Footer Link Component
-const FooterLink = ({
-  href,
-  children
-}: {
-  href: string;
-  children: React.ReactNode;
-}) => (
-  <li>
-    <Link
-      href={href}
-      className='text-foreground/60 hover:text-foreground text-sm transition-colors duration-200'
-    >
-      {children}
-    </Link>
-  </li>
-);
 
 const PopularBackground = () => (
   <div className='absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]' />

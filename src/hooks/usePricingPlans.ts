@@ -43,7 +43,6 @@ export const usePricingPlans = (): UsePricingPlansReturn => {
                 setTiers(transformedTiers);
             } catch (err) {
                 if (isMounted) {
-                    console.warn('API error, but fallback data should be returned from API route:', err);
                     setError('Unable to load pricing plans. Please refresh the page.');
                 }
             } finally {

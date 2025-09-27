@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface CookiePreferences {
   necessary: boolean;
@@ -50,7 +51,9 @@ export default function CookieConsentProvider() {
         // Apply saved preferences
         applyCookiePreferences(saved);
       } catch (error) {
-        console.error('Error parsing cookie preferences:', error);
+        toast.error("Something Went Wrong", {
+          description: "There was an error loading your cookie preferences."
+        });
       }
     }
   }, []);
@@ -73,7 +76,9 @@ export default function CookieConsentProvider() {
         try {
           window.chatwootSDK.toggle('close');
         } catch (e) {
-          console.error('Error toggling Chatwoot:', e);
+          toast.error("Something Went Wrong", {
+            description: "There was an error disabling Chatwoot."
+          });
         }
       }
     }

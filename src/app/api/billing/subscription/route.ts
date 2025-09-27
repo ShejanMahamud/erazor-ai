@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 export async function GET(
-  request: Request,
 ) {
   const { getToken, userId } = await auth();
   const token = await getToken();

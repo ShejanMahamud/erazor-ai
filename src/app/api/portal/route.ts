@@ -1,13 +1,7 @@
-// app/api/portal/route.ts
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { Polar } from '@polar-sh/sdk';
 import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
-
-// Check if required environment variables are present
-if (!process.env.POLAR_ACCESS_TOKEN) {
-  console.error('POLAR_ACCESS_TOKEN environment variable is not set');
-}
 
 const polar = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
@@ -23,8 +17,7 @@ export async function GET() {
   const user = await currentUser();
 
   if (!user) {
-    console.error('No user found after authentication');
-    return new Response('User not found', { status: 401 });
+    return NextResponse.json('User not found', { status: 401 });
   }
 
   try {
@@ -72,7 +65,6 @@ export async function GET() {
   } catch (error) {
     // More detailed error response
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorDetails = error instanceof Error ? error.stack : String(error);
 
     return NextResponse.json(
       {

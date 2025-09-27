@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         if (!res.ok) {
             const errorText = await res.text();
             return NextResponse.json(
-                { error: `Failed to fetch images` },
+                { error: errorText || `Failed to fetch images` },
                 { status: res.status }
             );
         }
