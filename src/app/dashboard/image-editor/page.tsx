@@ -1,23 +1,38 @@
-// Import the editor styles
-import '@pqina/pintura/pintura.css';
-
-// Import the editor default configuration
-import { getEditorDefaults } from '@pqina/pintura';
-
-// Import the editor component from `react-pintura`
-import { PinturaEditor } from '@pqina/react-pintura';
-
-// get default properties
-const editorConfig = getEditorDefaults();
+"use client";
+import { useState } from 'react';
+import FilerobotImageEditor, { TABS, TOOLS } from 'react-filerobot-image-editor';
 
 export default function ImageEditor() {
+    const [isImgEditorShown, setIsImgEditorShown] = useState(false);
+
+    const openImgEditor = () => {
+        setIsImgEditorShown(true);
+    };
+
+    const closeImgEditor = () => {
+        setIsImgEditorShown(false);
+    };
+
     return (
-        <div className="App" style={{ height: '600px' }}>
-            <PinturaEditor
-                {...editorConfig}
-                src="image.jpeg"
-                imageCropAspectRatio={1}
-            ></PinturaEditor>
+        <div>
+            <button onClick={openImgEditor}>Open Filerobot image editor</button>
+            {isImgEditorShown && (
+                <FilerobotImageEditor
+                    source="https://scaleflex.airstore.io/demo/stephen-walker-unsplash.jpg"
+                    onSave={(editedImageObject, designState) => console.log('saved', editedImageObject, designState)}
+                    onClose={closeImgEditor}
+                    annotationsCommon={{
+                        fill: '#ff0000'
+                    }}
+                    Text={{ text: 'Filerobot...' }}
+                    Rotate={{ angle: 90, componentType: 'slider' }}
+                    tabsIds={[TABS.ADJUST, TABS.ANNOTATE, TABS.WATERMARK]} // or {['Adjust', 'Annotate', 'Watermark']}
+                    defaultTabId={TABS.ANNOTATE} // or 'Annotate'
+                    defaultToolId={TOOLS.TEXT} // or 'Text'
+                    savingPixelRatio={1}
+                    previewPixelRatio={1}
+                />
+            )}
         </div>
     );
 }
