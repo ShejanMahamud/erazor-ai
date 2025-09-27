@@ -2,7 +2,17 @@
 
 import { useState } from 'react';
 
-export const DevBanner = () => {
+export const Banner = ({
+    focusText,
+    text,
+    linkText,
+    linkUrl,
+}: {
+    focusText?: string;
+    text?: string;
+    linkText?: string;
+    linkUrl?: string;
+}) => {
     const [isVisible, setIsVisible] = useState(true);
 
     if (!isVisible) return null;
@@ -11,11 +21,10 @@ export const DevBanner = () => {
         <div className="dev-banner w-full bg-gradient-to-r from-orange-500 to-purple-600 h-16 flex items-center justify-center relative z-[60] border-b border-white/20">
             <div className="flex items-center gap-2 mx-0 max-w-[90%] text-white drop-shadow-md">
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                     <p className="text-sm md:text-base">
-                        🚀 <strong>Beta Version:</strong> Erazor AI is currently under active development. Expect exciting new features and improvements!{" "}
-                        <a href="/contact" className="underline transition duration-200 hover:text-yellow-200">
-                            Share feedback
+                        <strong> {focusText}</strong> {text}{" "}
+                        <a href={linkUrl} className="underline transition duration-200 hover:text-yellow-200">
+                            {linkText}
                         </a>
                     </p>
                 </div>

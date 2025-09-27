@@ -1,5 +1,5 @@
+import { Banner } from '@/components/Banner';
 import CTA from '@/components/CTA';
-import { DevBanner } from '@/components/DevBanner';
 import { FAQ } from '@/components/FAQ';
 import { Hero } from '@/components/Hero';
 import { HowItWorks } from '@/components/HowItWorks';
@@ -320,7 +320,12 @@ export default async function Home() {
 
       <div className='bg-background min-h-screen bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]'>
         {/* Development Banner - Takes space at top */}
-        <DevBanner />
+        <Banner
+          focusText="🚀 Beta Version:"
+          text="Erazor AI is currently under active development. Expect exciting new features and improvements!"
+          linkText="Share feedback"
+          linkUrl="/contact"
+        />
 
         <Hero />
         <HowItWorks />
