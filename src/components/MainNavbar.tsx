@@ -17,6 +17,10 @@ import { useState } from 'react';
 export function MainNavbar() {
   const navItems = [
     {
+      name: 'Blog',
+      link: 'https://blog.erazor.app'
+    },
+    {
       name: 'Use Cases',
       link: '#use-cases'
     },

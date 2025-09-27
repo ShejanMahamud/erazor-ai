@@ -66,7 +66,7 @@ export const FileUpload = ({
   });
 
   return (
-    <div className="w-full" {...getRootProps()}>
+    <div className={`w-full ${pathname !== '/dashboard/background-remover' && 'border border-white/10 rounded-2xl py-10'}`} {...getRootProps()}>
       <motion.div
         onClick={handleClick}
         whileHover="animate"
