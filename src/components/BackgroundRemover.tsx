@@ -136,17 +136,16 @@ export function BackgroundRemover({
             })
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => null)
-                if (response.status === 429 || (errorData && errorData.message === "USAGE_LIMIT_REACHED")) {
-                    setShowUsageLimitDialog(true)
-                    setIsProcessing(false)
-                    return
-                } else {
-                    throw new Error(errorData?.message || "Failed to upload file")
-                }
+                return toast.error("Upload failed", {
+                    description: `Something went wrong: ${response.statusText}`
+                })
             }
 
             const data = await response.json()
+            if (data.message === "USAGE_LIMIT_REACHED") {
+                setShowUsageLimitDialog(true)
+                return
+            }
             if (data.data.anonId) {
                 setAnonUser(data.data.anonId)
             }
