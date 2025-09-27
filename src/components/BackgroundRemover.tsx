@@ -17,10 +17,11 @@ import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
-import { Download, ImageIcon, Loader2, RotateCcw } from "lucide-react"
+import { Download, ImageIcon, Loader2, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
+import ImageEditor from "./ImageEditor"
 import { Heading } from "./ui/heading"
 
 export function BackgroundRemover({
@@ -28,6 +29,8 @@ export function BackgroundRemover({
 }: {
     showHeader?: boolean
 }) {
+    const [editorOpen, setEditorOpen] = useState<boolean>(false)
+    const [editorClose, setEditorClose] = useState<boolean>(false)
     const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [originalImage, setOriginalImage] = useState<string | null>(null)
@@ -195,6 +198,14 @@ export function BackgroundRemover({
         toast.info("Ready for new image")
     }
 
+    const handleEditorOpen = () => {
+        setEditorOpen(true)
+    }
+
+    const handleEditorClose = () => {
+        setEditorClose(true)
+    }
+
     return (
         <PageContainer scrollable={false}>
             <div className="flex flex-1 flex-col space-y-6">
@@ -307,6 +318,22 @@ export function BackgroundRemover({
                                                 <RotateCcw className="h-4 w-4" />
                                                 New Image
                                             </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleEditorOpen}
+                                                className="flex items-center gap-2 flex-shrink-0"
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                                Edit Image
+                                            </Button>
+                                            {
+                                                editorOpen && <ImageEditor
+                                                    handleClose={handleEditorClose}
+                                                    imageSource={processedImage}
+                                                />
+
+                                            }
                                             <Button
                                                 size="sm"
                                                 onClick={handleDownload}
