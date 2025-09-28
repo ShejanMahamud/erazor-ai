@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { IconUpload } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
@@ -31,9 +31,11 @@ const secondaryVariant = {
 export const FileUpload = ({
   onChange,
   preview,
+  reset,
 }: {
   onChange?: (files: File[]) => void;
   preview?: boolean;
+  reset?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [_previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -49,6 +51,14 @@ export const FileUpload = ({
       }
     }
   };
+
+  useEffect(() => {
+    if (reset) {
+      setFiles([]);
+      setPreviewUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = ""; // reset native input
+    }
+  }, [reset]);
 
   const handleClick = () => {
     fileInputRef.current?.click();

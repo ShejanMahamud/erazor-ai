@@ -8,6 +8,7 @@ import { Suspense, useState } from 'react';
 export default function ImageEditorPage() {
     const [originalImage, setOriginalImage] = useState<string | null>(null);
     const [editorOpen, setEditorOpen] = useState<boolean>(false);
+    const [resetFileUpload, setResetFileUpload] = useState(false);
 
     const handleFileUpload = async (files: File[]) => {
         if (files.length === 0) return;
@@ -25,6 +26,9 @@ export default function ImageEditorPage() {
 
     const handleEditorClose = () => {
         setEditorOpen(false);
+        setOriginalImage(null);
+        setResetFileUpload(true);
+        setTimeout(() => setResetFileUpload(false), 0);
     };
 
 
@@ -33,12 +37,14 @@ export default function ImageEditorPage() {
             <Heading title="Image Editor" description="Edit your images with AI precision." />
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Suspense>
-                    <FileUpload onChange={handleFileUpload} />
+                    <FileUpload onChange={handleFileUpload} reset={resetFileUpload} />
                 </Suspense>
             </div>
             {
                 originalImage && editorOpen && (
-                    <ImageEditor handleClose={handleEditorClose} imageSource={originalImage} />
+                    <div className='w-full h-full flex items-center justify-center'>
+                        <ImageEditor handleClose={handleEditorClose} imageSource={originalImage} />
+                    </div>
                 )
             }
         </PageContainer>
