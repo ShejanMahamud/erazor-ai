@@ -21,7 +21,7 @@ import { Download, ImageIcon, Loader2, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
-import ImageEditor from "./ImageEditor"
+import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
 
 export function BackgroundRemover({
@@ -307,7 +307,7 @@ export function BackgroundRemover({
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 flex-row flex-wrap">
                                             <Button
                                                 variant="outline"
                                                 size="sm"

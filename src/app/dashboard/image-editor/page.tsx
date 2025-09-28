@@ -1,37 +1,46 @@
 "use client";
-import FilerobotImageEditor, { TABS, TOOLS } from 'react-filerobot-image-editor';
+import { ImageEditor } from '@/components/ImageEditor';
+import PageContainer from '@/components/layout/page-container';
+import { FileUpload } from '@/components/ui/file-upload';
+import { Heading } from '@/components/ui/heading';
+import { Suspense, useState } from 'react';
 
-export default function ImageEditor() {
+export default function ImageEditorPage() {
+    const [originalImage, setOriginalImage] = useState<string | null>(null);
+    const [editorOpen, setEditorOpen] = useState<boolean>(false);
+
+    const handleFileUpload = async (files: File[]) => {
+        if (files.length === 0) return;
+
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imageDataUrl = e.target?.result as string;
+            setOriginalImage(imageDataUrl);
+            setEditorOpen(true);
+        };
+        reader.readAsDataURL(file);
+    };
+
+
+    const handleEditorClose = () => {
+        setEditorOpen(false);
+    };
+
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 50, // keep it above
-                background: "#000000cc", // dark overlay
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
-            <div style={{ width: "90%", height: "90%" }}>
-                <FilerobotImageEditor
-                    source="https://scaleflex.airstore.io/demo/stephen-walker-unsplash.jpg"
-                    onSave={(editedImageObject, designState) =>
-                        console.log("saved", editedImageObject, designState)
-                    }
-                    annotationsCommon={{ fill: "#ff0000" }}
-                    Text={{ text: "Filerobot..." }}
-                    Rotate={{ angle: 90, componentType: "slider" }}
-                    tabsIds={[TABS.ADJUST, TABS.ANNOTATE, TABS.WATERMARK]}
-                    defaultTabId={TABS.ANNOTATE}
-                    defaultToolId={TOOLS.TEXT}
-                    savingPixelRatio={1}
-                    previewPixelRatio={1}
-                />
+        <PageContainer scrollable={false}>
+            <Heading title="Image Editor" description="Edit your images with AI precision." />
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <Suspense>
+                    <FileUpload onChange={handleFileUpload} />
+                </Suspense>
             </div>
-        </div>
-
+            {
+                originalImage && editorOpen && (
+                    <ImageEditor handleClose={handleEditorClose} imageSource={originalImage} />
+                )
+            }
+        </PageContainer>
     );
 }

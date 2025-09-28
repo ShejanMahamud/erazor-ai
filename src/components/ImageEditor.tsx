@@ -1,15 +1,18 @@
 "use client";
+import { useTheme } from 'next-themes';
+import { useEffect } from 'react';
 import FilerobotImageEditor, { TABS, TOOLS } from 'react-filerobot-image-editor';
 
-export default function ImageEditor({
+
+export function ImageEditor({
     handleClose,
     imageSource,
 }: {
     handleClose: () => void;
     imageSource: string;
 }) {
-
-    const handleSaveImage = (editedImageObject: any, designState: any) => {
+    const { theme } = useTheme()
+    const handleSaveImage = (editedImageObject: any) => {
         const { canvasBase64 } = editedImageObject;
 
         if (!canvasBase64) return;
@@ -20,13 +23,29 @@ export default function ImageEditor({
         link.click();
     }
 
+    useEffect(() => {
+        const root = document.documentElement;
+        if (theme === 'dark') {
+            root.style.setProperty('--fil-image-editor-bg', '#0d1117');
+            root.style.setProperty('--fil-toolbar-bg', '#161b22');
+            root.style.setProperty('--fil-toolbar-btn-bg', '#21262d');
+            root.style.setProperty('--fil-toolbar-btn-color', '#c9d1d9');
+        } else {
+            root.style.setProperty('--fil-image-editor-bg', '#fff');
+            root.style.setProperty('--fil-toolbar-bg', '#f5f5f5');
+            root.style.setProperty('--fil-toolbar-btn-bg', '#eee');
+            root.style.setProperty('--fil-toolbar-btn-color', '#333');
+        }
+    }, [theme]);
+
+
     return (
         <div
             style={{
                 position: "fixed",
                 inset: 0,
-                zIndex: 50, // keep it above
-                background: "#000000cc", // dark overlay
+                zIndex: 50,
+                background: "#000000cc",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -35,8 +54,8 @@ export default function ImageEditor({
             <div style={{ width: "90%", height: "90%" }}>
                 <FilerobotImageEditor
                     source={imageSource}
-                    onSave={(editedImageObject, designState) =>
-                        handleSaveImage(editedImageObject, designState)
+                    onSave={(editedImageObject) =>
+                        handleSaveImage(editedImageObject)
                     }
                     onClose={handleClose}
                     annotationsCommon={{ fill: "#ff0000" }}
