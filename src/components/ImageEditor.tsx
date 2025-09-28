@@ -12,7 +12,7 @@ export function ImageEditor({
     imageSource: string;
 }) {
     const { theme } = useTheme()
-    const handleSaveImage = (editedImageObject: { canvasBase64: string }) => {
+    const handleSaveImage = (editedImageObject: any) => {
         const { canvasBase64 } = editedImageObject;
 
         if (!canvasBase64) return;
