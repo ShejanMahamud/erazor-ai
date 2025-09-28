@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Github, Mail, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import { NavbarLogo } from './ui/resizable-navbar';
 
@@ -22,7 +22,6 @@ export const Footer = () => {
             <div className='flex gap-3 justify-center'>
               <SocialButton href='https://twitter.com/erazor_ai' icon={Twitter} />
               <SocialButton href='https://github.com/erazor-ai' icon={Github} />
-              <SocialButton href='https://linkedin.com/company/erazor' icon={Linkedin} />
               <SocialButton href='mailto:support@erazor.app' icon={Mail} />
             </div>
           </div>
