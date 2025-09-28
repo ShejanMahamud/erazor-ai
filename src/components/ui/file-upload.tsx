@@ -90,7 +90,7 @@ export const FileUpload = ({
           className="hidden"
         />
         {
-          (pathname === '/dashboard/background-remover' || pathname === '/dashboard/image-editor') &&
+          ['/dashboard/background-remover', '/dashboard/image-editor'].includes(pathname) &&
           <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
             <GridPattern />
           </div>
