@@ -301,7 +301,7 @@ export function BackgroundRemover({
                         {showResults && originalImage && processedImage && (
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-4">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center lg:justify-between justify-center flex-col lg:flex-row gap-4">
                                         <div className="flex items-center gap-3">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
                                                 <CheckCircle className="h-4 w-4 text-foreground" />
