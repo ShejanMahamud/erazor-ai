@@ -25,16 +25,18 @@ export function ImageEditor({
 
     useEffect(() => {
         const root = document.documentElement;
+        const computedStyle = getComputedStyle(root);
+
         if (theme === 'dark') {
-            root.style.setProperty('--fil-image-editor-bg', '#0d1117');
-            root.style.setProperty('--fil-toolbar-bg', '#161b22');
-            root.style.setProperty('--fil-toolbar-btn-bg', '#21262d');
-            root.style.setProperty('--fil-toolbar-btn-color', '#c9d1d9');
+            root.style.setProperty('--fil-image-editor-bg', computedStyle.getPropertyValue('--background').trim());
+            root.style.setProperty('--fil-toolbar-bg', computedStyle.getPropertyValue('--card').trim());
+            root.style.setProperty('--fil-toolbar-btn-bg', computedStyle.getPropertyValue('--secondary').trim());
+            root.style.setProperty('--fil-toolbar-btn-color', computedStyle.getPropertyValue('--foreground').trim());
         } else {
-            root.style.setProperty('--fil-image-editor-bg', '#fff');
-            root.style.setProperty('--fil-toolbar-bg', '#f5f5f5');
-            root.style.setProperty('--fil-toolbar-btn-bg', '#eee');
-            root.style.setProperty('--fil-toolbar-btn-color', '#333');
+            root.style.setProperty('--fil-image-editor-bg', computedStyle.getPropertyValue('--background').trim());
+            root.style.setProperty('--fil-toolbar-bg', computedStyle.getPropertyValue('--muted').trim());
+            root.style.setProperty('--fil-toolbar-btn-bg', computedStyle.getPropertyValue('--accent').trim());
+            root.style.setProperty('--fil-toolbar-btn-color', computedStyle.getPropertyValue('--foreground').trim());
         }
     }, [theme]);
 
