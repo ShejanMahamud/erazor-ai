@@ -63,7 +63,7 @@ export function ImageEditor({
                     annotationsCommon={{ fill: "#ff0000" }}
                     Text={{ text: "Erazor AI" }}
                     Rotate={{ angle: 90, componentType: "slider" }}
-                    tabsIds={[TABS.ADJUST, TABS.ANNOTATE, TABS.WATERMARK, TABS.FILTERS, TABS.RESIZE]}
+                    tabsIds={[TABS.ADJUST, TABS.ANNOTATE, TABS.WATERMARK, TABS.FILTERS, TABS.RESIZE, TABS.FINETUNE]}
                     defaultTabId={TABS.ANNOTATE}
                     defaultToolId={TOOLS.TEXT}
                     savingPixelRatio={1}

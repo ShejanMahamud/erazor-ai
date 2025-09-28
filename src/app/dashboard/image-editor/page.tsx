@@ -33,20 +33,31 @@ export default function ImageEditorPage() {
 
 
     return (
+
         <PageContainer scrollable={false}>
-            <Heading title="Image Editor" description="Edit your images with AI precision." />
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <Suspense>
-                    <FileUpload onChange={handleFileUpload} reset={resetFileUpload} />
-                </Suspense>
-            </div>
-            {
-                originalImage && editorOpen && (
-                    <div className='w-full h-full flex items-center justify-center'>
-                        <ImageEditor handleClose={handleEditorClose} imageSource={originalImage} />
+            <div className="flex flex-1 flex-col space-y-6">
+                <div className="flex items-end justify-between">
+
+                    <div className="flex-1">
+                        <Heading title="Image Editor" description="Edit your images with AI precision." />
                     </div>
-                )
-            }
+
+                </div>
+                {
+                    originalImage && editorOpen ? (
+                        <div className='w-full h-full flex items-center justify-center'>
+                            <ImageEditor handleClose={handleEditorClose} imageSource={originalImage} />
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                            <Suspense>
+                                <FileUpload onChange={handleFileUpload} reset={resetFileUpload} preview />
+                            </Suspense>
+                        </div>
+                    )
+                }
+            </div>
         </PageContainer>
     );
+
 }
