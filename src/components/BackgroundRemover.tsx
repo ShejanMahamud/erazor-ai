@@ -12,12 +12,19 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
-import { Download, ImageIcon, Loader2, Pencil, RotateCcw } from "lucide-react"
+import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -289,58 +296,58 @@ export function BackgroundRemover({
 
                         {/* Results State */}
                         {showResults && originalImage && processedImage && (
-                            <Card className="border-green-200 shadow-lg">
-                                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+                            <Card className="border shadow-sm">
+                                <CardHeader className="pb-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                                                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                                                <CheckCircle className="h-4 w-4 text-foreground" />
                                             </div>
                                             <div>
-                                                <CardTitle className="text-green-700 text-lg font-bold">
-                                                    Background Removed Successfully!
+                                                <CardTitle className="text-lg text-foreground">
+                                                    Background Removed Successfully
                                                 </CardTitle>
-                                                <p className="text-sm text-green-600 mt-1">
+                                                <p className="text-sm text-muted-foreground">
                                                     Your image is ready for download
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 flex-row flex-wrap">
+
+                                        <div className="flex items-center gap-2">
                                             <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={handleReset}
-                                                className="flex items-center gap-2 flex-shrink-0"
+                                                onClick={handleDownload}
+                                                className="bg-primary hover:bg-primary/90"
                                             >
-                                                <RotateCcw className="h-4 w-4" />
-                                                New Image
+                                                <Download className="h-4 w-4 mr-2" />
+                                                Download
                                             </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={handleEditorOpen}
-                                                className="flex items-center gap-2 flex-shrink-0"
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                                Edit Image
-                                            </Button>
-                                            {
-                                                editorOpen && <ImageEditor
+
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" size="icon">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                        <span className="sr-only">More options</span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48">
+                                                    <DropdownMenuItem onClick={handleEditorOpen}>
+                                                        <Pencil className="h-4 w-4 mr-2" />
+                                                        Edit Image
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={handleReset}>
+                                                        <RotateCcw className="h-4 w-4 mr-2" />
+                                                        New Image
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            {editorOpen && (
+                                                <ImageEditor
                                                     handleClose={handleEditorClose}
                                                     imageSource={processedImage}
                                                 />
-
-                                            }
-                                            <Button
-                                                size="sm"
-                                                onClick={handleDownload}
-                                                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md"
-                                            >
-                                                <Download className="h-4 w-4" />
-                                                Download
-                                            </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </CardHeader>
