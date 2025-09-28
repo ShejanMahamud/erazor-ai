@@ -145,6 +145,9 @@ export function BackgroundRemover({
             })
 
             if (!response.ok) {
+                setIsProcessing(false)
+                setIsUploading(false)
+                setError("Upload failed")
                 return toast.error("Upload failed", {
                     description: `Something went wrong: ${response.statusText}`
                 })
