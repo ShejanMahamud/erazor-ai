@@ -8,10 +8,6 @@ interface UseUserSubscriptionReturn {
     error: string | null;
 }
 
-/**
- * Custom hook for fetching user subscription data for display in pricing components
- * @returns Object containing user subscription data, loading state, and error
- */
 export const useUserSubscription = (): UseUserSubscriptionReturn => {
     const [userSubscription, setUserSubscription] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -32,7 +28,7 @@ export const useUserSubscription = (): UseUserSubscriptionReturn => {
             setError(null);
 
             try {
-                const response = await fetch(`/api/billing/subscription/${userId}`);
+                const response = await fetch(`/api/billing/subscription`);
 
                 if (!isMounted) return;
 
