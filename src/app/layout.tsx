@@ -176,6 +176,7 @@ export default async function RootLayout({
       <head>
         <meta name="msvalidate.01" content="117FCF20377F6D1208898A5975FB202C" />
         <meta name="yandex-verification" content="c054bf5b69da36f3" />
+        <meta name="google-adsense-account" content="ca-pub-1826178787116871"></meta>
         {/* Preconnect to external domains for performance */}
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link
