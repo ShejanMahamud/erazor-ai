@@ -6,8 +6,33 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn Dashboard Starter',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: {
+    default: 'Dashboard | Erazor AI - AI Background Remover',
+    template: '%s | Erazor AI Dashboard'
+  },
+  description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.',
+  keywords: [
+    'dashboard',
+    'AI background remover',
+    'image editor',
+    'photo editing tools',
+    'background removal dashboard',
+    'image processing history',
+    'Erazor AI dashboard'
+  ],
+  openGraph: {
+    title: 'Dashboard | Erazor AI - AI Background Remover',
+    description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.',
+    type: 'website'
+  },
+  twitter: {
+    title: 'Dashboard | Erazor AI - AI Background Remover',
+    description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.'
+  },
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default async function DashboardLayout({

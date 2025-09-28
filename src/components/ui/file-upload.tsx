@@ -76,7 +76,7 @@ export const FileUpload = ({
   });
 
   return (
-    <div className={`w-full ${pathname !== '/dashboard/background-remover' && 'border border-white/10 rounded-2xl py-10'}`} {...getRootProps()}>
+    <div className={`w-full ${(pathname !== '/dashboard/background-remover' && pathname !== '/dashboard/image-editor') && 'border border-white/10 rounded-2xl py-10'}`} {...getRootProps()}>
       <motion.div
         onClick={handleClick}
         whileHover="animate"
@@ -90,7 +90,8 @@ export const FileUpload = ({
           className="hidden"
         />
         {
-          pathname === '/dashboard/background-remover' && <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
+          (pathname === '/dashboard/background-remover' || pathname === '/dashboard/image-editor') &&
+          <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
             <GridPattern />
           </div>
         }

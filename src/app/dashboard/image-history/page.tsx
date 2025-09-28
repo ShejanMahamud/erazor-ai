@@ -7,7 +7,26 @@ import { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 
 export const metadata = {
-  title: 'Dashboard: Image History'
+  title: 'Image History',
+  description: 'View and manage your previously processed images. Access your complete history of AI-powered background removal and image editing operations.',
+  keywords: [
+    'image history',
+    'processed images',
+    'background removal history',
+    'image gallery',
+    'edited photos',
+    'photo archive',
+    'image management'
+  ],
+  openGraph: {
+    title: 'Image History | Erazor AI Dashboard',
+    description: 'View and manage your previously processed images. Access your complete history of AI-powered background removal operations.',
+    type: 'website'
+  },
+  twitter: {
+    title: 'Image History | Erazor AI Dashboard',
+    description: 'View and manage your previously processed images. Access your complete history of AI-powered background removal operations.'
+  }
 };
 
 type pageProps = {
