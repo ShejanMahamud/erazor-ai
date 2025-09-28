@@ -39,7 +39,7 @@ export default function ImageEditorPage() {
                 <div className="flex items-end justify-between">
 
                     <div className="flex-1">
-                        <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
+                        <Heading title="Image Editor" description="Edit your images with AI precision." />
                     </div>
 
                 </div>
