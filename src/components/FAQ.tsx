@@ -53,7 +53,7 @@ export const faqData: FAQItemData[] = [
     id: '7',
     question: 'Do unused credits roll over?',
     answer:
-      "Yes, for paid plans, unused credits roll over to the next month so you never lose what you've paid for. Free plan credits reset monthly.",
+      'No, unused credits do not roll over to the next billing period. Credits reset monthly for all plans, so we recommend using your credits within the month to get the most value from your subscription.',
     category: 'pricing'
   },
   {
@@ -62,6 +62,20 @@ export const faqData: FAQItemData[] = [
     answer:
       'Absolutely! All our plans include commercial usage rights. You can use the processed images for business, e-commerce, marketing, and any commercial projects.',
     category: 'general'
+  },
+  {
+    id: '9',
+    question: 'How do I get started?',
+    answer:
+      'Simply upload your image, and our AI will automatically remove the background in seconds. No sign-up required for your first try! Create an account to access more features and credits.',
+    category: 'general'
+  },
+  {
+    id: '10',
+    question: 'How do I contact support?',
+    answer:
+      'You can reach our support team through the contact form on our website, email us directly, or use the live chat feature. Pro users get priority support response.',
+    category: 'support'
   }
 ];
 
