@@ -296,7 +296,7 @@ export default async function RootLayout({
       >
         {/* Google Analytics with consent management */}
         <Script
-          src='https://www.googletagmanager.com/gtag/js?id=G-XRTGX8M0YB'
+          src='https://www.googletagmanager.com/gtag/js?id=G-4RYFWYBPY8'
           strategy='lazyOnload'
         />
         <Script id='google-analytics' strategy='lazyOnload'>
@@ -312,8 +312,7 @@ export default async function RootLayout({
               'ad_user_data': 'denied',
               'ad_personalization': 'denied'
             });
-            
-            gtag('config', 'G-XRTGX8M0YB');
+            gtag('config', 'G-4RYFWYBPY8');
           `}
         </Script>
 
