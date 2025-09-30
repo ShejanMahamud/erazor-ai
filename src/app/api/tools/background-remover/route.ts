@@ -1,10 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
     try {
         const { getToken } = await auth()
         const token = await getToken();
+        const cookieStore = await cookies()
 
         // Get the request body as form data or JSON
         const contentType = req.headers.get('content-type') || '';
@@ -13,8 +15,9 @@ export async function POST(req: NextRequest) {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+        } else {
+            headers['Anonymous-User'] = cookieStore.get('anon_id')?.value!;
         }
-
 
         if (contentType.includes('multipart/form-data')) {
             // For file uploads, forward the form data
