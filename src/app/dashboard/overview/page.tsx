@@ -1,6 +1,5 @@
 "use client";
 
-import { AreaGraph } from "@/components/AreaChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,8 +16,10 @@ import {
     StoryTitle,
 } from "@/components/ui/kibo-ui/stories";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Clock, ImageIcon, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
 export default function OverviewPage() {
+    const router = useRouter()
     const stories = [
         {
             id: 1,
@@ -166,59 +167,10 @@ export default function OverviewPage() {
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* Stats Cards */}
-                    <Card className="hover:shadow-md transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Images Processed</CardTitle>
-                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">1,247</div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <TrendingUp className="h-3 w-3 text-green-500" />
-                                <span className="text-green-500">+12%</span>
-                                <span>from last month</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="hover:shadow-md transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Avg Processing Time</CardTitle>
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">0.8s</div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Sparkles className="h-3 w-3 text-blue-500" />
-                                <span className="text-blue-500">Fast</span>
-                                <span>lightning speed</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Activity Chart */}
-                    <Card className="col-span-1 md:col-span-2 hover:shadow-md transition-shadow">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle>Monthly Activity</CardTitle>
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        Your processing activity over time
-                                    </p>
-                                </div>
-                                <Badge variant="outline">September 2025</Badge>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <AreaGraph />
-                        </CardContent>
-                    </Card>
                 </div>
 
                 {/* Recent Removals Gallery */}
-                <Card>
+                <Card className="overflow-hidden">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
@@ -227,18 +179,18 @@ export default function OverviewPage() {
                                     Your latest background removal projects
                                 </p>
                             </div>
-                            <Button variant="ghost" className="gap-2">
-                                View All
+                            <Button onClick={() => router.push("/dashboard/image-history")} variant="ghost" className="gap-2">
+                                View Yours
                                 <ArrowRight className="h-4 w-4" />
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="px-6 pb-6">
-                        <div className="w-full overflow-hidden">
+                    <CardContent className="px-0 pb-6">
+                        <div className="w-full overflow-x-auto">
                             <Stories className="w-full">
-                                <StoriesContent className="-ml-2 gap-2">
+                                <StoriesContent className="px-6 gap-4">
                                     {stories.map((story, index) => (
-                                        <Story className="aspect-[3/4] w-[180px] basis-auto flex-shrink-0" key={`${story.id}-${index}`}>
+                                        <Story className="aspect-[3/4] w-[160px] min-w-[160px] basis-auto flex-shrink-0" key={`${story.id}-${index}`}>
                                             <StoryImage alt={story.title} src={story.preview} />
                                             <StoryOverlay side="top" />
                                             <StoryOverlay side="bottom" />
