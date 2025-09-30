@@ -6,7 +6,8 @@ import HeadingText from '@/components/ui/heading-text';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Mail, Phone } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -33,7 +34,7 @@ export default function ContactPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -72,13 +73,6 @@ export default function ContactPage() {
         'Send us an email and we&apos;ll get back to you within 24 hours.',
       contact: 'support@erazor.ai',
       action: 'mailto:support@erazor.ai'
-    },
-    {
-      icon: Phone,
-      title: 'Phone',
-      description: 'Call us during business hours (9 AM - 6 PM EST).',
-      contact: '+1 (555) 123-4567',
-      action: 'tel:+15551234567'
     }
   ];
 
@@ -129,6 +123,7 @@ export default function ContactPage() {
                     questions.
                   </p>
                   <Button
+                    onClick={() => router.push('#faq')}
                     variant='outline'
                     size='sm'
                     className='hover:bg-gray-50 dark:hover:bg-gray-800'
