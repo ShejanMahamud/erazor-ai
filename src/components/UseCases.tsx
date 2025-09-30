@@ -146,7 +146,6 @@ export const UseCases = () => {
         <div className='mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
           {currentUseCase.map((useCase, index) => (
             <div
-              key={`${activeCategory}-${index}`}
               className='group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'
               onClick={() =>
                 setActiveImageIndex(activeImageIndex === index ? null : index)
