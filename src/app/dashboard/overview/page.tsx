@@ -74,7 +74,7 @@ export default function OverviewPage() {
                     <Heading title="Dashboard" description="Welcome back, here's what's happening." />
                 </div>
 
-                <div className="w-full h-[400px]">
+                <div className="w-full h-[500px]">
                     {/* Large Hero Card */}
                     <Card className=" border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
                         <CardContent className="p-6 h-full">
@@ -122,7 +122,7 @@ export default function OverviewPage() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="px-6 pb-6">
+                    <CardContent className="p-2">
                         <div className="relative px-12">
                             <Carousel
                                 opts={{
@@ -132,7 +132,7 @@ export default function OverviewPage() {
                             >
                                 <CarouselContent className="-ml-2 md:-ml-4">
                                     {useCases.map((useCase, index) => (
-                                        <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                                        <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/3 lg:basis-1/4">
                                             <div
                                                 className='group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'
                                                 onClick={() =>
