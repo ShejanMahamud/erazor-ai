@@ -321,7 +321,7 @@ export function BackgroundRemover({
                                         <div className="flex items-center gap-2">
                                             <Button
                                                 onClick={handleDownload}
-                                                className="bg-primary hover:bg-primary/90"
+                                                className="bg-primary hover:bg-primary/90 w-full lg:w-auto"
                                             >
                                                 <Download className="h-4 w-4 mr-2" />
                                                 Download
