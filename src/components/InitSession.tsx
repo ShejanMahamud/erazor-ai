@@ -1,9 +1,9 @@
 "use client";
 import { useEffect } from "react";
 
-export function InitAnonUser() {
+export function InitSession() {
     useEffect(() => {
-        fetch("/api/root/anon-user").catch(() => { });
+        fetch("/api/session").catch(() => { });
     }, []);
 
     return null;

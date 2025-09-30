@@ -23,7 +23,6 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
-import { useAuth } from "@clerk/nextjs"
 import Cookie from 'js-cookie'
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
@@ -48,8 +47,8 @@ export function BackgroundRemover({
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
     const [anonUser, setAnonUser] = useState<any>(null)
-    const { userId } = useAuth()
     const anonUserId = Cookie.get('anon_id') || null;
+    const userId = Cookie.get('user_id') || null;
     const { imageUpdate, connected } = useImageSocket(userId || anonUserId || anonUser)
 
     useEffect(() => {

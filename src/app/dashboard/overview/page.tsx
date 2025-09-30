@@ -74,9 +74,9 @@ export default function OverviewPage() {
                     <Heading title="Dashboard" description="Welcome back, here's what's happening." />
                 </div>
 
-                <div className="w-full h-[500px]">
+                <div className="w-full h-[400px]">
                     {/* Large Hero Card */}
-                    <Card className=" border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+                    <Card className="h-full border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
                         <CardContent className="p-6 h-full">
                             <div className="flex h-full flex-col justify-between">
                                 <div className="space-y-4">

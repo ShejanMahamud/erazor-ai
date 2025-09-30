@@ -45,13 +45,13 @@ export async function POST(req: NextRequest) {
     }
     else if (evt.type === 'session.created') {
       cookieStore.set({
-        name: 'clerkId',
+        name: 'user_id',
         value: evt.data.user_id,
-        httpOnly: true,
+        httpOnly: false,
         sameSite: 'lax',
       })
     } else if (evt.type === 'session.ended') {
-      cookieStore.delete('clerkId');
+      cookieStore.delete('user_id');
     }
     return new Response('Webhook received', { status: 200 });
   } catch (err) {
