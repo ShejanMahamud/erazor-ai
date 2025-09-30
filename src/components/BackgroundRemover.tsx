@@ -46,10 +46,9 @@ export function BackgroundRemover({
     const [error, setError] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
-    const [anonUser, setAnonUser] = useState<any>(null)
     const anonUserId = Cookie.get('anon_id') || null;
     const userId = Cookie.get('user_id') || null;
-    const { imageUpdate, connected } = useImageSocket(userId || anonUserId || anonUser)
+    const { imageUpdate, connected } = useImageSocket(userId || anonUserId)
 
     useEffect(() => {
         if (!imageUpdate) return;
@@ -155,9 +154,6 @@ export function BackgroundRemover({
             }
 
             const data = await response.json()
-            if (data.data.anonId) {
-                setAnonUser(data.data.anonId)
-            }
             if (data.message === "USAGE_LIMIT_REACHED") {
                 setShowUsageLimitDialog(true)
             }
@@ -214,6 +210,10 @@ export function BackgroundRemover({
 
     const handleEditorClose = () => {
         setEditorOpen(false)
+    }
+
+    if (connected) {
+        return toast.success("Connected to image processing server")
     }
 
     return (
