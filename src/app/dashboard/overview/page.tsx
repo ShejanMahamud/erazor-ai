@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heading } from "@/components/ui/heading";
-import { Progress } from "@/components/ui/progress";
 import { CDN_URL } from "@/constants/data";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Zap } from "lucide-react";
@@ -97,15 +96,8 @@ export default function OverviewPage() {
                                             Advanced AI technology processes your images with pixel-perfect precision
                                         </p>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">Processing Speed</span>
-                                            <span className="font-medium">95%</span>
-                                        </div>
-                                        <Progress value={95} className="h-2" />
-                                    </div>
                                 </div>
-                                <Button className="w-fit gap-2">
+                                <Button onClick={() => router.push("/dashboard/background-remover")} className="w-fit gap-2">
                                     Start Processing
                                     <ArrowRight className="h-4 w-4" />
                                 </Button>
