@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heading } from "@/components/ui/heading";
 import {
     Stories,
     StoriesContent,
@@ -15,7 +16,8 @@ import {
     StoryTitle,
 } from "@/components/ui/kibo-ui/stories";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, BarChart3, Clock, Download, Eye, ImageIcon, Sparkles, TrendingUp, Upload, Users, Zap } from "lucide-react";
+import { ChartArea } from '@/features/overview/components/area-graph';
+import { ArrowRight, Clock, ImageIcon, Sparkles, TrendingUp, Zap } from "lucide-react";
 export default function OverviewPage() {
     const stories = [
         {
@@ -124,24 +126,7 @@ export default function OverviewPage() {
             <div className="mx-auto max-w-[1600px] space-y-6">
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight">
-                            Dashboard
-                        </h1>
-                        <p className="mt-1 text-muted-foreground">
-                            Welcome back! Here's what's happening with your projects.
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" size="lg" className="gap-2">
-                            <BarChart3 className="h-4 w-4" />
-                            Analytics
-                        </Button>
-                        <Button size="lg" className="gap-2">
-                            <Upload className="h-4 w-4" />
-                            Upload Image
-                        </Button>
-                    </div>
+                    <Heading title="Dashboard" description="Welcome back, here's what's happening." />
                 </div>
 
                 <div className="grid auto-rows-[200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -213,36 +198,6 @@ export default function OverviewPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-md transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Downloads</CardTitle>
-                            <Download className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">856</div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <TrendingUp className="h-3 w-3 text-green-500" />
-                                <span className="text-green-500">+8%</span>
-                                <span>from last week</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="hover:shadow-md transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">24</div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Eye className="h-3 w-3 text-purple-500" />
-                                <span className="text-purple-500">Live</span>
-                                <span>right now</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-
                     {/* Activity Chart */}
                     <Card className="col-span-1 md:col-span-2 hover:shadow-md transition-shadow">
                         <CardHeader>
@@ -257,39 +212,7 @@ export default function OverviewPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                <div className="flex items-end justify-between h-32 gap-1">
-                                    {[
-                                        { day: 'Mon', value: 40, label: '120' },
-                                        { day: 'Tue', value: 65, label: '195' },
-                                        { day: 'Wed', value: 45, label: '135' },
-                                        { day: 'Thu', value: 80, label: '240' },
-                                        { day: 'Fri', value: 55, label: '165' },
-                                        { day: 'Sat', value: 90, label: '270' },
-                                        { day: 'Sun', value: 70, label: '210' }
-                                    ].map((bar, i) => (
-                                        <div key={i} className="flex-1 flex flex-col items-center group">
-                                            <div className="relative w-full mb-2">
-                                                <div
-                                                    className="w-full bg-primary rounded-t transition-all duration-300 hover:bg-primary/80 cursor-pointer"
-                                                    style={{ height: `${bar.value}%` }}
-                                                />
-                                                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-popover border rounded px-2 py-1 text-xs whitespace-nowrap">
-                                                    {bar.label} images
-                                                </div>
-                                            </div>
-                                            <span className="text-xs text-muted-foreground">{bar.day}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="flex items-center justify-between text-sm pt-2 border-t">
-                                    <span className="text-muted-foreground">This week</span>
-                                    <div className="flex items-center gap-1 font-medium text-green-600">
-                                        <TrendingUp className="h-3 w-3" />
-                                        +23% vs last week
-                                    </div>
-                                </div>
-                            </div>
+                            <ChartArea />
                         </CardContent>
                     </Card>
                 </div>
