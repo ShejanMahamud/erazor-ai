@@ -3,6 +3,7 @@ import CTA from '@/components/CTA';
 import { FAQ } from '@/components/FAQ';
 import { Hero } from '@/components/Hero';
 import { HowItWorks } from '@/components/HowItWorks';
+import { InitAnonUser } from '@/components/InitAnonUser';
 import MainLayout from '@/components/layout/main-layout';
 import { UseCases } from '@/components/UseCases';
 import dynamic from 'next/dynamic';
@@ -21,8 +22,10 @@ const WhyWe = dynamic(() => import('@/components/WhyWe'), {
 });
 
 export default async function Home() {
+
   return (
     <MainLayout>
+      <InitAnonUser />
       {/* Homepage Structured Data */}
       <script
         type="application/ld+json"

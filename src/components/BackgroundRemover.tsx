@@ -24,12 +24,14 @@ import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { useAuth } from "@clerk/nextjs"
+import Cookie from 'js-cookie'
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
+
 
 export function BackgroundRemover({
     showHeader = true,
@@ -47,8 +49,8 @@ export function BackgroundRemover({
     const [showResults, setShowResults] = useState(false)
     const [anonUser, setAnonUser] = useState<any>(null)
     const { userId } = useAuth()
-    // Only connect socket when we have a userId OR after we get anonUser
-    const { imageUpdate, connected } = useImageSocket(userId || anonUser)
+    const anonUserId = Cookie.get('anon_id') || null;
+    const { imageUpdate, connected } = useImageSocket(userId || anonUserId || anonUser)
 
     useEffect(() => {
         if (!imageUpdate) return;
@@ -154,13 +156,13 @@ export function BackgroundRemover({
             }
 
             const data = await response.json()
-            if (data.message === "USAGE_LIMIT_REACHED") {
-                setShowUsageLimitDialog(true)
-                return
-            }
             if (data.data.anonId) {
                 setAnonUser(data.data.anonId)
             }
+            if (data.message === "USAGE_LIMIT_REACHED") {
+                setShowUsageLimitDialog(true)
+            }
+
             return data
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "An error occurred"

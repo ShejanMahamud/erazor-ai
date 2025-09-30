@@ -239,11 +239,16 @@ export const UseCases = () => {
               Ready to transform your images?
             </div>
             <Button
-              onClick={() => router.push('/dashboard')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                router.push('/dashboard');
+              }}
               className={cn(
-                'rounded-xl bg-gradient-to-r px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 cursor-pointer',
+                'rounded-xl bg-gradient-to-r px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 cursor-pointer shadow-lg hover:shadow-xl',
                 activeColor
               )}
+              type="button"
             >
               Get Started
             </Button>
