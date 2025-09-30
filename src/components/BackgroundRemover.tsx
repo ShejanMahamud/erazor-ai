@@ -213,7 +213,7 @@ export function BackgroundRemover({
     }
 
     if (connected) {
-        return toast.success("Connected to image processing server")
+        toast.success("Connected to image processing server")
     }
 
     return (
