@@ -27,12 +27,16 @@ export async function GET() {
                 user_id: userId,
                 cookie_expires_in: maxAge,
             });
+        } else {
+            // session invalid → clear user_id before anonymous handling
+            cookieStore.delete('user_id');
         }
     } else {
+        // not logged in → clear user_id if it exists
         cookieStore.delete('user_id');
     }
 
-    // Handle anonymous users
+    // handle anonymous users
     const existingAnonId = cookieStore.get('anon_id')?.value;
     if (existingAnonId) {
         return NextResponse.json({ anon_id: existingAnonId });
@@ -47,4 +51,5 @@ export async function GET() {
     });
 
     return NextResponse.json({ anon_id: anonUserId });
+
 }
