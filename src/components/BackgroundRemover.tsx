@@ -50,7 +50,7 @@ export function BackgroundRemover({
     const [anonUser, setAnonUser] = useState<any>(null)
     const { userId } = useAuth()
     const anonUserId = Cookie.get('anon_id') || null;
-    const { imageUpdate, connected } = useImageSocket(userId || anonUserId)
+    const { imageUpdate, connected } = useImageSocket(userId || anonUserId || anonUser)
 
     useEffect(() => {
         if (!imageUpdate) return;
@@ -156,10 +156,13 @@ export function BackgroundRemover({
             }
 
             const data = await response.json()
+            if (data.data.anonId) {
+                setAnonUser(data.data.anonId)
+            }
             if (data.message === "USAGE_LIMIT_REACHED") {
                 setShowUsageLimitDialog(true)
-                return
             }
+
             return data
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "An error occurred"
