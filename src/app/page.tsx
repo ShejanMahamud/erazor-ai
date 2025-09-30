@@ -3,7 +3,7 @@ import CTA from '@/components/CTA';
 import { FAQ } from '@/components/FAQ';
 import { Hero } from '@/components/Hero';
 import { HowItWorks } from '@/components/HowItWorks';
-import { InitAnonUser } from '@/components/InitAnonUser';
+import { InitSession } from '@/components/InitSession';
 import MainLayout from '@/components/layout/main-layout';
 import { UseCases } from '@/components/UseCases';
 import dynamic from 'next/dynamic';
@@ -25,7 +25,7 @@ export default async function Home() {
 
   return (
     <MainLayout>
-      <InitAnonUser />
+      <InitSession />
       {/* Homepage Structured Data */}
       <script
         type="application/ld+json"
