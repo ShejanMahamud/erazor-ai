@@ -1,7 +1,8 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Stories,
     StoriesContent,
@@ -13,7 +14,8 @@ import {
     StoryOverlay,
     StoryTitle,
 } from "@/components/ui/kibo-ui/stories";
-import { ArrowRight, Clock, ImageIcon, Sparkles, TrendingUp, Upload, Zap } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { ArrowRight, BarChart3, Clock, Download, Eye, ImageIcon, Sparkles, TrendingUp, Upload, Users, Zap } from "lucide-react";
 export default function OverviewPage() {
     const stories = [
         {
@@ -127,148 +129,214 @@ export default function OverviewPage() {
                             Dashboard
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Your background removal workspace
+                            Welcome back! Here's what's happening with your projects.
                         </p>
                     </div>
-                    <Button size="lg" className="gap-2">
-                        <Upload className="h-4 w-4" />
-                        Upload Image
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="lg" className="gap-2">
+                            <BarChart3 className="h-4 w-4" />
+                            Analytics
+                        </Button>
+                        <Button size="lg" className="gap-2">
+                            <Upload className="h-4 w-4" />
+                            Upload Image
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="grid auto-rows-[180px] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid auto-rows-[200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {/* Large Hero Card */}
-                    <Card className="col-span-1 row-span-2 p-6 md:col-span-2">
-                        <div className="flex h-full flex-col justify-between">
-                            <div className="space-y-3">
-                                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                    <Zap className="h-3 w-3" />
-                                    AI Powered
-                                </div>
-                                <h2 className="text-3xl font-bold leading-tight lg:text-4xl">
-                                    Remove backgrounds
-                                    <br />
-                                    <span className="text-primary">
-                                        in seconds
-                                    </span>
-                                </h2>
-                                <p className="text-sm text-muted-foreground lg:text-base">
-                                    Advanced AI technology processes your images with pixel-perfect precision
-                                </p>
-                            </div>
-                            <Button variant="ghost" className="w-fit gap-2 text-primary hover:text-primary/80">
-                                Start Processing
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </Card>
-
-                    {/* Stats Card 1 */}
-                    <Card className="p-6">
-                        <div className="flex h-full flex-col justify-between">
-                            <div className="flex items-center justify-between">
-                                <div className="rounded-lg bg-primary/10 p-2">
-                                    <ImageIcon className="h-5 w-5 text-primary" />
-                                </div>
-                                <div className="flex items-center gap-1 rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-600">
-                                    <TrendingUp className="h-3 w-3" />
-                                    +12%
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-3xl font-bold">1,247</p>
-                                <p className="text-sm text-muted-foreground">Images processed</p>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Stats Card 2 */}
-                    <Card className="p-6">
-                        <div className="flex h-full flex-col justify-between">
-                            <div className="flex items-center justify-between">
-                                <div className="rounded-lg bg-secondary p-2">
-                                    <Clock className="h-5 w-5 text-secondary-foreground" />
-                                </div>
-                                <div className="flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-600">
-                                    <Sparkles className="h-3 w-3" />
-                                    Fast
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-3xl font-bold">0.8s</p>
-                                <p className="text-sm text-muted-foreground">Avg processing time</p>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Activity Card */}
-                    <Card className="col-span-1 p-6 md:col-span-2">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold">This Month</h3>
-                                <div className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                                    March 2025
-                                </div>
-                            </div>
-                            <div className="flex items-end gap-2 h-24">
-                                {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((height, i) => (
-                                    <div key={i} className="flex-1">
-                                        <div
-                                            className="w-full rounded-t bg-primary"
-                                            style={{ height: `${height}%` }}
-                                        />
+                    <Card className="col-span-1 row-span-2 md:col-span-2 border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+                        <CardContent className="p-6 h-full">
+                            <div className="flex h-full flex-col justify-between">
+                                <div className="space-y-4">
+                                    <Badge variant="secondary" className="w-fit gap-1">
+                                        <Zap className="h-3 w-3" />
+                                        AI Powered
+                                    </Badge>
+                                    <div>
+                                        <h2 className="text-3xl font-bold leading-tight lg:text-4xl">
+                                            Remove backgrounds
+                                            <br />
+                                            <span className="text-primary">
+                                                in seconds
+                                            </span>
+                                        </h2>
+                                        <p className="mt-2 text-muted-foreground lg:text-base">
+                                            Advanced AI technology processes your images with pixel-perfect precision
+                                        </p>
                                     </div>
-                                ))}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Processing Speed</span>
+                                            <span className="font-medium">95%</span>
+                                        </div>
+                                        <Progress value={95} className="h-2" />
+                                    </div>
+                                </div>
+                                <Button className="w-fit gap-2">
+                                    Start Processing
+                                    <ArrowRight className="h-4 w-4" />
+                                </Button>
                             </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">Daily activity</span>
-                                <span className="flex items-center gap-1 font-medium text-green-600">
-                                    <TrendingUp className="h-3 w-3" />
-                                    +23% vs last month
-                                </span>
+                        </CardContent>
+                    </Card>
+
+                    {/* Stats Cards */}
+                    <Card className="hover:shadow-md transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Images Processed</CardTitle>
+                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">1,247</div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <TrendingUp className="h-3 w-3 text-green-500" />
+                                <span className="text-green-500">+12%</span>
+                                <span>from last month</span>
                             </div>
-                        </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-md transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Avg Processing Time</CardTitle>
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">0.8s</div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Sparkles className="h-3 w-3 text-blue-500" />
+                                <span className="text-blue-500">Fast</span>
+                                <span>lightning speed</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-md transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Downloads</CardTitle>
+                            <Download className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">856</div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <TrendingUp className="h-3 w-3 text-green-500" />
+                                <span className="text-green-500">+8%</span>
+                                <span>from last week</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-md transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">24</div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Eye className="h-3 w-3 text-purple-500" />
+                                <span className="text-purple-500">Live</span>
+                                <span>right now</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Activity Chart */}
+                    <Card className="col-span-1 md:col-span-2 hover:shadow-md transition-shadow">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Monthly Activity</CardTitle>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        Your processing activity over time
+                                    </p>
+                                </div>
+                                <Badge variant="outline">September 2025</Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="flex items-end justify-between h-32 gap-1">
+                                    {[
+                                        { day: 'Mon', value: 40, label: '120' },
+                                        { day: 'Tue', value: 65, label: '195' },
+                                        { day: 'Wed', value: 45, label: '135' },
+                                        { day: 'Thu', value: 80, label: '240' },
+                                        { day: 'Fri', value: 55, label: '165' },
+                                        { day: 'Sat', value: 90, label: '270' },
+                                        { day: 'Sun', value: 70, label: '210' }
+                                    ].map((bar, i) => (
+                                        <div key={i} className="flex-1 flex flex-col items-center group">
+                                            <div className="relative w-full mb-2">
+                                                <div
+                                                    className="w-full bg-primary rounded-t transition-all duration-300 hover:bg-primary/80 cursor-pointer"
+                                                    style={{ height: `${bar.value}%` }}
+                                                />
+                                                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-popover border rounded px-2 py-1 text-xs whitespace-nowrap">
+                                                    {bar.label} images
+                                                </div>
+                                            </div>
+                                            <span className="text-xs text-muted-foreground">{bar.day}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex items-center justify-between text-sm pt-2 border-t">
+                                    <span className="text-muted-foreground">This week</span>
+                                    <div className="flex items-center gap-1 font-medium text-green-600">
+                                        <TrendingUp className="h-3 w-3" />
+                                        +23% vs last week
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
                     </Card>
                 </div>
 
                 {/* Recent Removals Gallery */}
-                <div className="w-full">
-                    <div className="mb-6 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-2xl font-bold tracking-tight">Recent Removals</h2>
-                            <p className="mt-1 text-sm text-muted-foreground">Your latest background removal projects</p>
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Recent Removals</CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Your latest background removal projects
+                                </p>
+                            </div>
+                            <Button variant="ghost" className="gap-2">
+                                View All
+                                <ArrowRight className="h-4 w-4" />
+                            </Button>
                         </div>
-                        <Button variant="ghost" className="gap-2">
-                            View All
-                            <ArrowRight className="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <div className="w-full ">
-                        <Stories className="w-full">
-                            <StoriesContent>
-                                {stories.map((story) => (
-                                    <Story className="aspect-[3/4] w-[200px]" key={story.id}>
-                                        <StoryImage alt={story.title} src={story.preview} />
-                                        <StoryOverlay side="top" />
-                                        <StoryOverlay side="bottom" />
-                                        <StoryTitle className="truncate font-medium text-sm">
-                                            {story.title}
-                                        </StoryTitle>
-                                        <StoryAuthor>
-                                            <StoryAuthorImage
-                                                fallback={story.fallback}
-                                                name={story.author}
-                                                src={story.avatar}
-                                            />
-                                            <StoryAuthorName>{story.author}</StoryAuthorName>
-                                        </StoryAuthor>
-                                    </Story>
-                                ))}
-                            </StoriesContent>
-                        </Stories>
-                    </div>
-                </div>
+                    </CardHeader>
+                    <CardContent className="px-6 pb-6">
+                        <div className="w-full overflow-hidden">
+                            <Stories className="w-full">
+                                <StoriesContent className="-ml-2 gap-2">
+                                    {stories.map((story, index) => (
+                                        <Story className="aspect-[3/4] w-[180px] basis-auto flex-shrink-0" key={`${story.id}-${index}`}>
+                                            <StoryImage alt={story.title} src={story.preview} />
+                                            <StoryOverlay side="top" />
+                                            <StoryOverlay side="bottom" />
+                                            <StoryTitle className="truncate font-medium text-sm">
+                                                {story.title}
+                                            </StoryTitle>
+                                            <StoryAuthor>
+                                                <StoryAuthorImage
+                                                    fallback={story.fallback}
+                                                    name={story.author}
+                                                    src={story.avatar}
+                                                />
+                                                <StoryAuthorName>{story.author}</StoryAuthorName>
+                                            </StoryAuthor>
+                                        </Story>
+                                    ))}
+                                </StoriesContent>
+                            </Stories>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     )
