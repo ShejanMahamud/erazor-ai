@@ -1,5 +1,6 @@
 "use client";
 
+import { AreaGraph } from "@/components/AreaChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,6 @@ import {
     StoryTitle,
 } from "@/components/ui/kibo-ui/stories";
 import { Progress } from "@/components/ui/progress";
-import { ChartArea } from '@/features/overview/components/area-graph';
 import { ArrowRight, Clock, ImageIcon, Sparkles, TrendingUp, Zap } from "lucide-react";
 export default function OverviewPage() {
     const stories = [
@@ -212,7 +212,7 @@ export default function OverviewPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <ChartArea />
+                            <AreaGraph />
                         </CardContent>
                     </Card>
                 </div>
