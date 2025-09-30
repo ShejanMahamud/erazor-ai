@@ -3,125 +3,70 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heading } from "@/components/ui/heading";
-import {
-    Stories,
-    StoriesContent,
-    Story,
-    StoryAuthor,
-    StoryAuthorImage,
-    StoryAuthorName,
-    StoryImage,
-    StoryOverlay,
-    StoryTitle,
-} from "@/components/ui/kibo-ui/stories";
 import { Progress } from "@/components/ui/progress";
+import { CDN_URL } from "@/constants/data";
+import { cn } from "@/lib/utils";
 import { ArrowRight, Zap } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 export default function OverviewPage() {
     const router = useRouter()
-    const stories = [
+    const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+
+    const useCases = [
         {
-            id: 1,
-            author: "Alex Johnson",
-            avatar:
-                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
-            fallback: "AJ",
-            preview:
-                "https://images.unsplash.com/photo-1753731683731-1032f9457b02?w=1636&fit=crop",
-            title: "Mountain Adventure",
+            before: `${CDN_URL}/assets/product-1.jpg`,
+            after: `${CDN_URL}/assets/product-1-removed.png`
         },
         {
-            id: 2,
-            author: "Sarah Chen",
-            avatar:
-                "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face",
-            fallback: "SC",
-            preview:
-                "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=533&fit=crop",
-            title: "Ocean Waves",
+            before: `${CDN_URL}/assets/product-2.jpg`,
+            after: `${CDN_URL}/assets/product-2-removed.png`
         },
         {
-            id: 3,
-            author: "Mike Rodriguez",
-            avatar:
-                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
-            fallback: "MR",
-            preview:
-                "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=533&fit=crop",
-            title: "Forest Trail",
+            before: `${CDN_URL}/assets/product-3.jpg`,
+            after: `${CDN_URL}/assets/product-3-removed.png`
         },
         {
-            id: 4,
-            author: "Emma Wilson",
-            avatar:
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-            fallback: "EW",
-            preview:
-                "https://images.unsplash.com/photo-1541336032412-2048a678540d?w=300&h=533&fit=crop",
-            title: "City Lights",
+            before: `${CDN_URL}/assets/portrait-1.jpg`,
+            after: `${CDN_URL}/assets/portrait-1-removed.png`
         },
         {
-            id: 5,
-            author: "David Kim",
-            avatar:
-                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face",
-            fallback: "DK",
-            preview:
-                "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=300&fit=crop",
-            title: "Desert Road",
+            before: `${CDN_URL}/assets/portrait-2.jpg`,
+            after: `${CDN_URL}/assets/portrait-2-removed.png`
         },
         {
-            id: 1,
-            author: "Alex Johnson",
-            avatar:
-                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
-            fallback: "AJ",
-            preview:
-                "https://images.unsplash.com/photo-1753731683731-1032f9457b02?w=1636&fit=crop",
-            title: "Mountain Adventure",
+            before: `${CDN_URL}/assets/portrait-3.jpg`,
+            after: `${CDN_URL}/assets/portrait-3-removed.png`
         },
         {
-            id: 2,
-            author: "Sarah Chen",
-            avatar:
-                "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face",
-            fallback: "SC",
-            preview:
-                "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=533&fit=crop",
-            title: "Ocean Waves",
+            before: `${CDN_URL}/assets/creative-1.jpg`,
+            after: `${CDN_URL}/assets/creative-1-removed.png`
         },
         {
-            id: 3,
-            author: "Mike Rodriguez",
-            avatar:
-                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
-            fallback: "MR",
-            preview:
-                "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=533&fit=crop",
-            title: "Forest Trail",
+            before: `${CDN_URL}/assets/creative-2.jpg`,
+            after: `${CDN_URL}/assets/creative-2-removed.png`
         },
         {
-            id: 4,
-            author: "Emma Wilson",
-            avatar:
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-            fallback: "EW",
-            preview:
-                "https://images.unsplash.com/photo-1541336032412-2048a678540d?w=300&h=533&fit=crop",
-            title: "City Lights",
+            before: `${CDN_URL}/assets/creative-3.jpg`,
+            after: `${CDN_URL}/assets/creative-3-removed.png`
         },
         {
-            id: 5,
-            author: "David Kim",
-            avatar:
-                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face",
-            fallback: "DK",
-            preview:
-                "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=300&fit=crop",
-            title: "Desert Road",
+            before: `${CDN_URL}/assets/social-1.jpg`,
+            after: `${CDN_URL}/assets/social-1-removed.png`
         },
-    ];
+        {
+            before: `${CDN_URL}/assets/social-2.jpg`,
+            after: `${CDN_URL}/assets/social-2-removed.png`
+        },
+        {
+            before: `${CDN_URL}/assets/social-3.jpg`,
+            after: `${CDN_URL}/assets/social-3-removed.png`
+        }
+    ]
+
     return (
         <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
             <div className="mx-auto max-w-[1600px] space-y-6">
@@ -130,7 +75,7 @@ export default function OverviewPage() {
                     <Heading title="Dashboard" description="Welcome back, here's what's happening." />
                 </div>
 
-                <div className="grid auto-rows-[200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="w-full grid grid-cols-1 gap-4">
                     {/* Large Hero Card */}
                     <Card className="col-span-1 row-span-2 md:col-span-2 border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
                         <CardContent className="p-6 h-full">
@@ -185,31 +130,105 @@ export default function OverviewPage() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="px-0 pb-6">
-                        <div className="w-full overflow-x-auto">
-                            <Stories className="w-full">
-                                <StoriesContent className="px-6 gap-4">
-                                    {stories.map((story, index) => (
-                                        <Story className="aspect-[3/4] w-[160px] min-w-[160px] basis-auto flex-shrink-0" key={`${story.id}-${index}`}>
-                                            <StoryImage alt={story.title} src={story.preview} />
-                                            <StoryOverlay side="top" />
-                                            <StoryOverlay side="bottom" />
-                                            <StoryTitle className="truncate font-medium text-sm">
-                                                {story.title}
-                                            </StoryTitle>
-                                            <StoryAuthor>
-                                                <StoryAuthorImage
-                                                    fallback={story.fallback}
-                                                    name={story.author}
-                                                    src={story.avatar}
-                                                />
-                                                <StoryAuthorName>{story.author}</StoryAuthorName>
-                                            </StoryAuthor>
-                                        </Story>
-                                    ))}
-                                </StoriesContent>
-                            </Stories>
-                        </div>
+                    <CardContent className="px-6 pb-6">
+                        <Carousel
+                            opts={{
+                                align: "start",
+                            }}
+                            className="w-full"
+                        >
+                            <CarouselContent>
+                                {useCases.map((useCase, index) => (
+                                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                                        <div
+                                            className='group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'
+                                            onClick={() =>
+                                                setActiveImageIndex(activeImageIndex === index ? null : index)
+                                            }
+                                        >
+                                            {/* Before/After Images */}
+                                            <div className='relative aspect-[4/4] overflow-hidden'>
+                                                {/* Before Image */}
+                                                <div
+                                                    className={cn(
+                                                        'absolute inset-0 transition-opacity duration-500',
+                                                        'group-hover:opacity-0',
+                                                        activeImageIndex === index && 'opacity-0'
+                                                    )}
+                                                >
+                                                    <Image
+                                                        src={useCase.before}
+                                                        alt={`Before`}
+                                                        fill
+                                                        priority={false}
+                                                        loading='lazy'
+                                                        placeholder='blur'
+                                                        blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyI+PHN0b3Agc3RvcC1jb2xvcj0iIzMzMzMzMyIgc3RvcC1vcGFjaXR5PSIwLjAzIiBvZmZzZXQ9IjIwJSIvPjxzdG9wIHN0b3AtY29sb3I9IiM2NjY2NjYiIHN0b3Atb3BhY2l0eT0iMC4wNSIgb2Zmc2V0PSI1MCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjMzMzMzMzIiBzdG9wLW9wYWNpdHk9IjAuMDMiIG9mZnNldD0iNzAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
+                                                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                                                        className='object-cover'
+                                                    />
+                                                    <div className='absolute inset-0 bg-black/20' />
+                                                </div>
+
+                                                {/* After Image Overlay */}
+                                                <div
+                                                    className={cn(
+                                                        'absolute inset-0 transition-opacity duration-500',
+                                                        'group-hover:opacity-100',
+                                                        activeImageIndex === index ? 'opacity-100' : 'opacity-0'
+                                                    )}
+                                                >
+                                                    {/* Transparent Background Pattern */}
+                                                    <div
+                                                        className='absolute inset-0'
+                                                        style={{
+                                                            backgroundImage: `
+                                                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                                                linear-gradient(-45deg, transparent 75%, #ccc 75%)
+                                              `,
+                                                            backgroundSize: '20px 20px',
+                                                            backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                                                        }}
+                                                    />
+                                                    <Image
+                                                        src={useCase.after}
+                                                        alt={`After`}
+                                                        fill
+                                                        priority={false}
+                                                        loading='lazy'
+                                                        placeholder='blur'
+                                                        blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyI+PHN0b3Agc3RvcC1jb2xvcj0iIzMzMzMzMyIgc3RvcC1vcGFjaXR5PSIwLjAzIiBvZmZzZXQ9IjIwJSIvPjxzdG9wIHN0b3AtY29sb3I9IiM2NjY2NjYiIHN0b3Atb3BhY2l0eT0iMC4wNSIgb2Zmc2V0PSI1MCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjMzMzMzMzIiBzdG9wLW9wYWNpdHk9IjAuMDMiIG9mZnNldD0iNzAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
+                                                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                                                        className='object-cover'
+                                                    />
+                                                </div>
+
+                                                {/* Before/After Labels */}
+                                                <div className='absolute top-4 left-4 flex gap-2'>
+                                                    <div className='rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm'>
+                                                        Before
+                                                    </div>
+                                                    <div
+                                                        className={cn(
+                                                            'rounded-full bg-gradient-to-r px-3 py-1 text-xs font-medium text-white transition-opacity duration-300',
+                                                            'group-hover:opacity-100',
+                                                            activeImageIndex === index ? 'opacity-100' : 'opacity-0',
+                                                            'from-orange-500 to-purple-600'
+                                                        )}
+                                                    >
+                                                        After
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                        </Carousel>
                     </CardContent>
                 </Card>
             </div>
