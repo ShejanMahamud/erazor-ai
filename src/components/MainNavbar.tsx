@@ -50,7 +50,7 @@ export function MainNavbar() {
   const { user, isLoaded } = useUser();
 
   return (
-    <div className='absolute z-50 w-full top-8'>
+    <div className='absolute z-50 w-full top-16'>
       <Navbar className='my-4'>
         {/* Desktop Navigation */}
         <NavBody>
