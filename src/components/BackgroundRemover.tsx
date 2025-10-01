@@ -51,11 +51,8 @@ export function BackgroundRemover({
     const { imageUpdate, connected } = useImageSocket(userId || anonUserId)
 
     useEffect(() => {
-        if (!imageUpdate) return;
-
-        // Server ensures imageUpdate is always "ready" status
+        if (!imageUpdate || showResults) return;
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-
         if (processedImageUrl) {
             setProcessedImage(processedImageUrl);
             setIsProcessing(false);
@@ -65,7 +62,8 @@ export function BackgroundRemover({
                 description: "Your image is ready for download."
             });
         }
-    }, [imageUpdate]);
+    }, [imageUpdate, showResults]);
+
 
     // Simulate progress when processing starts
     useEffect(() => {
