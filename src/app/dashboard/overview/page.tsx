@@ -1,11 +1,13 @@
 "use client";
 
+import { Banner } from "@/components/Banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heading } from "@/components/ui/heading";
 import { CDN_URL } from "@/constants/data";
+import { useUserSubscription } from "@/hooks/useUserSubscription";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Zap } from "lucide-react";
 import Image from "next/image";
@@ -14,7 +16,9 @@ import { useState } from "react";
 export default function OverviewPage() {
     const router = useRouter()
     const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+    const { userSubscription, loading } = useUserSubscription()
 
+    const showBanner = !loading && (!userSubscription || userSubscription.status !== "active")
     const useCases = [
         {
             before: `${CDN_URL}/assets/product-1.jpg`,
@@ -68,6 +72,7 @@ export default function OverviewPage() {
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
+            {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
             <div className="mx-auto max-w-[1600px] space-y-6">
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
