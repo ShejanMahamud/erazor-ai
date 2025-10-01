@@ -25,6 +25,10 @@ export function MainNavbar() {
       link: '#use-cases'
     },
     {
+      name: 'Image Editor',
+      link: '/image-editor'
+    },
+    {
       name: 'Testimonials',
       link: '#testimonials'
     },
