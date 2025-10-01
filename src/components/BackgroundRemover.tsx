@@ -224,13 +224,6 @@ export function BackgroundRemover({
                     }
                 </div>
 
-                {imageUpdate && <Image
-                    src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ}
-                    alt="Processed"
-                    className="w-full h-full object-contain"
-                />}
-
-
                 {!originalImage && (
                     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                         <Suspense>
@@ -301,8 +294,6 @@ export function BackgroundRemover({
                                 </CardContent>
                             </Card>
                         )}
-
-
 
                         {/* Results State */}
                         {imageUpdate && (
