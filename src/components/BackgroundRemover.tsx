@@ -10,32 +10,24 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-// import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import {
-//     DropdownMenu,
-//     DropdownMenuContent,
-//     DropdownMenuItem,
-//     DropdownMenuSeparator,
-//     DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
 import { FileUpload } from "@/components/ui/file-upload"
-// import { ProcessingOverlay } from "@/components/ui/processing-overlay"
-// import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
-// import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
+import { Download, ImageIcon, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
-// import { ImageEditor } from "./ImageEditor"
-import { Download, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import { ImageEditor } from "./ImageEditor"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader } from "./ui/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 import { Heading } from "./ui/heading"
 import { Comparison, ComparisonHandle, ComparisonItem } from "./ui/kibo-ui/comparison"
-
 
 export function BackgroundRemover({
     showHeader = true,
@@ -49,45 +41,35 @@ export function BackgroundRemover({
     const [processedImage, setProcessedImage] = useState<string | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
-    const [isUploading, setIsUploading] = useState(false)
-    const [showResults, setShowResults] = useState(false)
     const { imageUpdate } = useImageSocket()
 
     useEffect(() => {
-        if (!imageUpdate) return;
-
-        console.log("[BackgroundRemover] Received image update:", imageUpdate);
-
-        const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-
-        // If we're processing and get a processed image, show it
-        if (processedImageUrl && isProcessing && !showResults) {
-            setProcessedImage(processedImageUrl);
-            setIsProcessing(false);
-            setProgress(100);
-            setShowResults(true);
+        if (!imageUpdate) return
+        const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ
+        if (processedImageUrl && isProcessing) {
+            setProcessedImage(processedImageUrl)
+            setIsProcessing(false)
+            setProgress(100)
             toast.success("Background removed successfully!", {
-                description: "Your image is ready for download."
-            });
+                description: "Your image is ready for download.",
+            })
         }
-    }, [imageUpdate, isProcessing, showResults]);
+    }, [imageUpdate, isProcessing])
 
-
-    // Simulate progress when processing starts
     useEffect(() => {
-        if (isProcessing && !showResults) {
+        if (isProcessing) {
             const progressInterval = setInterval(() => {
-                setProgress(prev => {
-                    const newProgress = prev >= 90 ? prev : prev + 10;
-                    return newProgress;
-                });
-            }, 500);
+                setProgress((prev) => {
+                    const newProgress = prev >= 90 ? prev : prev + 10
+                    return newProgress
+                })
+            }, 500)
 
             return () => {
-                clearInterval(progressInterval);
-            };
+                clearInterval(progressInterval)
+            }
         }
-    }, [isProcessing, showResults]);
+    }, [isProcessing])
 
     const handleFileUpload = async (files: File[]) => {
         if (files.length === 0) return
@@ -95,10 +77,10 @@ export function BackgroundRemover({
         const file = files[0]
 
         // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
         if (!allowedTypes.includes(file.type)) {
-            toast.error('Invalid file type', {
-                description: 'Please upload a JPG, PNG, or WebP image file.'
+            toast.error("Invalid file type", {
+                description: "Please upload a JPG, PNG, or WebP image file.",
             })
             return
         }
@@ -106,30 +88,26 @@ export function BackgroundRemover({
         // Validate file size (max 20MB)
         const maxSize = 20 * 1024 * 1024
         if (file.size > maxSize) {
-            toast.error('File too large', {
-                description: 'Please upload an image smaller than 20MB.'
+            toast.error("File too large", {
+                description: "Please upload an image smaller than 20MB.",
             })
             return
         }
 
-        // Reset states
         setError(null)
         setProcessedImage(null)
         setProgress(0)
-        setIsProcessing(true) // Set immediately to catch socket updates
-        setShowResults(false)
-        setIsUploading(true)
+        setIsProcessing(false)
 
         // Create preview of original image immediately
         const reader = new FileReader()
         reader.onload = (e) => {
-            const imageDataUrl = e.target?.result as string;
+            const imageDataUrl = e.target?.result as string
             setOriginalImage(imageDataUrl)
-            setIsUploading(false)
             setIsProcessing(true)
-            setProgress(10) // Start with initial progress
-            toast.success('Image uploaded successfully!', {
-                description: 'Processing background removal...'
+            setProgress(10)
+            toast.success("Image uploaded successfully!", {
+                description: "Processing background removal...",
             })
         }
         reader.readAsDataURL(file)
@@ -145,10 +123,9 @@ export function BackgroundRemover({
 
             if (!response.ok) {
                 setIsProcessing(false)
-                setIsUploading(false)
                 setError("Upload failed")
                 return toast.error("Upload failed", {
-                    description: `Something went wrong: ${response.statusText}`
+                    description: `Something went wrong: ${response.statusText}`,
                 })
             }
 
@@ -164,9 +141,8 @@ export function BackgroundRemover({
             const errorMessage = err instanceof Error ? err.message : "An error occurred"
             setError(errorMessage)
             setIsProcessing(false)
-            setIsUploading(false)
             toast.error("Upload failed", {
-                description: errorMessage
+                description: errorMessage,
             })
         }
     }
@@ -189,7 +165,7 @@ export function BackgroundRemover({
         } catch (err) {
             setError("Failed to download image")
             toast.error("Download failed", {
-                description: "Failed to download the processed image."
+                description: "Failed to download the processed image.",
             })
         }
     }
@@ -200,8 +176,6 @@ export function BackgroundRemover({
         setProgress(0)
         setError(null)
         setIsProcessing(false)
-        setIsUploading(false)
-        setShowResults(false)
         toast.info("Ready for new image")
     }
 
@@ -217,11 +191,14 @@ export function BackgroundRemover({
         <PageContainer scrollable={false}>
             <div className="flex flex-1 flex-col space-y-6">
                 <div className="flex items-end justify-between">
-                    {
-                        showHeader && <div className="flex-1">
-                            <Heading title="Background Remover" description="Remove the background from your images with AI precision." />
+                    {showHeader && (
+                        <div className="flex-1">
+                            <Heading
+                                title="Background Remover"
+                                description="Remove the background from your images with AI precision."
+                            />
                         </div>
-                    }
+                    )}
                 </div>
 
                 {!originalImage && (
@@ -232,16 +209,13 @@ export function BackgroundRemover({
                     </div>
                 )}
 
-                {
-                    imageUpdate ? <Card>
+                {originalImage && processedImage && (
+                    <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold">Background Removal Preview</h3>
                                 <div className="flex items-center gap-2">
-                                    <Button
-                                        onClick={handleDownload}
-                                        className="bg-primary hover:bg-primary/90 w-full lg:w-auto"
-                                    >
+                                    <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 w-full lg:w-auto">
                                         <Download className="h-4 w-4 mr-2" />
                                         Download
                                     </Button>
@@ -266,195 +240,49 @@ export function BackgroundRemover({
                                         </DropdownMenuContent>
                                     </DropdownMenu>
 
-                                    {editorOpen && (
-                                        <ImageEditor
-                                            handleClose={handleEditorClose}
-                                            imageSource={processedImage!}
-                                        />
-                                    )}
+                                    {editorOpen && <ImageEditor handleClose={handleEditorClose} imageSource={processedImage} />}
                                 </div>
                             </div>
-
-
                         </CardHeader>
-                        <CardContent><Comparison className="aspect-video" mode="drag">
-                            <ComparisonItem position="left">
-                                <Image
-                                    src={originalImage!}
-                                    alt="Original"
-                                    className="w-full h-full object-contain relative z-50"
-                                />
-                            </ComparisonItem>
-                            <ComparisonItem position="right">
-                                <Image
-                                    src={processedImage!}
-                                    alt="Processed"
-                                    className="w-full h-full object-contain relative z-50"
-                                />
-                            </ComparisonItem>
-                            <ComparisonHandle />
-                        </Comparison></CardContent>
+                        <CardContent>
+                            <Comparison className="aspect-video" mode="drag">
+                                <ComparisonItem position="left">
+                                    <Image
+                                        src={originalImage || "/placeholder.svg"}
+                                        alt="Original"
+                                        fill
+                                        className="object-contain relative z-50"
+                                    />
+                                </ComparisonItem>
+                                <ComparisonItem position="right">
+                                    <Image
+                                        src={processedImage || "/placeholder.svg"}
+                                        alt="Processed"
+                                        fill
+                                        className="object-contain relative z-50"
+                                    />
+                                </ComparisonItem>
+                                <ComparisonHandle />
+                            </Comparison>
+                        </CardContent>
                     </Card>
-                        : <div className="w-full h-64 flex items-center justify-center bg-muted rounded-lg">
-                            <p className="text-sm text-muted-foreground">Waiting for background removal...</p>
-                        </div>
-                }
+                )}
 
-                {/* Processing or Results Section */}
-                {/* {originalImage && (
-                    <div className="space-y-6">
-                        {isUploading && (
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-center space-x-4">
-                                        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-                                        <div>
-                                            <p className="text-sm font-medium">Uploading image...</p>
-                                            <p className="text-xs text-muted-foreground">Preparing for background removal</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {isProcessing && !showResults && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                                        Processing Your Image
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-medium text-muted-foreground">Original Image</h4>
-                                            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                                                <Image
-                                                    src={originalImage}
-                                                    alt="Original"
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
-                                            <ProcessingOverlay
-                                                image={originalImage}
-                                                progress={progress}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">Progress</span>
-                                            <span className="font-medium">{Math.round(progress)}%</span>
-                                        </div>
-                                        <Progress value={progress} className="h-2" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {showResults && originalImage && processedImage && (
-                            <Card className="border shadow-sm">
-                                <CardHeader className="pb-4">
-                                    <div className="flex items-center lg:justify-between justify-center flex-col lg:flex-row gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                                                <CheckCircle className="h-4 w-4 text-foreground" />
-                                            </div>
-                                            <div>
-                                                <CardTitle className="text-lg text-foreground">
-                                                    Background Removed Successfully
-                                                </CardTitle>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Your image is ready for download
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                onClick={handleDownload}
-                                                className="bg-primary hover:bg-primary/90 w-full lg:w-auto"
-                                            >
-                                                <Download className="h-4 w-4 mr-2" />
-                                                Download
-                                            </Button>
-
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="outline" size="icon">
-                                                        <MoreVertical className="h-4 w-4" />
-                                                        <span className="sr-only">More options</span>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48">
-                                                    <DropdownMenuItem onClick={handleEditorOpen}>
-                                                        <Pencil className="h-4 w-4 mr-2" />
-                                                        Edit Image
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={handleReset}>
-                                                        <RotateCcw className="h-4 w-4 mr-2" />
-                                                        New Image
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-
-                                            {editorOpen && (
-                                                <ImageEditor
-                                                    handleClose={handleEditorClose}
-                                                    imageSource={processedImage}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-medium">Original Image</h4>
-                                            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                                                <Image
-                                                    src={originalImage}
-                                                    alt="Original"
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-medium">Background Removed</h4>
-                                            <div
-                                                className="aspect-square relative overflow-hidden rounded-lg"
-                                                style={{
-                                                    backgroundImage: `
-                            linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-                            linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-                            linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-                            linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
-                          `,
-                                                    backgroundSize: '20px 20px',
-                                                    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-                                                }}
-                                            >
-                                                <Image
-                                                    src={processedImage}
-                                                    alt="Background removed"
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
+                {originalImage && !processedImage && isProcessing && (
+                    <Card>
+                        <CardContent className="p-6">
+                            <div className="w-full h-64 flex flex-col items-center justify-center bg-muted rounded-lg">
+                                <p className="text-sm text-muted-foreground mb-4">Processing background removal...</p>
+                                <div className="w-full max-w-xs bg-secondary rounded-full h-2">
+                                    <div
+                                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-2">{progress}%</p>
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
 
                 {error && (
@@ -471,7 +299,7 @@ export function BackgroundRemover({
                             </div>
                         </CardContent>
                     </Card>
-                )} */}
+                )}
 
                 <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
                     <AlertDialogContent>
@@ -488,6 +316,6 @@ export function BackgroundRemover({
                     </AlertDialogContent>
                 </AlertDialog>
             </div>
-        </PageContainer >
+        </PageContainer>
     )
 }
