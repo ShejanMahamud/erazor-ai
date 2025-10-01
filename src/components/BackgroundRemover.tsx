@@ -29,6 +29,7 @@ import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
+import { Comparison, ComparisonHandle, ComparisonItem } from "./ui/kibo-ui/comparison"
 
 
 export function BackgroundRemover({
@@ -226,6 +227,32 @@ export function BackgroundRemover({
                         </Suspense>
                     </div>
                 )}
+
+                {
+                    imageUpdate && <Comparison className="aspect-video" mode="drag">
+                        <ComparisonItem className="bg-red-500" position="left">
+                            <Image
+                                alt="Placeholder 1"
+                                className="opacity-50"
+                                height={1080}
+                                src={originalImage!}
+                                unoptimized
+                                width={1920}
+                            />
+                        </ComparisonItem>
+                        <ComparisonItem className="bg-blue-500" position="right">
+                            <Image
+                                alt="Placeholder 2"
+                                className="opacity-50"
+                                height={1440}
+                                src={processedImage!}
+                                unoptimized
+                                width={2560}
+                            />
+                        </ComparisonItem>
+                        <ComparisonHandle />
+                    </Comparison>
+                }
 
                 {/* Processing or Results Section */}
                 {originalImage && (
