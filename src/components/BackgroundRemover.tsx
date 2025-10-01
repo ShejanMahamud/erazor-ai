@@ -154,7 +154,8 @@ export function BackgroundRemover({
             }
 
             const data = await response.json()
-            if (data.message === "USAGE_LIMIT_REACHED") {
+
+            if (/USAGE_LIMIT_EXCEEDED/.test(data.details)) {
                 setShowUsageLimitDialog(true)
             }
 
