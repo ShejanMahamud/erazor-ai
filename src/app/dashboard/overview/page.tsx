@@ -71,14 +71,13 @@ export default function OverviewPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
-
-            <div className="mx-auto max-w-[1600px] space-y-6">
+        <div className="min-h-screen bg-background">
+            {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
+            <div className="mx-auto max-w-[1600px] space-y-6 p-4 md:p-6 lg:p-8">
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <Heading title="Dashboard" description="Welcome back, here's what's happening." />
                 </div>
-                {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
                 <div className="w-full h-[400px] pt-4">
                     {/* Large Hero Card */}
                     <Card className="h-full border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
