@@ -30,10 +30,21 @@ export function BackgroundRemover({
     const hasShownToastRef = useRef(false)
     const { imageUpdate } = useImageSocket()
 
+    console.log("[v0] imageUpdate:", imageUpdate)
+    console.log("[v0] originalImage:", originalImage)
+
     const processedImage = useMemo(() => {
-        if (!imageUpdate) return null
-        return imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || null
+        if (!imageUpdate) {
+            console.log("[v0] No imageUpdate, returning null")
+            return null
+        }
+        const result = imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || null
+        console.log("[v0] processedImage computed:", result)
+        return result
     }, [imageUpdate])
+
+    console.log("[v0] processedImage:", processedImage)
+    console.log("[v0] isUploading:", isUploading)
 
     useEffect(() => {
         if (processedImage && !hasShownToastRef.current) {
@@ -149,6 +160,15 @@ export function BackgroundRemover({
                 {!originalImage && (
                     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4">
                         <div className="max-w-2xl w-full text-center space-y-8">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
+                                    <Sparkles className="w-8 h-8 text-primary" />
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Remove Image Background</h1>
+                                <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                                    100% automatic and free. Remove backgrounds from images in seconds with AI precision.
+                                </p>
+                            </div>
 
                             <Suspense>
                                 <FileUpload onChange={handleFileUpload} />
@@ -167,13 +187,6 @@ export function BackgroundRemover({
                         </div>
                     </div>
                 )}
-
-                {
-                    imageUpdate && <Image src={imageUpdate.bgRemovedImageUrlLQ || imageUpdate.bgRemovedImageUrlHQ} alt="Processing" />
-                }
-                {
-                    processedImage && <Image src={processedImage} alt="Background Removed" />
-                }
 
                 {isProcessing && (
                     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4">
