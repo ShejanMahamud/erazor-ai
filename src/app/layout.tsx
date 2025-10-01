@@ -1,4 +1,5 @@
 import CookieConsent from '@/components/CookieConsent';
+import { InitSession } from '@/components/InitSession';
 import Providers from '@/components/layout/providers';
 import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
 import ClickSpark from '@/components/ui/click-spark';
@@ -335,6 +336,8 @@ export default async function RootLayout({
                 sparkCount={8}
                 duration={400}
               >
+                <InitSession />
+
                 {children}
               </ClickSpark>
             </Providers>
