@@ -1,49 +1,69 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { io, type Socket } from "socket.io-client"
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
-interface ImageUpdate {
-  bgRemovedImageUrlHQ?: string
-  bgRemovedImageUrlLQ?: string
-  status?: string
-  progress?: number
-}
+let socket: Socket | null = null;
+let subscribers = 0;
 
 export function useImageSocket() {
-  const [imageUpdate, setImageUpdate] = useState<ImageUpdate | null>(null)
-  const [socket, setSocket] = useState<Socket | null>(null)
+  const [connected, setConnected] = useState<boolean>(!!socket?.connected);
+  const [imageUpdate, setImageUpdate] = useState<any>(null);
+  const userId = Cookies.get("user_id")
+  const anonId = Cookies.get("anon_id")
+  const userIdentifier = userId || anonId;
+
 
   useEffect(() => {
-    // Initialize socket connection
-    const socketInstance = io({
-      path: process.env.NEXT_PUBLIC_IMAGE_WS_URL,
+    // If no identifier, reflect disconnected UI and exit early.
+    if (!userIdentifier) {
+      setConnected(false);
+      return;
+    }
+
+    subscribers++;
+    const wsUrl = process.env.NEXT_PUBLIC_IMAGE_WS_URL;
+    if (!wsUrl) {
+      throw new Error("NEXT_PUBLIC_IMAGE_WS_URL is not defined. Please check your environment variables.");
+    }
+    socket = io(wsUrl, {
       transports: ["websocket"],
-    })
+    });
 
-    socketInstance.on("connect", () => {
-      console.log("Socket connected")
-    })
+    const onConnect = () => {
+      setConnected(true);
+      // emit join for the current identifier (closure captures the current value)
+      if (userIdentifier) socket?.emit("join", userIdentifier);
+    };
 
-    socketInstance.on("imageUpdate", (data: ImageUpdate) => {
-      console.log("Image update received:", data)
-      setImageUpdate(data)
-    })
+    const onImageUpdate = (data: any) => setImageUpdate(data);
+    const onDisconnect = () => setConnected(false);
 
-    socketInstance.on("disconnect", () => {
-      console.log("Socket disconnected")
-    })
+    socket.on("connect", onConnect);
+    socket.on("image-status-update", onImageUpdate);
+    socket.on("disconnect", onDisconnect);
 
-    socketInstance.on("error", (error) => {
-      console.error("Socket error:", error)
-    })
-
-    setSocket(socketInstance)
+    // If the socket already connected before listeners were attached,
+    // call onConnect() to sync state and emit join (once).
+    if (socket.connected) {
+      onConnect();
+    }
 
     return () => {
-      socketInstance.disconnect()
-    }
-  }, [])
+      subscribers--;
+      socket?.off("connect", onConnect);
+      socket?.off("image-status-update", onImageUpdate);
+      socket?.off("disconnect", onDisconnect);
 
-  return { imageUpdate, socket }
+      setTimeout(() => {
+        if (subscribers <= 0 && socket) {
+          socket.disconnect();
+          socket = null;
+        }
+      }, 0);
+    };
+  }, [userIdentifier]);
+
+  return { connected, imageUpdate };
 }
