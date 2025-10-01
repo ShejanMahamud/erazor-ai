@@ -32,6 +32,8 @@ import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
 
 
+type ProcessingState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error'
+
 export function BackgroundRemover({
     showHeader = true,
 }: {
@@ -39,15 +41,14 @@ export function BackgroundRemover({
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
     const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
-    const [isProcessing, setIsProcessing] = useState(false)
+    const [state, setState] = useState<ProcessingState>('idle')
     const [originalImage, setOriginalImage] = useState<string | null>(null)
     const [processedImage, setProcessedImage] = useState<string | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
-    const [isUploading, setIsUploading] = useState(false)
-    const [showResults, setShowResults] = useState(false)
     const { imageUpdate } = useImageSocket()
     const router = useRouter()
+
     useEffect(() => {
         if (!imageUpdate) return;
 
@@ -56,9 +57,8 @@ export function BackgroundRemover({
 
         if (processedImageUrl) {
             setProcessedImage(processedImageUrl);
-            setIsProcessing(false);
+            setState('completed');
             setProgress(100);
-            setShowResults(true);
             toast.success("Background removed successfully!", {
                 description: "Your image is ready for download."
             });
@@ -67,7 +67,7 @@ export function BackgroundRemover({
 
     // Simulate progress when processing starts
     useEffect(() => {
-        if (isProcessing && !showResults) {
+        if (state === 'processing') {
             const progressInterval = setInterval(() => {
                 setProgress(prev => {
                     const newProgress = prev >= 90 ? prev : prev + 10;
@@ -79,7 +79,7 @@ export function BackgroundRemover({
                 clearInterval(progressInterval);
             };
         }
-    }, [isProcessing, showResults]);
+    }, [state]);
 
     const handleFileUpload = async (files: File[]) => {
         if (files.length === 0) return
@@ -108,17 +108,14 @@ export function BackgroundRemover({
         setError(null)
         setProcessedImage(null)
         setProgress(0)
-        setIsProcessing(false)
-        setShowResults(false)
-        setIsUploading(true)
+        setState('uploading')
 
         // Create preview of original image immediately
         const reader = new FileReader()
         reader.onload = (e) => {
             const imageDataUrl = e.target?.result as string;
             setOriginalImage(imageDataUrl)
-            setIsUploading(false)
-            setIsProcessing(true)
+            setState('processing')
             setProgress(10) // Start with initial progress
             toast.success('Image uploaded successfully!', {
                 description: 'Processing background removal...'
@@ -136,8 +133,7 @@ export function BackgroundRemover({
             })
 
             if (!response.ok) {
-                setIsProcessing(false)
-                setIsUploading(false)
+                setState('error')
                 setError("Upload failed")
                 return toast.error("Upload failed", {
                     description: `Something went wrong: ${response.statusText}`
@@ -154,8 +150,7 @@ export function BackgroundRemover({
                         onClick: () => router.push("/pricing")
                     }
                 })
-                setIsProcessing(false)
-                setIsUploading(false)
+                setState('error')
                 setShowUsageLimitDialog(true)
             }
 
@@ -163,8 +158,7 @@ export function BackgroundRemover({
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "An error occurred"
             setError(errorMessage)
-            setIsProcessing(false)
-            setIsUploading(false)
+            setState('error')
             toast.error("Upload failed", {
                 description: errorMessage
             })
@@ -199,9 +193,7 @@ export function BackgroundRemover({
         setProcessedImage(null)
         setProgress(0)
         setError(null)
-        setIsProcessing(false)
-        setIsUploading(false)
-        setShowResults(false)
+        setState('idle')
         toast.info("Ready for new image")
     }
 
@@ -236,7 +228,7 @@ export function BackgroundRemover({
                 {originalImage && (
                     <div className="space-y-6">
                         {/* Upload Loading State */}
-                        {isUploading && (
+                        {state === 'uploading' && (
                             <Card>
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-center space-x-4">
@@ -251,7 +243,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Processing State */}
-                        {isProcessing && !showResults && (
+                        {state === 'processing' && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
@@ -296,7 +288,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Results State */}
-                        {showResults && processedImage && (
+                        {state === 'completed' && processedImage && (
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-4">
                                     <div className="flex items-center lg:justify-between justify-center flex-col lg:flex-row gap-4">
