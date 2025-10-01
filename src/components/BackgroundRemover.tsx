@@ -45,7 +45,7 @@ export function BackgroundRemover({
     const [error, setError] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
-    const { imageUpdate, connected } = useImageSocket()
+    const { imageUpdate } = useImageSocket()
 
     useEffect(() => {
         if (!imageUpdate) return;
@@ -241,7 +241,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Processing State */}
-                        {isProcessing && !showResults && (
+                        {!imageUpdate && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
@@ -286,7 +286,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Results State */}
-                        {showResults && originalImage && processedImage && (
+                        {imageUpdate && (
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-4">
                                     <div className="flex items-center lg:justify-between justify-center flex-col lg:flex-row gap-4">
@@ -336,7 +336,7 @@ export function BackgroundRemover({
                                             {editorOpen && (
                                                 <ImageEditor
                                                     handleClose={handleEditorClose}
-                                                    imageSource={processedImage}
+                                                    imageSource={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ}
                                                 />
                                             )}
                                         </div>
@@ -373,7 +373,7 @@ export function BackgroundRemover({
                                                 }}
                                             >
                                                 <Image
-                                                    src={processedImage}
+                                                    src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ}
                                                     alt="Background removed"
                                                     className="w-full h-full object-contain"
                                                 />
