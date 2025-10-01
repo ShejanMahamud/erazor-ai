@@ -11,8 +11,10 @@ export default function BackgroundRemoverPage() {
 
   return (
     <PageContainer scrollable={false}>
-      {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
-      <BackgroundRemover showHeader={true} />
+      <div className="flex flex-1 flex-col space-y-6">
+        {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
+        <BackgroundRemover showHeader={true} />
+      </div>
     </PageContainer>
   )
 }
