@@ -14,7 +14,7 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { Download, ImageIcon, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { ImageEditor } from "./ImageEditor"
 import { Button } from "./ui/button"
@@ -38,23 +38,26 @@ export function BackgroundRemover({
     const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [originalImage, setOriginalImage] = useState<string | null>(null)
-    const [processedImage, setProcessedImage] = useState<string | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
+    const [hasShownSuccessToast, setHasShownSuccessToast] = useState(false)
     const { imageUpdate } = useImageSocket()
 
+    const processedImage = useMemo(() => {
+        if (!imageUpdate) return null
+        return imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || null
+    }, [imageUpdate])
+
     useEffect(() => {
-        if (!imageUpdate) return
-        const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ
-        if (processedImageUrl && isProcessing) {
-            setProcessedImage(processedImageUrl)
+        if (processedImage && isProcessing && !hasShownSuccessToast) {
             setIsProcessing(false)
             setProgress(100)
+            setHasShownSuccessToast(true)
             toast.success("Background removed successfully!", {
                 description: "Your image is ready for download.",
             })
         }
-    }, [imageUpdate, isProcessing])
+    }, [processedImage, isProcessing, hasShownSuccessToast])
 
     useEffect(() => {
         if (isProcessing) {
@@ -95,9 +98,9 @@ export function BackgroundRemover({
         }
 
         setError(null)
-        setProcessedImage(null)
         setProgress(0)
         setIsProcessing(false)
+        setHasShownSuccessToast(false)
 
         // Create preview of original image immediately
         const reader = new FileReader()
@@ -172,10 +175,10 @@ export function BackgroundRemover({
 
     const handleReset = () => {
         setOriginalImage(null)
-        setProcessedImage(null)
         setProgress(0)
         setError(null)
         setIsProcessing(false)
+        setHasShownSuccessToast(false)
         toast.info("Ready for new image")
     }
 
@@ -208,11 +211,6 @@ export function BackgroundRemover({
                         </Suspense>
                     </div>
                 )}
-                {
-                    imageUpdate && (
-                        <Image src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || ""} alt="Processed" className="hidden" />
-                    )
-                }
 
                 {originalImage && processedImage && (
                     <Card>
@@ -250,7 +248,7 @@ export function BackgroundRemover({
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <Comparison className="w-full" mode="drag">
+                            <Comparison className="aspect-video" mode="drag">
                                 <ComparisonItem position="left">
                                     <Image
                                         src={originalImage || "/placeholder.svg"}
