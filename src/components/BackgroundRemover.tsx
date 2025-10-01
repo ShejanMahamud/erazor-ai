@@ -50,10 +50,24 @@ export function BackgroundRemover({
     const userId = Cookie.get('user_id') || null;
     const { imageUpdate, connected } = useImageSocket(userId || anonUserId)
 
+    // Log connection status changes
     useEffect(() => {
-        if (!imageUpdate || showResults) return;
+        console.log("[BackgroundRemover] Socket connection status:", connected);
+        if (!connected && isProcessing) {
+            console.warn("[BackgroundRemover] Socket disconnected while processing!");
+        }
+    }, [connected, isProcessing]);
+
+    useEffect(() => {
+        if (!imageUpdate) return;
+        
+        console.log("[BackgroundRemover] Received image update:", imageUpdate);
+        
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-        if (processedImageUrl) {
+        
+        // Only process if we're currently processing and haven't shown results yet
+        if (processedImageUrl && isProcessing && !showResults) {
+            console.log("[BackgroundRemover] Setting processed image:", processedImageUrl);
             setProcessedImage(processedImageUrl);
             setIsProcessing(false);
             setProgress(100);
@@ -62,7 +76,7 @@ export function BackgroundRemover({
                 description: "Your image is ready for download."
             });
         }
-    }, [imageUpdate, showResults]);
+    }, [imageUpdate, isProcessing, showResults]);
 
 
     // Simulate progress when processing starts
@@ -82,13 +96,6 @@ export function BackgroundRemover({
     }, [isProcessing, showResults]);
 
     const handleFileUpload = async (files: File[]) => {
-        // For logged-in users, check connection. For anonymous users, we'll get connection after API call
-        if (userId && !connected) {
-            toast.error("Connection error", {
-                description: "Please wait for the connection to establish and try again."
-            })
-            return
-        }
         if (files.length === 0) return
 
         const file = files[0]
