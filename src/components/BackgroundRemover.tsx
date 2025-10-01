@@ -212,10 +212,6 @@ export function BackgroundRemover({
         setEditorOpen(false)
     }
 
-    if (connected) {
-        toast.success("Connected to image processing server")
-    }
-
     return (
         <PageContainer scrollable={false}>
             <div className="flex flex-1 flex-col space-y-6">
