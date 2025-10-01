@@ -251,7 +251,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Processing State */}
-                        {!imageUpdate && (
+                        {isProcessing && !showResults && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export function BackgroundRemover({
                         )}
 
                         {/* Results State */}
-                        {imageUpdate && (
+                        {showResults && processedImage && (
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-4">
                                     <div className="flex items-center lg:justify-between justify-center flex-col lg:flex-row gap-4">
