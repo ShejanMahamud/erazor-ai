@@ -210,7 +210,7 @@ export function BackgroundRemover({
                 )}
                 {
                     imageUpdate && (
-                        <Image src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || ""} alt="Processed" />
+                        <Image src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || ""} alt="Processed" className="hidden" />
                     )
                 }
 
@@ -250,7 +250,7 @@ export function BackgroundRemover({
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <Comparison className="aspect-video" mode="drag">
+                            <Comparison className="w-full" mode="drag">
                                 <ComparisonItem position="left">
                                     <Image
                                         src={originalImage || "/placeholder.svg"}
