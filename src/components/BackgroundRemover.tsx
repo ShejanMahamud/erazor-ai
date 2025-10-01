@@ -28,6 +28,11 @@ import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 // import { ImageEditor } from "./ImageEditor"
+import { Download, MoreVertical, Pencil, RotateCcw } from "lucide-react"
+import { ImageEditor } from "./ImageEditor"
+import { Button } from "./ui/button"
+import { Card, CardContent, CardHeader } from "./ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Heading } from "./ui/heading"
 import { Comparison, ComparisonHandle, ComparisonItem } from "./ui/kibo-ui/comparison"
 
@@ -228,29 +233,71 @@ export function BackgroundRemover({
                 )}
 
                 {
-                    imageUpdate && <Comparison className="aspect-video" mode="drag">
-                        <ComparisonItem className="bg-red-500" position="left">
-                            <Image
-                                alt="Placeholder 1"
-                                className="opacity-50"
-                                height={1080}
-                                src={originalImage!}
-                                unoptimized
-                                width={1920}
-                            />
-                        </ComparisonItem>
-                        <ComparisonItem className="bg-blue-500" position="right">
-                            <Image
-                                alt="Placeholder 2"
-                                className="opacity-50"
-                                height={1440}
-                                src={processedImage!}
-                                unoptimized
-                                width={2560}
-                            />
-                        </ComparisonItem>
-                        <ComparisonHandle />
-                    </Comparison>
+                    imageUpdate ? <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold">Background Removal Preview</h3>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        onClick={handleDownload}
+                                        className="bg-primary hover:bg-primary/90 w-full lg:w-auto"
+                                    >
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Download
+                                    </Button>
+
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="icon">
+                                                <MoreVertical className="h-4 w-4" />
+                                                <span className="sr-only">More options</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-48">
+                                            <DropdownMenuItem onClick={handleEditorOpen}>
+                                                <Pencil className="h-4 w-4 mr-2" />
+                                                Edit Image
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onClick={handleReset}>
+                                                <RotateCcw className="h-4 w-4 mr-2" />
+                                                New Image
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+
+                                    {editorOpen && (
+                                        <ImageEditor
+                                            handleClose={handleEditorClose}
+                                            imageSource={processedImage!}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+
+
+                        </CardHeader>
+                        <CardContent><Comparison className="aspect-video" mode="drag">
+                            <ComparisonItem position="left">
+                                <Image
+                                    src={originalImage!}
+                                    alt="Original"
+                                    className="w-full h-full object-contain relative z-50"
+                                />
+                            </ComparisonItem>
+                            <ComparisonItem position="right">
+                                <Image
+                                    src={processedImage!}
+                                    alt="Processed"
+                                    className="w-full h-full object-contain relative z-50"
+                                />
+                            </ComparisonItem>
+                            <ComparisonHandle />
+                        </Comparison></CardContent>
+                    </Card>
+                        : <div className="w-full h-64 flex items-center justify-center bg-muted rounded-lg">
+                            <p className="text-sm text-muted-foreground">Waiting for background removal...</p>
+                        </div>
                 }
 
                 {/* Processing or Results Section */}
@@ -441,6 +488,6 @@ export function BackgroundRemover({
                     </AlertDialogContent>
                 </AlertDialog>
             </div>
-        </PageContainer>
+        </PageContainer >
     )
 }
