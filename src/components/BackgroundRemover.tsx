@@ -208,6 +208,11 @@ export function BackgroundRemover({
                         </Suspense>
                     </div>
                 )}
+                {
+                    imageUpdate && (
+                        <Image src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ || ""} alt="Processed" />
+                    )
+                }
 
                 {originalImage && processedImage && (
                     <Card>
