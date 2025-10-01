@@ -23,7 +23,6 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
-import Cookie from 'js-cookie'
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
@@ -46,17 +45,15 @@ export function BackgroundRemover({
     const [error, setError] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
-    const anonUserId = Cookie.get('anon_id') || null;
-    const userId = Cookie.get('user_id') || null;
-    const { imageUpdate } = useImageSocket(userId || anonUserId)
+    const { imageUpdate } = useImageSocket()
 
     useEffect(() => {
         if (!imageUpdate) return;
-        
+
         console.log("[BackgroundRemover] Received image update:", imageUpdate);
-        
+
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-        
+
         // If we're processing and get a processed image, show it
         if (processedImageUrl && isProcessing && !showResults) {
             console.log("[BackgroundRemover] Setting processed image:", processedImageUrl);
