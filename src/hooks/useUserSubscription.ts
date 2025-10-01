@@ -28,7 +28,9 @@ export const useUserSubscription = (): UseUserSubscriptionReturn => {
             setError(null);
 
             try {
-                const response = await fetch(`/api/billing/subscription`);
+                const response = await fetch(`/api/billing/subscription`, {
+                    next: { revalidate: 300 }
+                });
 
                 if (!isMounted) return;
 

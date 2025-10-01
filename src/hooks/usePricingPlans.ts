@@ -8,10 +8,6 @@ interface UsePricingPlansReturn {
     error: string | null;
 }
 
-/**
- * Custom hook for fetching and transforming pricing plans
- * @returns Object containing tiers, loading state, and error
- */
 export const usePricingPlans = (): UsePricingPlansReturn => {
     const [tiers, setTiers] = useState<TransformedPricingTier[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +21,9 @@ export const usePricingPlans = (): UsePricingPlansReturn => {
                 setLoading(true);
                 setError(null);
 
-                const response = await fetch('/api/billing/plans');
+                const response = await fetch('/api/billing/plans', {
+                    next: { revalidate: 3600 } // Revalidate every hour
+                });
 
                 if (!isMounted) return; // Component unmounted, don't update state
 
