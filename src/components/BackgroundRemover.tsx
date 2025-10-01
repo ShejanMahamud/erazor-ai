@@ -46,18 +46,9 @@ export function BackgroundRemover({
     const [error, setError] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
-    const [currentImageId, setCurrentImageId] = useState<string | null>(null)
     const anonUserId = Cookie.get('anon_id') || null;
     const userId = Cookie.get('user_id') || null;
-    const { imageUpdate, connected } = useImageSocket(userId || anonUserId)
-
-    // Log connection status changes
-    useEffect(() => {
-        console.log("[BackgroundRemover] Socket connection status:", connected);
-        if (!connected && isProcessing) {
-            console.warn("[BackgroundRemover] Socket disconnected while processing!");
-        }
-    }, [connected, isProcessing]);
+    const { imageUpdate } = useImageSocket(userId || anonUserId)
 
     useEffect(() => {
         if (!imageUpdate) return;
@@ -65,32 +56,19 @@ export function BackgroundRemover({
         console.log("[BackgroundRemover] Received image update:", imageUpdate);
         
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-        const imageId = imageUpdate?._id || imageUpdate?.id;
         
-        // If we're processing and don't have an image ID yet, store it from the update
-        if (isProcessing && !currentImageId && imageId) {
-            console.log("[BackgroundRemover] Setting image ID from socket update:", imageId);
-            setCurrentImageId(imageId);
+        // If we're processing and get a processed image, show it
+        if (processedImageUrl && isProcessing && !showResults) {
+            console.log("[BackgroundRemover] Setting processed image:", processedImageUrl);
+            setProcessedImage(processedImageUrl);
+            setIsProcessing(false);
+            setProgress(100);
+            setShowResults(true);
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
+            });
         }
-        
-        // Process if we have a processed image and either:
-        // 1. We're expecting results for this specific image ID, OR
-        // 2. We're processing and don't have an ID yet (first update)
-        if (processedImageUrl && !showResults && isProcessing) {
-            if (!currentImageId || imageId === currentImageId) {
-                console.log("[BackgroundRemover] Setting processed image:", processedImageUrl);
-                setProcessedImage(processedImageUrl);
-                setIsProcessing(false);
-                setProgress(100);
-                setShowResults(true);
-                toast.success("Background removed successfully!", {
-                    description: "Your image is ready for download."
-                });
-            } else {
-                console.log("[BackgroundRemover] Ignoring update for different image. Expected:", currentImageId, "Got:", imageId);
-            }
-        }
-    }, [imageUpdate, currentImageId, showResults, isProcessing]);
+    }, [imageUpdate, isProcessing, showResults]);
 
 
     // Simulate progress when processing starts
@@ -136,10 +114,9 @@ export function BackgroundRemover({
         setError(null)
         setProcessedImage(null)
         setProgress(0)
-        setIsProcessing(true) // Set immediately to catch early socket updates
+        setIsProcessing(true) // Set immediately to catch socket updates
         setShowResults(false)
         setIsUploading(true)
-        setCurrentImageId(null)
 
         // Create preview of original image immediately
         const reader = new FileReader()
@@ -178,16 +155,6 @@ export function BackgroundRemover({
             if (/USAGE_LIMIT_EXCEEDED/.test(data.details)) {
                 setShowUsageLimitDialog(true)
                 setIsProcessing(false)
-                return data
-            }
-
-            // Store the image ID to match with socket updates
-            if (data?.image?._id || data?.image?.id) {
-                const imageId = data.image._id || data.image.id;
-                console.log("[BackgroundRemover] Tracking image ID:", imageId);
-                setCurrentImageId(imageId);
-            } else {
-                console.warn("[BackgroundRemover] No image ID in response:", data);
             }
 
             return data
@@ -233,7 +200,6 @@ export function BackgroundRemover({
         setIsProcessing(false)
         setIsUploading(false)
         setShowResults(false)
-        setCurrentImageId(null)
         toast.info("Ready for new image")
     }
 
