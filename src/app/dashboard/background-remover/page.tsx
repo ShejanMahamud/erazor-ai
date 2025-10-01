@@ -10,8 +10,8 @@ export default function BackgroundRemoverPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
       <div className="flex flex-1 flex-col space-y-6 p-4 md:p-6 lg:p-8">
-        {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
         <BackgroundRemover showHeader={true} />
       </div>
     </div>
