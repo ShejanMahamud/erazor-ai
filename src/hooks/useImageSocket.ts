@@ -5,12 +5,12 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 let subscribers = 0;
+let currentRoom: string | null = null;
 
 export function useImageSocket(userIdentifier: string | null) {
   const [connected, setConnected] = useState<boolean>(!!socket?.connected);
   const [imageUpdate, setImageUpdate] = useState<any>(null);
   const userIdentifierRef = useRef(userIdentifier);
-  const hasJoinedRef = useRef(false);
 
   // Update ref when userIdentifier changes
   useEffect(() => {
@@ -40,17 +40,19 @@ export function useImageSocket(userIdentifier: string | null) {
     }
 
     const joinRoom = () => {
-      if (socket?.connected && userIdentifierRef.current) {
+      if (socket?.connected && userIdentifierRef.current && currentRoom !== userIdentifierRef.current) {
         console.log(`[Socket] Joining room for user: ${userIdentifierRef.current}`);
         socket.emit("join", userIdentifierRef.current);
-        hasJoinedRef.current = true;
+        currentRoom = userIdentifierRef.current;
+      } else if (currentRoom === userIdentifierRef.current) {
+        console.log(`[Socket] Already in room: ${currentRoom}`);
       }
     };
 
     const onConnect = () => {
       console.log("[Socket] Connected");
       setConnected(true);
-      hasJoinedRef.current = false;
+      currentRoom = null; // Reset room on new connection
       joinRoom();
     };
 
@@ -62,7 +64,7 @@ export function useImageSocket(userIdentifier: string | null) {
     const onDisconnect = (reason: string) => {
       console.log("[Socket] Disconnected:", reason);
       setConnected(false);
-      hasJoinedRef.current = false;
+      currentRoom = null;
     };
 
     const onConnectError = (error: Error) => {
@@ -87,7 +89,8 @@ export function useImageSocket(userIdentifier: string | null) {
     socket.on("reconnect_attempt", onReconnectAttempt);
 
     // If socket is already connected before listeners attach, join immediately
-    if (socket.connected && !hasJoinedRef.current) {
+    if (socket.connected) {
+      setConnected(true);
       joinRoom();
     }
 
@@ -104,7 +107,7 @@ export function useImageSocket(userIdentifier: string | null) {
         console.log("[Socket] Disconnecting - no more subscribers");
         socket.disconnect();
         socket = null;
-        hasJoinedRef.current = false;
+        currentRoom = null;
       }
     };
   }, [userIdentifier]);
