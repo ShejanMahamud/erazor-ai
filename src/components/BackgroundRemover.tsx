@@ -10,24 +10,24 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+// import { Button } from "@/components/ui/button"
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+// import {
+//     DropdownMenu,
+//     DropdownMenuContent,
+//     DropdownMenuItem,
+//     DropdownMenuSeparator,
+//     DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 import { FileUpload } from "@/components/ui/file-upload"
-import { ProcessingOverlay } from "@/components/ui/processing-overlay"
-import { Progress } from "@/components/ui/progress"
+// import { ProcessingOverlay } from "@/components/ui/processing-overlay"
+// import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
-import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
+// import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { ImageEditor } from "./ImageEditor"
+// import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
 import { Comparison, ComparisonHandle, ComparisonItem } from "./ui/kibo-ui/comparison"
 
@@ -57,7 +57,6 @@ export function BackgroundRemover({
 
         // If we're processing and get a processed image, show it
         if (processedImageUrl && isProcessing && !showResults) {
-            console.log("[BackgroundRemover] Setting processed image:", processedImageUrl);
             setProcessedImage(processedImageUrl);
             setIsProcessing(false);
             setProgress(100);
@@ -255,9 +254,8 @@ export function BackgroundRemover({
                 }
 
                 {/* Processing or Results Section */}
-                {originalImage && (
+                {/* {originalImage && (
                     <div className="space-y-6">
-                        {/* Upload Loading State */}
                         {isUploading && (
                             <Card>
                                 <CardContent className="p-6">
@@ -272,7 +270,6 @@ export function BackgroundRemover({
                             </Card>
                         )}
 
-                        {/* Processing State */}
                         {isProcessing && !showResults && (
                             <Card>
                                 <CardHeader>
@@ -283,7 +280,6 @@ export function BackgroundRemover({
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* Original Image */}
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium text-muted-foreground">Original Image</h4>
                                             <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
@@ -295,7 +291,6 @@ export function BackgroundRemover({
                                             </div>
                                         </div>
 
-                                        {/* Processing Overlay */}
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
                                             <ProcessingOverlay
@@ -305,7 +300,6 @@ export function BackgroundRemover({
                                         </div>
                                     </div>
 
-                                    {/* Progress Bar */}
                                     <div className="space-y-2">
                                         <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Progress</span>
@@ -317,7 +311,6 @@ export function BackgroundRemover({
                             </Card>
                         )}
 
-                        {/* Results State */}
                         {showResults && originalImage && processedImage && (
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-4">
@@ -376,7 +369,6 @@ export function BackgroundRemover({
                                 </CardHeader>
                                 <CardContent className="space-y-6">
 
-                                    {/* Separate Images */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium">Original Image</h4>
@@ -418,7 +410,6 @@ export function BackgroundRemover({
                     </div>
                 )}
 
-                {/* Error State */}
                 {error && (
                     <Card className="border-destructive">
                         <CardContent className="p-6">
@@ -433,7 +424,7 @@ export function BackgroundRemover({
                             </div>
                         </CardContent>
                     </Card>
-                )}
+                )} */}
 
                 <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
                     <AlertDialogContent>
