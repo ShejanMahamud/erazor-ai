@@ -25,6 +25,7 @@ import { Progress } from "@/components/ui/progress"
 import { useImageSocket } from "@/hooks/useImageSocket"
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { ImageEditor } from "./ImageEditor"
@@ -46,7 +47,7 @@ export function BackgroundRemover({
     const [isUploading, setIsUploading] = useState(false)
     const [showResults, setShowResults] = useState(false)
     const { imageUpdate } = useImageSocket()
-
+    const router = useRouter()
     useEffect(() => {
         if (!imageUpdate) return;
 
@@ -146,6 +147,15 @@ export function BackgroundRemover({
             const data = await response.json()
 
             if (/USAGE_LIMIT_EXCEEDED/.test(data.details)) {
+                toast.error("Usage limit exceeded", {
+                    description: "You have reached your usage limit for background removal.",
+                    action: {
+                        label: "Upgrade Plan",
+                        onClick: () => router.push("/pricing")
+                    }
+                })
+                setIsProcessing(false)
+                setIsUploading(false)
                 setShowUsageLimitDialog(true)
             }
 
@@ -330,6 +340,10 @@ export function BackgroundRemover({
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-48">
+                                                    <DropdownMenuItem onClick={() => router.push('pricing')}>
+                                                        <Pencil className="h-4 w-4 mr-2" />
+                                                        Download HD
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={handleEditorOpen}>
                                                         <Pencil className="h-4 w-4 mr-2" />
                                                         Edit Image

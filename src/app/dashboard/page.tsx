@@ -3,15 +3,29 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, and manage your AI-powered photo editing tools.',
+  title: {
+    default: 'Dashboard | Erazor AI - AI Background Remover',
+    template: '%s | Erazor AI Dashboard'
+  },
+  description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.',
   keywords: [
     'dashboard',
     'AI background remover',
     'image editor',
     'photo editing tools',
-    'background removal'
+    'background removal dashboard',
+    'image processing history',
+    'Erazor AI dashboard'
   ],
+  openGraph: {
+    title: 'Dashboard | Erazor AI - AI Background Remover',
+    description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.',
+    type: 'website'
+  },
+  twitter: {
+    title: 'Dashboard | Erazor AI - AI Background Remover',
+    description: 'Access your Erazor AI dashboard to remove backgrounds, edit images, view processing history, and manage your AI-powered photo editing tools.'
+  },
   robots: {
     index: false,
     follow: false
@@ -26,6 +40,6 @@ export default async function Dashboard() {
   if (!userId) {
     return redirect('/auth/sign-in');
   } else {
-    redirect('/dashboard/overview');
+    redirect('/dashboard/background-remover');
   }
 }
