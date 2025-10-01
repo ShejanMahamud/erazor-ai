@@ -7,7 +7,6 @@ import { io, Socket } from "socket.io-client";
 // Global socket instance with reference counting
 let socket: Socket | null = null;
 let subscribers = 0;
-let connectionPromise: Promise<void> | null = null;
 
 export function useImageSocket() {
   const [connected, setConnected] = useState<boolean>(false);
@@ -15,17 +14,20 @@ export function useImageSocket() {
 
   // Use refs to avoid stale closures
   const mountedRef = useRef(true);
-  const userIdentifierRef = useRef<string | null>(null);
+  const setImageUpdateRef = useRef(setImageUpdate);
+  const setConnectedRef = useRef(setConnected);
 
-  // Get user identifier once and store in ref
+  // Keep refs up to date
   useEffect(() => {
+    setImageUpdateRef.current = setImageUpdate;
+    setConnectedRef.current = setConnected;
+  });
+
+  useEffect(() => {
+    // Get user identifier
     const anonUserId = Cookies.get('anon_id');
     const userId = Cookies.get('user_id');
-    userIdentifierRef.current = userId || anonUserId || null;
-  }, []);
-
-  useEffect(() => {
-    const userIdentifier = userIdentifierRef.current;
+    const userIdentifier = userId || anonUserId;
 
     // If no identifier, reflect disconnected UI and exit early
     if (!userIdentifier) {
@@ -53,32 +55,36 @@ export function useImageSocket() {
         reconnectionDelayMax: 5000,
         reconnectionAttempts: 5,
       });
+
+      console.log("Socket created:", wsUrl);
     }
 
     const onConnect = () => {
-      if (!mountedRef.current) return;
-      setConnected(true);
+      console.log("Socket connected, emitting join for:", userIdentifier);
+      setConnectedRef.current(true);
       // Emit join with the current user identifier
-      const currentIdentifier = userIdentifierRef.current;
-      if (currentIdentifier && socket?.connected) {
-        socket.emit("join", currentIdentifier);
+      if (userIdentifier && socket?.connected) {
+        socket.emit("join", userIdentifier);
       }
     };
 
     const onImageUpdate = (data: any) => {
-      if (!mountedRef.current) return;
-      setImageUpdate(data);
+      console.log("Image update received:", data);
+      if (!mountedRef.current) {
+        console.log("Component unmounted, ignoring update");
+        return;
+      }
+      setImageUpdateRef.current(data);
     };
 
     const onDisconnect = () => {
-      if (!mountedRef.current) return;
-      setConnected(false);
+      console.log("Socket disconnected");
+      setConnectedRef.current(false);
     };
 
     const onError = (error: Error) => {
-      if (!mountedRef.current) return;
       console.error("Socket error:", error);
-      setConnected(false);
+      setConnectedRef.current(false);
     };
 
     // Attach event listeners
@@ -89,11 +95,13 @@ export function useImageSocket() {
 
     // If already connected, sync state and emit join
     if (socket.connected) {
+      console.log("Socket already connected");
       onConnect();
     }
 
     // Cleanup function
     return () => {
+      console.log("Component unmounting, cleaning up");
       mountedRef.current = false;
       subscribers--;
 
@@ -107,9 +115,9 @@ export function useImageSocket() {
       // Use setTimeout to allow for quick remounts (like during dev hot reload)
       setTimeout(() => {
         if (subscribers <= 0 && socket) {
+          console.log("No more subscribers, disconnecting socket");
           socket.disconnect();
           socket = null;
-          connectionPromise = null;
         }
       }, 100);
     };

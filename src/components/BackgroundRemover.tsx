@@ -46,16 +46,31 @@ export function BackgroundRemover({
     const [processedImage, setProcessedImage] = useState<string | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
-    const { imageUpdate } = useImageSocket()
+    const { imageUpdate, connected } = useImageSocket()
     const router = useRouter()
 
+    // Log connection status for debugging
     useEffect(() => {
+        console.log("Socket connected:", connected);
+    }, [connected]);
+
+    // Handle image updates from socket
+    useEffect(() => {
+        console.log("ImageUpdate changed:", imageUpdate);
+
         if (!imageUpdate) return;
+
+        // Only process if we're currently in processing state
+        if (state !== 'processing') {
+            console.log("Not in processing state, ignoring update. Current state:", state);
+            return;
+        }
 
         // Server ensures imageUpdate is always "ready" status
         const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
 
         if (processedImageUrl) {
+            console.log("Processing complete, setting image:", processedImageUrl);
             setProcessedImage(processedImageUrl);
             setState('completed');
             setProgress(100);
@@ -63,7 +78,7 @@ export function BackgroundRemover({
                 description: "Your image is ready for download."
             });
         }
-    }, [imageUpdate]);
+    }, [imageUpdate, state]);
 
     // Simulate progress when processing starts
     useEffect(() => {
@@ -339,10 +354,10 @@ export function BackgroundRemover({
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
 
-                                            {editorOpen && (
+                                            {editorOpen && processedImage && (
                                                 <ImageEditor
                                                     handleClose={handleEditorClose}
-                                                    imageSource={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ}
+                                                    imageSource={processedImage}
                                                 />
                                             )}
                                         </div>
@@ -379,7 +394,7 @@ export function BackgroundRemover({
                                                 }}
                                             >
                                                 <Image
-                                                    src={imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ}
+                                                    src={processedImage}
                                                     alt="Background removed"
                                                     className="w-full h-full object-contain"
                                                 />
