@@ -22,7 +22,7 @@ import {
 import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
-import Cookies from "js-cookie"
+import { useSession } from "@/hooks/useSession"
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -47,50 +47,33 @@ export function BackgroundRemover({
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
+    const session = useSession((state) => state);
 
+    const userIdentifier = session.userId || session.anonId;
+    if (!userIdentifier) {
+        toast.error("User identification error", {
+            description: "Could not identify user. Please ensure cookies are enabled."
+        })
+    }
 
-    useEffect(() => {
-        const userId = Cookies.get('user_id');
-        const anonUserId = Cookies.get('anon_id');
-        const userIdentifier = userId || anonUserId;
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, { withCredentials: true });
 
-        if (!userIdentifier) {
-            toast.error("User identification error", {
-                description: "Could not identify user. Please ensure cookies are enabled."
-            });
-            return;
-        }
-
-        // Create EventSource connection dynamically
-        const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, {
-            withCredentials: true,
+    eventSource.onmessage = (event) => {
+        const imageUpdate = JSON.parse(event.data);
+        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+        setState('completed');
+        setProgress(100);
+        toast.success("Background removed successfully!", {
+            description: "Your image is ready for download."
         });
+        if (imageUpdate.status === 'ready') {
+            eventSource.close();
+        }
+    };
 
-        es.onmessage = (event) => {
-            const imageUpdate = JSON.parse(event.data);
-            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-            setState('completed');
-            setProgress(100);
-            toast.success("Background removed successfully!", {
-                description: "Your image is ready for download."
-            });
-
-            if (imageUpdate.status === 'ready') {
-                es.close(); // close connection once done
-            }
-        };
-
-        es.onerror = (err) => {
-            console.error('SSE error', err);
-            es.close(); // optional cleanup on error
-        };
-
-        // ✅ Cleanup when component unmounts
-        return () => {
-            es.close();
-        };
-    }, []); // only once when component mounts
-
+    eventSource.onerror = (err) => {
+        console.error('SSE error', err);
+    };
 
     // Simulate progress when processing starts
     useEffect(() => {
