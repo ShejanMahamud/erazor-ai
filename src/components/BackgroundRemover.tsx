@@ -47,32 +47,50 @@ export function BackgroundRemover({
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
-    const userId = Cookies.get('user_id')
-    const anonUserId = Cookies.get('anon_id')
-    const userIdentifier = userId || anonUserId
-    if (!userIdentifier) {
-        toast.error("User identification error", {
-            description: "Could not identify user. Please ensure cookies are enabled."
-        })
-    }
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, { withCredentials: true });
 
-    eventSource.onmessage = (event) => {
-        const imageUpdate = JSON.parse(event.data);
-        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-        setState('completed');
-        setProgress(100);
-        toast.success("Background removed successfully!", {
-            description: "Your image is ready for download."
-        });
-        if (imageUpdate.status === 'ready') {
-            eventSource.close();
+
+    useEffect(() => {
+        const userId = Cookies.get('user_id');
+        const anonUserId = Cookies.get('anon_id');
+        const userIdentifier = userId || anonUserId;
+
+        if (!userIdentifier) {
+            toast.error("User identification error", {
+                description: "Could not identify user. Please ensure cookies are enabled."
+            });
+            return;
         }
-    };
 
-    eventSource.onerror = (err) => {
-        console.error('SSE error', err);
-    };
+        // Create EventSource connection dynamically
+        const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, {
+            withCredentials: true,
+        });
+
+        es.onmessage = (event) => {
+            const imageUpdate = JSON.parse(event.data);
+            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+            setState('completed');
+            setProgress(100);
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
+            });
+
+            if (imageUpdate.status === 'ready') {
+                es.close(); // close connection once done
+            }
+        };
+
+        es.onerror = (err) => {
+            console.error('SSE error', err);
+            es.close(); // optional cleanup on error
+        };
+
+        // ✅ Cleanup when component unmounts
+        return () => {
+            es.close();
+        };
+    }, []); // only once when component mounts
+
 
     // Simulate progress when processing starts
     useEffect(() => {
