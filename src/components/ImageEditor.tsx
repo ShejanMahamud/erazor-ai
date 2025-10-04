@@ -1,7 +1,12 @@
 "use client";
 import { useTheme } from 'next-themes';
+import dynamic from 'next/dist/shared/lib/dynamic';
 import { useEffect } from 'react';
-import FilerobotImageEditor, { TABS, TOOLS } from 'react-filerobot-image-editor';
+import { TABS, TOOLS } from 'react-filerobot-image-editor';
+const FilerobotImageEditor = dynamic(
+    () => import("react-filerobot-image-editor"),
+    { ssr: false } // 🚀 disables SSR so canvas isn't loaded server-side
+);
 
 
 export function ImageEditor({
