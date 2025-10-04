@@ -22,7 +22,6 @@ import {
 import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
-import { useImageSocket } from "@/hooks/useImageSocket"
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -46,39 +45,23 @@ export function BackgroundRemover({
     const [processedImage, setProcessedImage] = useState<string | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
-    const { imageUpdate, connected } = useImageSocket()
     const router = useRouter()
 
-    // Log connection status for debugging
-    useEffect(() => {
-        console.log("Socket connected:", connected);
-    }, [connected]);
+    const eventSource = new EventSource(`https://core.erazor.app/v1/api/images/events/`, { withCredentials: true });
 
-    // Handle image updates from socket
-    useEffect(() => {
-        console.log("ImageUpdate changed:", imageUpdate);
+    eventSource.onmessage = (event) => {
+        const imageUpdate = JSON.parse(event.data);
+        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+        setState('completed');
+        setProgress(100);
+        toast.success("Background removed successfully!", {
+            description: "Your image is ready for download."
+        });
+    };
 
-        if (!imageUpdate) return;
-
-        // Only process if we're currently in processing state
-        if (state !== 'processing') {
-            console.log("Not in processing state, ignoring update. Current state:", state);
-            return;
-        }
-
-        // Server ensures imageUpdate is always "ready" status
-        const processedImageUrl = imageUpdate?.bgRemovedImageUrlHQ || imageUpdate?.bgRemovedImageUrlLQ;
-
-        if (processedImageUrl) {
-            console.log("Processing complete, setting image:", processedImageUrl);
-            setProcessedImage(processedImageUrl);
-            setState('completed');
-            setProgress(100);
-            toast.success("Background removed successfully!", {
-                description: "Your image is ready for download."
-            });
-        }
-    }, [imageUpdate, state]);
+    eventSource.onerror = (err) => {
+        console.error('SSE error', err);
+    };
 
     // Simulate progress when processing starts
     useEffect(() => {
