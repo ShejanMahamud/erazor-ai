@@ -47,7 +47,7 @@ export function BackgroundRemover({
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
-    const eventSource = new EventSource(`https://core.erazor.app/v1/api/images/events/`, { withCredentials: true });
+    const eventSource = new EventSource(`https://core.erazor.app/v1/api/images/events`, { withCredentials: true });
 
     eventSource.onmessage = (event) => {
         const imageUpdate = JSON.parse(event.data);
