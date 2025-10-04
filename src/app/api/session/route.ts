@@ -21,6 +21,7 @@ export async function GET() {
                 sameSite: 'none',
                 secure: true,
                 httpOnly: false,
+                domain: '.erazor.app',
             });
             res.cookies.delete('anon_id'); // cleanup anon cookie
             return res;
@@ -41,6 +42,7 @@ export async function GET() {
         sameSite: 'none',
         secure: true,
         httpOnly: false,
+        domain: '.erazor.app',
     });
 
     return res;
