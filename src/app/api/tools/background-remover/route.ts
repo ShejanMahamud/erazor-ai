@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+        } else {
+            headers['Anonymous-User'] = cookieStore.get('anon_id')?.value!;
         }
 
         if (contentType.includes('multipart/form-data')) {
