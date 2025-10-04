@@ -20,7 +20,7 @@ export async function GET() {
                 maxAge,
                 sameSite: 'none',
                 secure: true,
-                httpOnly: true,
+                httpOnly: false,
             });
             res.cookies.delete('anon_id'); // cleanup anon cookie
             return res;
@@ -40,7 +40,7 @@ export async function GET() {
         maxAge: 60 * 60 * 24 * 365,
         sameSite: 'none',
         secure: true,
-        httpOnly: true,
+        httpOnly: false,
     });
 
     return res;
