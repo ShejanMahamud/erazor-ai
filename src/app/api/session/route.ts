@@ -1,10 +1,8 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function GET() {
-    const cookieStore = await cookies();
+export async function GET(res: NextResponse) {
     const { userId, sessionId } = await auth();
 
     if (userId && sessionId) {
@@ -16,11 +14,11 @@ export async function GET() {
             const now = Date.now();
             const maxAge = Math.max(0, Math.floor((expireDate - now) / 1000));
 
-            cookieStore.set('user_id', userId, {
+            res.cookies.set('user_id', userId, {
                 maxAge,
-                sameSite: 'lax',
+                sameSite: 'none',
                 secure: true,
-                httpOnly: false,
+                httpOnly: true,
             });
 
             return NextResponse.json({
@@ -29,22 +27,22 @@ export async function GET() {
             });
         } else {
             // session invalid → clear user_id before anonymous handling
-            cookieStore.delete('user_id');
+            res.cookies.delete('user_id');
         }
     } else {
         // not logged in → clear user_id if it exists
-        cookieStore.delete('user_id');
+        res.cookies.delete('user_id');
     }
 
     // handle anonymous users
-    const existingAnonId = cookieStore.get('anon_id')?.value;
+    const existingAnonId = res.cookies.get('anon_id')?.value;
     if (existingAnonId) {
         return NextResponse.json({ anon_id: existingAnonId });
     }
 
     const anonUserId = `anon-${uuidv4()}`;
-    cookieStore.set('anon_id', anonUserId, {
-        maxAge: 60 * 60 * 24 * 365, // 1 year
+    res.cookies.set('anon_id', anonUserId, {
+        maxAge: 60 * 60 * 24 * 365,
         sameSite: 'none',
         secure: true,
         httpOnly: true,
