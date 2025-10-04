@@ -65,6 +65,9 @@ export function BackgroundRemover({
         toast.success("Background removed successfully!", {
             description: "Your image is ready for download."
         });
+        if (imageUpdate.status === 'ready') {
+            eventSource.close();
+        }
     };
 
     eventSource.onerror = (err) => {
