@@ -22,8 +22,9 @@ import {
 import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
-import { useSession } from "@/hooks/useSession"
-import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
+import { useBackgroundRemoverStore } from "@/stores/background-remover-store"
+import { useSession } from "@/stores/session-store"
+import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
@@ -31,58 +32,68 @@ import { toast } from "sonner"
 import { ImageEditor } from "./ImageEditor"
 import { Heading } from "./ui/heading"
 
-
-type ProcessingState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error'
-
 export function BackgroundRemover({
     showHeader = true,
 }: {
     showHeader?: boolean
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
-    const [showUsageLimitDialog, setShowUsageLimitDialog] = useState(false)
-    const [state, setState] = useState<ProcessingState>('idle')
-    const [originalImage, setOriginalImage] = useState<string | null>(null)
-    const [processedImage, setProcessedImage] = useState<string | null>(null)
-    const [progress, setProgress] = useState(0)
-    const [error, setError] = useState<string | null>(null)
+
     const router = useRouter()
     const session = useSession((state) => state);
+    const {
+        state,
+        originalImage,
+        processedImage,
+        progress,
+        error,
+        showUsageLimitDialog,
+        setShowUsageLimitDialog,
+        fileUpload,
+        downloadPhoto,
+        reset,
+        connectSSE,
+        setProgress,
+    } = useBackgroundRemoverStore((s) => ({
+        state: s.state,
+        originalImage: s.originalImage,
+        processedImage: s.processedImage,
+        progress: s.progress,
+        error: s.error,
+        showUsageLimitDialog: s.showUsageLimitDialog,
+        setShowUsageLimitDialog: s.setShowUsageLimitDialog,
+        fileUpload: s.fileUpload,
+        downloadPhoto: s.downloadPhoto,
+        reset: s.reset,
+        connectSSE: s.connectSSE,
+        setProgress: s.setProgress,
+    }));
 
     const userIdentifier = session.userId || session.anonId;
-    if (!userIdentifier) {
-        toast.error("User identification error", {
-            description: "Could not identify user. Please ensure cookies are enabled."
-        })
-    }
 
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, { withCredentials: true });
 
-    eventSource.onmessage = (event) => {
-        const imageUpdate = JSON.parse(event.data);
-        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-        setState('completed');
-        setProgress(100);
-        toast.success("Background removed successfully!", {
-            description: "Your image is ready for download."
-        });
-        if (imageUpdate.status === 'ready') {
-            eventSource.close();
+    useEffect(() => {
+        if (session.loading) return;
+
+        if (!session.userId && !session.anonId) {
+            toast.error("User identification error", {
+                description: "Could not identify user. Please ensure cookies are enabled."
+            });
         }
-    };
+    }, [session]);
 
-    eventSource.onerror = (err) => {
-        console.error('SSE error', err);
-    };
+    useEffect(() => {
+        if (userIdentifier) connectSSE(userIdentifier);
+    }, [userIdentifier]);
+
 
     // Simulate progress when processing starts
     useEffect(() => {
         if (state === 'processing') {
             const progressInterval = setInterval(() => {
-                setProgress(prev => {
-                    const newProgress = prev >= 90 ? prev : prev + 10;
-                    return newProgress;
-                });
+                const currentProgress = progress;
+                const newProgress = currentProgress >= 90 ? currentProgress : currentProgress + 10;
+                setProgress(newProgress);
             }, 500);
 
             return () => {
@@ -92,118 +103,15 @@ export function BackgroundRemover({
     }, [state]);
 
     const handleFileUpload = async (files: File[]) => {
-        if (files.length === 0) return
-
-        const file = files[0]
-
-        // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-        if (!allowedTypes.includes(file.type)) {
-            toast.error('Invalid file type', {
-                description: 'Please upload a JPG, PNG, or WebP image file.'
-            })
-            return
-        }
-
-        // Validate file size (max 20MB)
-        const maxSize = 20 * 1024 * 1024
-        if (file.size > maxSize) {
-            toast.error('File too large', {
-                description: 'Please upload an image smaller than 20MB.'
-            })
-            return
-        }
-
-        // Reset states
-        setError(null)
-        setProcessedImage(null)
-        setProgress(0)
-        setState('uploading')
-
-        // Create preview of original image immediately
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            const imageDataUrl = e.target?.result as string;
-            setOriginalImage(imageDataUrl)
-            setState('processing')
-            setProgress(10) // Start with initial progress
-            toast.success('Image uploaded successfully!', {
-                description: 'Processing background removal...'
-            })
-        }
-        reader.readAsDataURL(file)
-
-        const formData = new FormData()
-        formData.append("file", file)
-
-        try {
-            const response = await fetch("/api/tools/background-remover", {
-                method: "POST",
-                body: formData,
-            })
-
-            if (!response.ok) {
-                setState('error')
-                setError("Upload failed")
-                return toast.error("Upload failed", {
-                    description: `Something went wrong: ${response.statusText}`
-                })
-            }
-
-            const data = await response.json()
-
-            if (/USAGE_LIMIT_EXCEEDED/.test(data.details)) {
-                toast.error("Usage limit exceeded", {
-                    description: "You have reached your usage limit for background removal.",
-                    action: {
-                        label: "Upgrade Plan",
-                        onClick: () => router.push("/pricing")
-                    }
-                })
-                setState('error')
-                setShowUsageLimitDialog(true)
-            }
-
-            return data
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "An error occurred"
-            setError(errorMessage)
-            setState('error')
-            toast.error("Upload failed", {
-                description: errorMessage
-            })
-        }
+        fileUpload(files)
     }
 
     const handleDownload = async () => {
-        if (!processedImage) return
-
-        try {
-            const response = await fetch(processedImage)
-            const blob = await response.blob()
-            const url = window.URL.createObjectURL(blob)
-            const a = document.createElement("a")
-            a.href = url
-            a.download = "erazor_ai_bg-removed.png"
-            document.body.appendChild(a)
-            a.click()
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
-            toast.success("Image downloaded successfully!")
-        } catch (err) {
-            setError("Failed to download image")
-            toast.error("Download failed", {
-                description: "Failed to download the processed image."
-            })
-        }
+        downloadPhoto()
     }
 
     const handleReset = () => {
-        setOriginalImage(null)
-        setProcessedImage(null)
-        setProgress(0)
-        setError(null)
-        setState('idle')
+        reset()
         toast.info("Ready for new image")
     }
 
@@ -323,6 +231,10 @@ export function BackgroundRemover({
                                             >
                                                 <Download className="h-4 w-4 mr-2" />
                                                 Download
+                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white">
+                                                    <Sparkle className="h-4 w-4 mr-1" />
+                                                    Pro
+                                                </div>
                                             </Button>
 
                                             <DropdownMenu>

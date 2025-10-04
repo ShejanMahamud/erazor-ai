@@ -1,5 +1,5 @@
 "use client";
-import { useSession } from "@/hooks/useSession";
+import { useSession } from "@/stores/session-store";
 import { useEffect } from "react";
 
 export function InitSession() {
