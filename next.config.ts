@@ -11,6 +11,7 @@ const baseConfig: NextConfig = {
 
   // Optimize bundle size
   experimental: {
+
     optimizePackageImports: [
       '@/components',
       '@/hooks',
@@ -121,7 +122,11 @@ const baseConfig: NextConfig = {
     ];
   },
 
-  transpilePackages: ['geist']
+  transpilePackages: [
+    'react-filerobot-image-editor',
+    'konva',
+    'geist'
+  ],
 };
 
 let configWithPlugins = baseConfig;
