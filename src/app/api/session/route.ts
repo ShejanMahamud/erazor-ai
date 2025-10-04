@@ -45,9 +45,9 @@ export async function GET() {
     const anonUserId = `anon-${uuidv4()}`;
     cookieStore.set('anon_id', anonUserId, {
         maxAge: 60 * 60 * 24 * 365, // 1 year
-        sameSite: 'lax',
+        sameSite: 'none',
         secure: true,
-        httpOnly: false,
+        httpOnly: true,
     });
 
     return NextResponse.json({ anon_id: anonUserId });
