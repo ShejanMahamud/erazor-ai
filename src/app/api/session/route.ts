@@ -1,11 +1,12 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
+    const cookieStore = await cookies();
     const { userId, sessionId } = await auth();
 
-    // If logged in
     if (userId && sessionId) {
         const client = await clerkClient();
         const session = await client.sessions.getSession(sessionId);
@@ -15,35 +16,40 @@ export async function GET() {
             const now = Date.now();
             const maxAge = Math.max(0, Math.floor((expireDate - now) / 1000));
 
-            const res = NextResponse.json({ user_id: userId });
-            res.cookies.set('user_id', userId, {
+            cookieStore.set('user_id', userId, {
                 maxAge,
-                sameSite: 'none',
+                sameSite: 'lax',
                 secure: true,
                 httpOnly: false,
-                domain: '.erazor.app',
             });
-            res.cookies.delete('anon_id'); // cleanup anon cookie
-            return res;
+
+            return NextResponse.json({
+                user_id: userId,
+                cookie_expires_in: maxAge,
+            });
         } else {
-            const res = NextResponse.json({ message: 'session expired' });
-            res.cookies.delete('user_id');
-            return res;
+            // session invalid → clear user_id before anonymous handling
+            cookieStore.delete('user_id');
         }
+    } else {
+        // not logged in → clear user_id if it exists
+        cookieStore.delete('user_id');
     }
 
-    // Not logged in → fallback to anon
-    const anonUserId = `anon-${uuidv4()}`;
-    const res = NextResponse.json({ anon_id: anonUserId });
+    // handle anonymous users
+    const existingAnonId = cookieStore.get('anon_id')?.value;
+    if (existingAnonId) {
+        return NextResponse.json({ anon_id: existingAnonId });
+    }
 
-    res.cookies.delete('user_id');
-    res.cookies.set('anon_id', anonUserId, {
-        maxAge: 60 * 60 * 24 * 365,
-        sameSite: 'none',
+    const anonUserId = `anon-${uuidv4()}`;
+    cookieStore.set('anon_id', anonUserId, {
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+        sameSite: 'lax',
         secure: true,
         httpOnly: false,
-        domain: '.erazor.app',
     });
 
-    return res;
+    return NextResponse.json({ anon_id: anonUserId });
+
 }
