@@ -22,6 +22,7 @@ import {
 import { FileUpload } from "@/components/ui/file-upload"
 import { ProcessingOverlay } from "@/components/ui/processing-overlay"
 import { Progress } from "@/components/ui/progress"
+import Cookies from "js-cookie"
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -46,8 +47,15 @@ export function BackgroundRemover({
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
-
-    const eventSource = new EventSource(`https://core.erazor.app/v1/api/images/events`, { withCredentials: true });
+    const userId = Cookies.get('user_id')
+    const anonUserId = Cookies.get('anon_id')
+    const userIdentifier = userId || anonUserId
+    if (!userIdentifier) {
+        toast.error("User identification error", {
+            description: "Could not identify user. Please ensure cookies are enabled."
+        })
+    }
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userIdentifier}`, { withCredentials: true });
 
     eventSource.onmessage = (event) => {
         const imageUpdate = JSON.parse(event.data);
