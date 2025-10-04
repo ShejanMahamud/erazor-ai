@@ -9,6 +9,7 @@ interface SessionState {
     anonId: string | null
     setUserId: (id: string) => void
     setAnonId: (id: string) => void
+    loading: boolean
 }
 
 export const useSession = create<SessionState>((set) => ({
@@ -16,4 +17,5 @@ export const useSession = create<SessionState>((set) => ({
     anonId: anonId,
     setUserId: (id: string) => set({ userId: id }),
     setAnonId: (id: string) => set({ anonId: id }),
+    loading: !userId && !anonId,
 }))
