@@ -6,69 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heading } from "@/components/ui/heading";
-import { CDN_URL } from "@/constants/data";
-import { useUserSubscription } from "@/hooks/useUserSubscription";
+import { recentUseCases } from "@/constants/data";
 import { cn } from "@/lib/utils";
+import { useSubscriptionStore } from "@/stores/subscription-store";
 import { ArrowRight, Zap } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useShallow } from "zustand/shallow";
 export default function OverviewPage() {
     const router = useRouter()
     const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
-    const { userSubscription, loading } = useUserSubscription()
 
-    const showBanner = !loading && (!userSubscription || userSubscription.status !== "active")
-    const useCases = [
-        {
-            before: `${CDN_URL}/assets/product-1.jpg`,
-            after: `${CDN_URL}/assets/product-1-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/product-2.jpg`,
-            after: `${CDN_URL}/assets/product-2-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/product-3.jpg`,
-            after: `${CDN_URL}/assets/product-3-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/portrait-1.jpg`,
-            after: `${CDN_URL}/assets/portrait-1-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/portrait-2.jpg`,
-            after: `${CDN_URL}/assets/portrait-2-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/portrait-3.jpg`,
-            after: `${CDN_URL}/assets/portrait-3-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/creative-1.jpg`,
-            after: `${CDN_URL}/assets/creative-1-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/creative-2.jpg`,
-            after: `${CDN_URL}/assets/creative-2-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/creative-3.jpg`,
-            after: `${CDN_URL}/assets/creative-3-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/social-1.jpg`,
-            after: `${CDN_URL}/assets/social-1-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/social-2.jpg`,
-            after: `${CDN_URL}/assets/social-2-removed.png`
-        },
-        {
-            before: `${CDN_URL}/assets/social-3.jpg`,
-            after: `${CDN_URL}/assets/social-3-removed.png`
-        }
-    ]
+    const [showBanner] = useSubscriptionStore(useShallow((state) => [!state.isSubscribed()]))
 
     return (
         <div className="min-h-screen bg-background">
@@ -135,7 +85,7 @@ export default function OverviewPage() {
                                 className="w-full"
                             >
                                 <CarouselContent className="-ml-2 md:-ml-4">
-                                    {useCases.map((useCase, index) => (
+                                    {recentUseCases.map((useCase, index) => (
                                         <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/3 lg:basis-1/4">
                                             <div
                                                 className='group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/50 bg-white/50 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-gray-800/50 dark:bg-black/20'

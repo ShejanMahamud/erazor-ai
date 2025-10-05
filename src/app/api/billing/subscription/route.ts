@@ -1,3 +1,4 @@
+import { serverBaseUrl } from '@/config';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 export async function GET(
@@ -5,11 +6,12 @@ export async function GET(
   const { getToken, userId } = await auth();
   const token = await getToken();
   const subscription = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/billing/subscription/${userId}`,
+    `${serverBaseUrl}/billing/subscription/${userId}`,
     {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'x-api-key': process.env.API_KEY!
       }
     }
   ).then((res) => res.json());

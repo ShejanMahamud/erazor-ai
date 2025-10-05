@@ -1,3 +1,4 @@
+import { Banner } from '@/components/Banner';
 import CookieConsent from '@/components/CookieConsent';
 import { InitSession } from '@/components/InitSession';
 import Providers from '@/components/layout/providers';
@@ -173,7 +174,7 @@ export default async function RootLayout({
   const isScaled = activeThemeValue?.endsWith('-scaled');
 
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning className='scroll-smooth dark:scroll-auto'>
       <head>
         <meta name="msvalidate.01" content="117FCF20377F6D1208898A5975FB202C" />
         <meta name="yandex-verification" content="c054bf5b69da36f3" />
@@ -336,6 +337,12 @@ export default async function RootLayout({
                 sparkCount={8}
                 duration={400}
               >
+                <Banner
+                  focusText="Early Bird Offer: "
+                  text="Get 20% off on yearly plans. Limited time only! Coupon code: EARLYBIRD20"
+                  linkText="Claim Offer"
+                  linkUrl="/pricing"
+                />
                 <InitSession />
 
                 {children}

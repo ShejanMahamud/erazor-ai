@@ -1,6 +1,6 @@
 'use client';
 
-import { CDN_URL } from '@/constants/data';
+import { useCases } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -36,64 +36,7 @@ export const UseCases = () => {
     }
   ];
 
-  const useCases = {
-    branding: [
-      {
-        before: `${CDN_URL}/assets/product-1.jpg`,
-        after: `${CDN_URL}/assets/product-1-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/product-2.jpg`,
-        after: `${CDN_URL}/assets/product-2-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/product-3.jpg`,
-        after: `${CDN_URL}/assets/product-3-removed.png`
-      }
-    ],
-    portraits: [
-      {
-        before: `${CDN_URL}/assets/portrait-1.jpg`,
-        after: `${CDN_URL}/assets/portrait-1-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/portrait-2.jpg`,
-        after: `${CDN_URL}/assets/portrait-2-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/portrait-3.jpg`,
-        after: `${CDN_URL}/assets/portrait-3-removed.png`
-      }
-    ],
-    creative: [
-      {
-        before: `${CDN_URL}/assets/creative-1.jpg`,
-        after: `${CDN_URL}/assets/creative-1-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/creative-2.jpg`,
-        after: `${CDN_URL}/assets/creative-2-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/creative-3.jpg`,
-        after: `${CDN_URL}/assets/creative-3-removed.png`
-      }
-    ],
-    social: [
-      {
-        before: `${CDN_URL}/assets/social-1.jpg`,
-        after: `${CDN_URL}/assets/social-1-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/social-2.jpg`,
-        after: `${CDN_URL}/assets/social-2-removed.png`
-      },
-      {
-        before: `${CDN_URL}/assets/social-3.jpg`,
-        after: `${CDN_URL}/assets/social-3-removed.png`
-      }
-    ]
-  };
+
 
   const currentUseCase = useCases[activeCategory as keyof typeof useCases];
   const activeColor =

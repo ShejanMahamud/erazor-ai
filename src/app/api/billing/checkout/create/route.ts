@@ -20,26 +20,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the backend API URL from environment variables
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    if (!backendUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Service temporarily unavailable'
-        },
-        { status: 500 }
-      );
-    }
-
     // Make request to your backend
     const response = await fetch(`${serverBaseUrl}/billing/checkout/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         // Add any authentication headers if needed
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'x-api-key': process.env.API_KEY!
       },
       body: JSON.stringify({
         productId,

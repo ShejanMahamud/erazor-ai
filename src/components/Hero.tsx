@@ -1,21 +1,26 @@
 'use client';
 
 import { BackgroundRemover } from '@/components/BackgroundRemover';
-import { avatars } from '@/constants/data';
+import { CDN_URL } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import CurvedLoop from './CurvedLoop';
 import { AnimatedGradientText } from './ui/animated-gradient-text';
 import { AnimatedShinyText } from './ui/animated-shiny-text';
 import { AvatarCircles } from './ui/avatar-circles';
 import { Button } from './ui/button';
+import CircularText from './ui/circular-text';
 import { MainBackground } from './ui/main-background';
 import { PointerHighlight } from './ui/pointer-highlight';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 export const Hero = () => {
   const { isSignedIn } = useAuth();
+  const [imageState, setImageState] = useState<'before' | 'after'>('before');
   return (
     <section className='bg-background font-manrope relative inset-0 min-h-screen overflow-hidden bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px] pt-40'>
       {/* Background Effects */}
@@ -109,8 +114,13 @@ export const Hero = () => {
               </Button>
             </div>
 
-            <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center'>
-              <AvatarCircles numPeople={99} avatarUrls={avatars} />
+            <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:border lg:p-2 lg:rounded-full lg:w-fit'>
+              <AvatarCircles numPeople={99} avatarUrls={[
+                'https://testingbot.com/free-online-tools/random-avatar/300?u=u837kfei139k',
+                'https://testingbot.com/free-online-tools/random-avatar/300?u=u87kfei139k',
+                'https://testingbot.com/free-online-tools/random-avatar/300?u=u837fei139k',
+                'https://testingbot.com/free-online-tools/random-avatar/300?u=u837kfei19k',
+              ]} />
               <span className='text-foreground/50 text-sm'>
                 Trusted by 10,000+ users worldwide
               </span>
@@ -118,83 +128,95 @@ export const Hero = () => {
           </div>
 
           <div className='relative'>
-            { /* <div className='group relative'>
-
-            <div
-              className={`relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-3xl shadow-2xl`}
-            >
-              <Image
-                src={
-                  imageState === 'before'
-                    ? `${CDN_URL}/assets/before.jpg`
-                    : `${CDN_URL}/assets/after.png`
-                }
-                alt={
-                  imageState === 'before'
-                    ? 'Original image'
-                    : 'Background removed'
-                }
-                priority={false}
-                fill
-                loading='lazy'
-                placeholder='blur'
-                blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyI+PHN0b3Agc3RvcC1jb2xvcj0iIzMzMzMzMyIgc3RvcC1vcGFjaXR5PSIwLjAzIiBvZmZzZXQ9IjIwJSIvPjxzdG9wIHN0b3AtY29sb3I9IiM2NjY2NjYiIHN0b3Atb3BhY2l0eT0iMC4wNSIgb2Zmc2V0PSI1MCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjMzMzMzMzIiBzdG9wLW9wYWNpdHk9IjAuMDMiIG9mZnNldD0iNzAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
-                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                className='object-cover transition-all duration-700 ease-out'
-              />
-
-              {imageState === 'after' && (
-                <div className='absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5' />
-              )}
-
-              <div className='absolute top-4 left-1/2 -translate-x-1/2'>
-                <div
-                  className={cn(
-                    'flex items-center gap-1 rounded-full p-1',
-                    'bg-white/80 backdrop-blur-md dark:bg-black/80',
-                    'border border-white/20 shadow-lg'
-                  )}
-                >
-                  <button
-                    onClick={() => setImageState('before')}
-                    className={cn(
-                      'rounded-full px-4 py-2 text-xs font-medium transition-all duration-300',
-                      imageState === 'before'
-                        ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black'
-                        : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'
-                    )}
-                  >
-                    Before
-                  </button>
-                  <button
-                    onClick={() => setImageState('after')}
-                    className={cn(
-                      'rounded-full px-4 py-2 text-xs font-medium transition-all duration-300',
-                      imageState === 'after'
-                        ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black'
-                        : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'
-                    )}
-                  >
-                    After
-                  </button>
-                </div>
+            <Tabs defaultValue='example'>
+              <div className='flex items-center justify-center'>
+                <TabsList className='flex items-center justify-center gap-4'>
+                  <TabsTrigger value='bg-rmv'>Background Remove</TabsTrigger>
+                  <TabsTrigger value='example'>Example</TabsTrigger>
+                </TabsList>
               </div>
-            </div>
+              <TabsContent value='example'>
+                <div className='group relative'>
 
-                <div className='absolute -bottom-6 left-1/2 -translate-x-1/2'>
-              <CircularText
-                text={`${imageState === 'before' ? 'ORIGINAL*IMAGE*' : 'BACKGROUND*REMOVED*'}`}
-                onHover='speedUp'
-                spinDuration={20}
-                className='text-2xl lg:text-xs'
-              />
-            </div>
-          </div>
-          <div className='absolute inset-0 -z-10'>
-              <div className='absolute top-1/4 -left-12 h-32 w-32 rounded-full bg-orange-500/10 blur-2xl' />
-              <div className='absolute -right-12 bottom-1/4 h-40 w-40 rounded-full bg-purple-600/10 blur-2xl' />
-            </div> */}
-            <BackgroundRemover showHeader={false} />
+                  <div
+                    className={`relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-3xl shadow-2xl`}
+                  >
+                    <Image
+                      src={
+                        imageState === 'before'
+                          ? `${CDN_URL}/assets/before.jpg`
+                          : `${CDN_URL}/assets/after.png`
+                      }
+                      alt={
+                        imageState === 'before'
+                          ? 'Original image'
+                          : 'Background removed'
+                      }
+                      priority={false}
+                      fill
+                      loading='lazy'
+                      placeholder='blur'
+                      blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyI+PHN0b3Agc3RvcC1jb2xvcj0iIzMzMzMzMyIgc3RvcC1vcGFjaXR5PSIwLjAzIiBvZmZzZXQ9IjIwJSIvPjxzdG9wIHN0b3AtY29sb3I9IiM2NjY2NjYiIHN0b3Atb3BhY2l0eT0iMC4wNSIgb2Zmc2V0PSI1MCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjMzMzMzMzIiBzdG9wLW9wYWNpdHk9IjAuMDMiIG9mZnNldD0iNzAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
+                      sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                      className='object-cover transition-all duration-700 ease-out'
+                    />
+
+                    {imageState === 'after' && (
+                      <div className='absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5' />
+                    )}
+
+                    <div className='absolute top-4 left-1/2 -translate-x-1/2'>
+                      <div
+                        className={cn(
+                          'flex items-center gap-1 rounded-full p-1',
+                          'bg-white/80 backdrop-blur-md dark:bg-black/80',
+                          'border border-white/20 shadow-lg'
+                        )}
+                      >
+                        <button
+                          onClick={() => setImageState('before')}
+                          className={cn(
+                            'rounded-full px-4 py-2 text-xs font-medium transition-all duration-300',
+                            imageState === 'before'
+                              ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black'
+                              : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'
+                          )}
+                        >
+                          Before
+                        </button>
+                        <button
+                          onClick={() => setImageState('after')}
+                          className={cn(
+                            'rounded-full px-4 py-2 text-xs font-medium transition-all duration-300',
+                            imageState === 'after'
+                              ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black'
+                              : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'
+                          )}
+                        >
+                          After
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='absolute -bottom-6 left-1/2 -translate-x-1/2'>
+                    <CircularText
+                      text={`${imageState === 'before' ? 'ORIGINAL*IMAGE*' : 'BACKGROUND*REMOVED*'}`}
+                      onHover='speedUp'
+                      spinDuration={20}
+                      className='text-xs'
+                    />
+                  </div>
+                </div>
+                <div className='absolute inset-0 -z-10'>
+                  <div className='absolute top-1/4 -left-12 h-32 w-32 rounded-full bg-orange-500/10 blur-2xl' />
+                  <div className='absolute -right-12 bottom-1/4 h-40 w-40 rounded-full bg-purple-600/10 blur-2xl' />
+                </div>
+              </TabsContent>
+              <TabsContent value='bg-rmv'>
+                <BackgroundRemover showHeader={false} />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
         <CurvedLoop

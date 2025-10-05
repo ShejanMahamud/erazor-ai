@@ -1,3 +1,4 @@
+import { serverBaseUrl } from '@/config';
 import { auth } from '@clerk/nextjs/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,6 +20,8 @@ export async function POST(req: NextRequest) {
             headers['Anonymous-User'] = cookieStore.get('anon_id')?.value!;
         }
 
+        headers['x-api-key'] = process.env.API_KEY!;
+
         if (contentType.includes('multipart/form-data')) {
             // For file uploads, forward the form data
             const formData = await req.formData();
@@ -36,7 +39,7 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/images/process`, {
+        const res = await fetch(`${serverBaseUrl}/images/process`, {
             method: 'POST',
             body: body,
             credentials: 'include',

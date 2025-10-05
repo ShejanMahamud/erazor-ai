@@ -1,9 +1,11 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { createCheckoutSession } from '@/lib/api/create-checkout';
 import { cn } from '@/lib/utils';
-import { TransformedPricingTier, UserSubscription } from '@/types/billing';
+import { TransformedPricingTier } from '@/types/billing';
 import { useAuth } from '@clerk/nextjs';
 import NumberFlow from '@number-flow/react';
+import { Subscription } from '@polar-sh/sdk/dist/commonjs/models/components/subscription';
 import { ArrowRight, BadgeCheck, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -16,7 +18,7 @@ export const PricingCard = ({
 }: {
   tier: TransformedPricingTier;
   paymentFrequency: string;
-  userSubscription?: UserSubscription | null;
+  userSubscription?: Subscription | null;
 }) => {
   const price = tier.price[paymentFrequency as keyof typeof tier.price];
   const isHighlighted = tier.highlighted;
@@ -83,26 +85,15 @@ export const PricingCard = ({
         throw new Error('Plan ID not found for free tier');
       }
 
-      const response = await fetch('/api/billing/checkout/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: planId,
-          clerkId: userId
-        }),
-      });
+      const response = await createCheckoutSession(planId, userId);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to create checkout session');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to create checkout session');
       }
 
       // Redirect to checkout URL
-      if (data.data?.url) {
-        window.location.href = data.data.url;
+      if (response.data?.url) {
+        window.location.href = response.data.url;
       } else {
         throw new Error('Checkout URL not received');
       }

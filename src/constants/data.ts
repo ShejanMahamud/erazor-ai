@@ -57,36 +57,176 @@ export const navItems: NavItem[] = [
   }
 ];
 
-// Fast-loading local avatars - no external dependencies
-export const avatars = [
+
+export const reviews = [
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iIzNiODJmNiIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UzwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user1'
+    name: 'Sarah Chen',
+    username: '@sarahdesigns',
+    body: 'Game changer for my e-commerce store! Background removal that used to take me hours now takes seconds. The quality is incredible.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=SarahChen'
   },
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iIzEwYjk4MSIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TTwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user2'
+    name: 'Marcus Rodriguez',
+    username: '@marcusphoto',
+    body: "As a photographer, I'm blown away by the precision. It handles complex hair and edges better than expensive desktop software.",
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=MarcusRodriguez'
   },
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI2Y1OWU0YiIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RDwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user3'
+    name: 'Emily Watson',
+    username: '@emilycreates',
+    body: 'Perfect for social media content creation. The AI is so smart - it even preserves fine details like jewelry and accessories.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=EmilyWatson'
   },
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI2VmNDQ0NCIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TDwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user4'
+    name: 'David Park',
+    username: '@davidstudio',
+    body: 'I run a small design agency and this tool has 10x our productivity. Clients love the quick turnaround times.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=DavidPark'
   },
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iIzg4NTVmNiIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QTwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user5'
+    name: 'Lisa Thompson',
+    username: '@lisashop',
+    body: 'Switched from expensive alternatives and never looked back. The batch processing feature saves me so much time for product photos.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=LisaThompson'
   },
   {
-    imageUrl:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iIzA2YjZkNCIvPjx0ZXh0IHg9IjIwIiB5PSIyNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SjwvdGV4dD48L3N2Zz4=',
-    profileUrl: 'https://github.com/user6'
+    name: 'Alex Kumar',
+    username: '@alexmarketing',
+    body: 'The API integration was seamless. We process thousands of images daily and the consistency is remarkable. Highly recommend!',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=AlexKumar'
+  },
+  {
+    name: 'Rachel Green',
+    username: '@rachelcontent',
+    body: 'Finally, a background removal tool that actually works on mobile! Perfect for creating content on the go.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=RachelGreen'
+  },
+  {
+    name: 'Tom Wilson',
+    username: '@tomdigital',
+    body: "The before/after quality blew my mind. It's like having a professional photo editor in your pocket. Worth every penny.",
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=TomWilson'
+  },
+  {
+    name: 'Priya Patel',
+    username: '@priyatech',
+    body: 'Integrated this into our workflow and cut editing time by 80%. The AI handles complex backgrounds flawlessly.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=PriyaPatel'
+  },
+  {
+    name: 'Jake Morrison',
+    username: '@jakecreative',
+    body: 'Best investment for my freelance business. Clients are impressed with the lightning-fast delivery and professional results.',
+    img: 'https://testingbot.com/free-online-tools/random-avatar/300?u=JakeMorrison'
   }
 ];
+
+export const useCases = {
+  branding: [
+    {
+      before: `${CDN_URL}/assets/product-1.jpg`,
+      after: `${CDN_URL}/assets/product-1-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/product-2.jpg`,
+      after: `${CDN_URL}/assets/product-2-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/product-3.jpg`,
+      after: `${CDN_URL}/assets/product-3-removed.png`
+    }
+  ],
+  portraits: [
+    {
+      before: `${CDN_URL}/assets/portrait-1.jpg`,
+      after: `${CDN_URL}/assets/portrait-1-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/portrait-2.jpg`,
+      after: `${CDN_URL}/assets/portrait-2-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/portrait-3.jpg`,
+      after: `${CDN_URL}/assets/portrait-3-removed.png`
+    }
+  ],
+  creative: [
+    {
+      before: `${CDN_URL}/assets/creative-1.jpg`,
+      after: `${CDN_URL}/assets/creative-1-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/creative-2.jpg`,
+      after: `${CDN_URL}/assets/creative-2-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/creative-3.jpg`,
+      after: `${CDN_URL}/assets/creative-3-removed.png`
+    }
+  ],
+  social: [
+    {
+      before: `${CDN_URL}/assets/social-1.jpg`,
+      after: `${CDN_URL}/assets/social-1-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/social-2.jpg`,
+      after: `${CDN_URL}/assets/social-2-removed.png`
+    },
+    {
+      before: `${CDN_URL}/assets/social-3.jpg`,
+      after: `${CDN_URL}/assets/social-3-removed.png`
+    }
+  ]
+};
+
+export const recentUseCases = [
+  {
+    before: `${CDN_URL}/assets/product-1.jpg`,
+    after: `${CDN_URL}/assets/product-1-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/product-2.jpg`,
+    after: `${CDN_URL}/assets/product-2-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/product-3.jpg`,
+    after: `${CDN_URL}/assets/product-3-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/portrait-1.jpg`,
+    after: `${CDN_URL}/assets/portrait-1-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/portrait-2.jpg`,
+    after: `${CDN_URL}/assets/portrait-2-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/portrait-3.jpg`,
+    after: `${CDN_URL}/assets/portrait-3-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/creative-1.jpg`,
+    after: `${CDN_URL}/assets/creative-1-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/creative-2.jpg`,
+    after: `${CDN_URL}/assets/creative-2-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/creative-3.jpg`,
+    after: `${CDN_URL}/assets/creative-3-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/social-1.jpg`,
+    after: `${CDN_URL}/assets/social-1-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/social-2.jpg`,
+    after: `${CDN_URL}/assets/social-2-removed.png`
+  },
+  {
+    before: `${CDN_URL}/assets/social-3.jpg`,
+    after: `${CDN_URL}/assets/social-3-removed.png`
+  }
+]

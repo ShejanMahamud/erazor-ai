@@ -1,12 +1,13 @@
 'use client';
 
 import { PricingCard } from '@/components/PricingCard';
-import { PricingError, PricingSkeleton } from '@/components/PricingComponents';
 import { PricingHeader } from '@/components/PricingHeader';
 import { PAYMENT_FREQUENCIES } from '@/config';
-import { usePricingPlans } from '@/hooks/usePricingPlans';
-import { useUserSubscription } from '@/hooks/useUserSubscription';
+import { useSubscriptionStore } from '@/stores/subscription-store';
 import { useState } from 'react';
+import { useShallow } from 'zustand/shallow';
+import { PricingError } from './PricingError';
+import { PricingSkeleton } from './PricingSkeleton';
 
 export const Pricing = () => {
   const [selectedPaymentFreq, setSelectedPaymentFreq] = useState(
@@ -14,17 +15,16 @@ export const Pricing = () => {
   );
 
   // Use custom hooks for data fetching
-  const { tiers, loading: plansLoading, error: plansError } = usePricingPlans();
-  const { userSubscription } = useUserSubscription();
+  const [userSubscription, plans, loading, error] = useSubscriptionStore(useShallow((state) => [state.subscription, state.plans, state.loading, state.error]));
 
   // Show loading skeleton while data is being fetched
-  if (plansLoading) {
+  if (loading) {
     return <PricingSkeleton />;
   }
 
   // Show error state if plans failed to load
-  if (plansError) {
-    return <PricingError error={plansError} />;
+  if (error) {
+    return <PricingError error={error} />;
   }
 
   return (
@@ -42,7 +42,7 @@ export const Pricing = () => {
       {/* Pricing Cards */}
       <div className='flex w-full max-w-6xl justify-center'>
         <div className='w-full mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 place-items-center'>
-          {tiers.map((tier) => (
+          {plans?.map((tier) => (
             <PricingCard
               key={tier.id}
               tier={tier}

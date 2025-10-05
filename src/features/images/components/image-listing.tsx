@@ -1,6 +1,7 @@
 'use client';
 
 import { DataNotFound } from '@/components/ui/not-found';
+import { getImageHistory } from '@/lib/api/image-history';
 import { ApiResponse } from '@/types/image';
 import { useAuth } from '@clerk/nextjs';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
@@ -39,20 +40,14 @@ export default function ImageListingPage() {
           ...(status && { status: String(status) })
         });
 
-        const res = await fetch(
-          `/api/images/history?${filters}`
-        );
+        const res = await getImageHistory(filters);
 
-        if (!res.ok) {
-          const errorData = await res.text();
-          toast.error('Failed to fetch images', {
-            description: errorData
-          });
+        if (!res) {
+          toast.error('Failed to fetch images');
           return;
         }
 
-        const responseData: ApiResponse = await res.json();
-        setData(responseData);
+        setData(res);
       } catch (error) {
         toast.error('Failed to fetch images', {
           description: (error as Error).message

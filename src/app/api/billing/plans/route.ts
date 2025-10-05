@@ -1,20 +1,18 @@
+import { serverBaseUrl } from '@/config';
 import { BillingPlansResponse } from '@/types/billing';
 import { NextResponse } from 'next/server';
 
 
 export async function GET() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL;
 
-    const apiUrl = `${baseUrl}/billing/plans`;
-
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${serverBaseUrl}/billing/plans`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.API_KEY!
       },
-      next: { revalidate: 300 }
+      next: { revalidate: 3600 }
     });
 
     if (!response.ok) {
