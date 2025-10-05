@@ -18,7 +18,7 @@ import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, Rotate
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
@@ -39,6 +39,7 @@ export function BackgroundRemover({
     showHeader?: boolean
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
+    const sseConnectedRef = useRef<boolean>(false)
 
     const router = useRouter()
     const session = useSession(useShallow((state) => state));
@@ -54,6 +55,7 @@ export function BackgroundRemover({
         downloadPhoto,
         reset,
         connectSSE,
+        disconnectSSE,
         setProgress,
     ] = useBackgroundRemoverStore(useShallow((s) => ([
         s.state,
@@ -67,6 +69,7 @@ export function BackgroundRemover({
         s.downloadPhoto,
         s.reset,
         s.connectSSE,
+        s.disconnectSSE,
         s.setProgress,
     ])));
 
@@ -91,9 +94,22 @@ export function BackgroundRemover({
     }, [session.initialized, session.loading, session.userId, session.anonId]);
 
     useEffect(() => {
-        if (session.initialized && userIdentifier) {
+        if (!session.initialized || !userIdentifier) return;
+
+        // Only connect if not already connected
+        if (!sseConnectedRef.current) {
+            console.log('Connecting SSE for user:', userIdentifier);
             connectSSE(userIdentifier);
+            sseConnectedRef.current = true;
         }
+
+        // Cleanup function to disconnect when component unmounts
+        return () => {
+            console.log('Cleaning up SSE connection');
+            disconnectSSE();
+            sseConnectedRef.current = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session.initialized, userIdentifier]);
 
 
