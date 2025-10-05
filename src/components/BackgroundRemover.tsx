@@ -99,13 +99,26 @@ export function BackgroundRemover({
             sseConnectedRef.current = true;
         }
 
-        // Cleanup function to disconnect when component unmounts
+        // Only cleanup on actual unmount, not on dependency changes
         return () => {
-            console.log('Cleaning up SSE connection');
-            backgroundRemoverStore.getState().disconnectSSE();
-            sseConnectedRef.current = false;
+            // Check if we're actually unmounting vs just re-rendering
+            if (sseConnectedRef.current) {
+                console.log('Component unmounting, cleaning up SSE connection');
+                backgroundRemoverStore.getState().disconnectSSE();
+                sseConnectedRef.current = false;
+            }
         };
-    }, [session.initialized, userIdentifier]);
+    }, []); // Remove dependencies to prevent reconnections
+
+    // Separate effect to handle user changes
+    useEffect(() => {
+        if (session.initialized && userIdentifier && sseConnectedRef.current) {
+            // Reconnect with new user if user changed
+            console.log('User changed, reconnecting SSE for:', userIdentifier);
+            backgroundRemoverStore.getState().disconnectSSE();
+            backgroundRemoverStore.getState().connectSSE(userIdentifier);
+        }
+    }, [userIdentifier]); // Only reconnect when user actually changes
 
 
     // Simulate progress when processing starts
