@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: 'Erazor AI <support@erazor.app>',
-      to: ['support@erazor.app'], // Send to your support email
-      replyTo: email, // Allow replying to the user
+      to: ['support@erazor.app'],
+      replyTo: email,
       subject: `Contact Form: ${subject}`,
       react: ContactEmail({ name, email, message }),
     });

@@ -77,6 +77,11 @@ const baseConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'testingbot.com',
+        port: ''
+      },
+      {
+        protocol: 'https',
         hostname: 'avatar.vercel.sh'
       },
       {

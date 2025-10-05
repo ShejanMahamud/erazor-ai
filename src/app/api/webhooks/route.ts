@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
       const res = await fetch(`${serverBaseUrl}/users`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.API_KEY! },
         body: JSON.stringify(payload)
       });
 
@@ -38,6 +38,33 @@ export async function POST(req: NextRequest) {
         }
 
         return new Response('Failed to create user', { status: 500 });
+      }
+
+      const data = await res.json();
+      return NextResponse.json(data);
+    }
+    else if (evt.type === 'user.updated') {
+      const payload = {
+        id: evt.data.id,
+        email: evt.data.email_addresses.map((email) => email.email_address)[0],
+        username: evt.data.username,
+        firstName: evt.data.first_name,
+        lastName: evt.data.last_name,
+        imageUrl: evt.data.image_url,
+        verified: evt.data.email_addresses.map(
+          (email) => email.verification?.status
+        )[0]
+      };
+
+      const res = await fetch(`${serverBaseUrl}/users/${evt.data.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.API_KEY! },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        return NextResponse.json({ message: 'Failed to update user' });
       }
 
       const data = await res.json();

@@ -1,6 +1,3 @@
-/**
- * Loading skeleton component for pricing section
- */
 export const PricingSkeleton = () => {
     return (
         <section className='my-32 flex flex-col items-center gap-10 px-10 py-10'>
@@ -18,7 +15,7 @@ export const PricingSkeleton = () => {
             {/* Pricing Cards Skeleton */}
             <div className='flex w-full max-w-6xl justify-center'>
                 <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-                    {[...Array(4)].map((_, i) => (
+                    {[...Array(3)].map((_, i) => (
                         <div
                             key={i}
                             className='bg-background relative flex min-h-[400px] animate-pulse flex-col gap-8 overflow-hidden rounded-2xl border p-6 shadow'
@@ -53,14 +50,14 @@ export const PricingSkeleton = () => {
                                         <div className='h-4 w-4 rounded bg-gray-200 dark:bg-gray-700'></div>
                                         <div
                                             className={`bg-gray-150 h-3 rounded dark:bg-gray-600 ${featureIndex === 0
-                                                    ? 'w-28'
-                                                    : featureIndex === 1
-                                                        ? 'w-24'
-                                                        : featureIndex === 2
-                                                            ? 'w-32'
-                                                            : featureIndex === 3
-                                                                ? 'w-20'
-                                                                : 'w-16'
+                                                ? 'w-28'
+                                                : featureIndex === 1
+                                                    ? 'w-24'
+                                                    : featureIndex === 2
+                                                        ? 'w-32'
+                                                        : featureIndex === 3
+                                                            ? 'w-20'
+                                                            : 'w-16'
                                                 }`}
                                         ></div>
                                     </div>
@@ -72,22 +69,6 @@ export const PricingSkeleton = () => {
                         </div>
                     ))}
                 </div>
-            </div>
-        </section>
-    );
-};
-
-/**
- * Error component for pricing section
- */
-export const PricingError = ({ error }: { error: string }) => {
-    return (
-        <section className='my-32 flex flex-col items-center gap-10 py-10'>
-            <div className='text-center'>
-                <h2 className='mb-2 text-2xl font-bold text-red-600'>
-                    Error loading plans
-                </h2>
-                <p className='text-gray-600'>{error}</p>
             </div>
         </section>
     );

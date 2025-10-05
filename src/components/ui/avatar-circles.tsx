@@ -9,7 +9,7 @@ interface Avatar {
 interface AvatarCirclesProps {
   className?: string;
   numPeople?: number;
-  avatarUrls: Avatar[];
+  avatarUrls: string[];
 }
 
 export const AvatarCircles = ({
@@ -30,7 +30,7 @@ export const AvatarCircles = ({
           width={40}
           height={40}
           alt={`User avatar ${index + 1}`}
-          src={url.imageUrl}
+          src={url}
           className='h-10 w-10 rounded-full border-2 border-white object-cover dark:border-gray-800'
         />
       ))}

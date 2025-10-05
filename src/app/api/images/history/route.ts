@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
         const res = await fetch(apiUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                'x-api-key': process.env.API_KEY!
             },
         });
 

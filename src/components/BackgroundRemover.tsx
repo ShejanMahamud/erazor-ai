@@ -24,6 +24,7 @@ import { useShallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { Heading } from "./ui/heading";
+import { ImageComparison, ImageComparisonImage, ImageComparisonSlider } from "./ui/image-comparison";
 
 const ImageEditor = dynamic(
     () => import('./ImageEditor').then(mod => ({ default: mod.ImageEditor })),
@@ -76,27 +77,64 @@ export function BackgroundRemover({
         s.setState
     ])));
 
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
+    // const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
 
-    eventSource.onmessage = (event) => {
-        const imageUpdate = JSON.parse(event.data);
-        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-        setState('completed');
-        setProgress(100);
-        toast.success("Background removed successfully!", {
-            description: "Your image is ready for download."
-        });
-        if (imageUpdate.status === 'ready') {
+    // eventSource.onmessage = (event) => {
+    //     const imageUpdate = JSON.parse(event.data);
+    //     setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+    //     setState('completed');
+    //     setProgress(100);
+    //     toast.success("Background removed successfully!", {
+    //         description: "Your image is ready for download."
+    //     });
+    //     if (imageUpdate.status === 'ready') {
+    //         eventSource.close();
+    //     }
+    // };
+    // eventSource.onerror = (err) => {
+    //     console.error('SSE error', err);
+    //     toast.error("Error connecting to image processing service", {
+    //         description: "Failed to connect to image processing service. Please try again later."
+    //     });
+    //     eventSource.close();
+    // };
+
+    useEffect(() => {
+        if (!session.userId && !session.anonId) return;
+
+        const eventSource = new EventSource(
+            `${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`,
+            { withCredentials: true }
+        );
+
+        eventSource.onmessage = (event) => {
+            const imageUpdate = JSON.parse(event.data);
+
+            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+            setState("completed");
+            setProgress(100);
+
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download.",
+            });
+
+            if (imageUpdate.status === "ready") {
+                eventSource.close();
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            console.error("SSE error", err);
+            toast.error("Error connecting to image processing service", {
+                description: "Failed to connect to image processing service. Please try again later.",
+            });
             eventSource.close();
-        }
-    };
-    eventSource.onerror = (err) => {
-        console.error('SSE error', err);
-        toast.error("SSE error", {
-            description: "Failed to connect to SSE. Please try again later."
-        });
-        eventSource.close();
-    };
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, [session.userId, session.anonId, setProcessedImage]);
 
     // Simulate progress when processing starts
     useEffect(() => {
@@ -260,7 +298,7 @@ export function BackgroundRemover({
                                                             <Pencil className="h-4 w-4 mr-2" />
                                                             <span className="text-sm font-medium">
                                                                 Download HD
-                                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white">
+                                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white text-xs">
                                                                     <Sparkle className="h-4 w-4 mr-1" />
                                                                     Pro
                                                                 </div>
@@ -291,7 +329,7 @@ export function BackgroundRemover({
                                 <CardContent className="space-y-6">
 
                                     {/* Separate Images */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium">Original Image</h4>
                                             <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
@@ -327,7 +365,23 @@ export function BackgroundRemover({
                                                 />
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
+                                    <ImageComparison className="aspect-square w-full rounded-lg" enableHover>
+                                        <ImageComparisonImage
+                                            src={originalImage}
+                                            className="grayscale"
+                                            alt="Original Image"
+                                            position="left"
+                                        />
+                                        <ImageComparisonImage
+                                            src={processedImage}
+                                            alt="Processed Image"
+                                            position="right"
+                                        />
+                                        <ImageComparisonSlider className="w-0.5 bg-white/30 backdrop-blur-xs">
+                                            <div className="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"></div>
+                                        </ImageComparisonSlider>
+                                    </ImageComparison>
                                 </CardContent>
                             </Card>
                         )}

@@ -3,7 +3,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Image, SingleImageApiResponse } from '@/types/image';
+import { getAImage } from '@/lib/api/get-a-image';
+import { Image } from '@/types/image';
 import { IconAlertCircle, IconArrowLeft, IconCheck, IconClock, IconDownload } from '@tabler/icons-react';
 import NextImage from 'next/image';
 import Link from 'next/link';
@@ -24,14 +25,13 @@ export default function ImageViewPage({ imageId }: ImageViewPageProps) {
         const fetchImage = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/images/${imageId}`);
+                const response = await getAImage(imageId);
 
-                if (!response.ok) {
+                if (!response) {
                     throw new Error('Failed to fetch image');
                 }
 
-                const data: SingleImageApiResponse = await response.json();
-                setImage(data.data);
+                setImage(response);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
             } finally {
