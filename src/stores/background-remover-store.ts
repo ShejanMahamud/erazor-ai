@@ -22,7 +22,7 @@ interface BackgroundRemoverState {
     setError: (e: string | null) => void;
     reset: () => void;
     setShowUsageLimitDialog: (show: boolean) => void;
-    connectSSE: (userId: string) => EventSource | null;
+    connectSSE: (userId: string) => void;
     disconnectSSE: () => void;
     downloadPhoto: () => void;
     fileUpload: (files: File[]) => Promise<any>;
@@ -52,53 +52,78 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         error: null,
     }),
 
-    connectSSE: (userId: string) => {
-        if (typeof window === 'undefined') return null;
+    // connectSSE: (userId: string) => {
+    //     if (typeof window === 'undefined') return null;
 
-        if (!userId) {
-            console.warn('Cannot connect SSE: No user identifier provided');
-            return null;
-        }
+    //     if (!userId) {
+    //         console.warn('Cannot connect SSE: No user identifier provided');
+    //         return null;
+    //     }
 
-        // Close existing connection if any
-        const existingConnection = get().eventSource;
-        if (existingConnection) {
-            console.log('Closing existing SSE connection before creating new one');
-            existingConnection.close();
-            set({ eventSource: null });
-        }
+    //     // Close existing connection if any
+    //     const existingConnection = get().eventSource;
+    //     if (existingConnection) {
+    //         console.log('Closing existing SSE connection before creating new one');
+    //         existingConnection.close();
+    //         set({ eventSource: null });
+    //     }
 
-        console.log('Establishing SSE connection for user:', userId);
-        const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {
-            withCredentials: true,
-        });
+    //     console.log('Establishing SSE connection for user:', userId);
+    //     const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {
+    //         withCredentials: true,
+    //     });
 
-        es.onopen = () => {
-            console.log('SSE connection opened successfully for user:', userId);
-        };
+    //     es.onopen = () => {
+    //         console.log('SSE connection opened successfully for user:', userId);
+    //     };
 
-        es.onmessage = (event) => {
-            console.log('SSE message received:', event.data);
-            try {
-                const data = JSON.parse(event.data);
-                set({
-                    processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
-                    state: "completed",
-                    progress: 100
-                });
-            } catch (error) {
-                console.error('Failed to parse SSE message:', error);
+    //     es.onmessage = (event) => {
+    //         console.log('SSE message received:', event.data);
+    //         try {
+    //             const data = JSON.parse(event.data);
+    //             set({
+    //                 processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
+    //                 state: "completed",
+    //                 progress: 100
+    //             });
+    //         } catch (error) {
+    //             console.error('Failed to parse SSE message:', error);
+    //         }
+    //         // Don't close the connection here - let the component manage it
+    //     };
+
+    //     es.onerror = (error) => {
+    //         console.error('SSE connection error:', error);
+    //         // Don't automatically close or retry - let the component handle reconnection
+    //     };
+
+    //     set({ eventSource: es });
+    //     return es;
+    // },
+    connectSSE(userId) {
+        const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, { withCredentials: true });
+
+        eventSource.onmessage = (event) => {
+            const imageUpdate = JSON.parse(event.data);
+            set({
+                processedImage: imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ,
+                state: "completed",
+                progress: 100
+            })
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
+            });
+            if (imageUpdate.status === 'ready') {
+                eventSource.close();
             }
-            // Don't close the connection here - let the component manage it
         };
 
-        es.onerror = (error) => {
-            console.error('SSE connection error:', error);
-            // Don't automatically close or retry - let the component handle reconnection
+
+        eventSource.onerror = (err) => {
+            console.error('SSE error', err);
         };
 
-        set({ eventSource: es });
-        return es;
+        set({ eventSource });
     },
     disconnectSSE: () => {
         const { eventSource } = get();
