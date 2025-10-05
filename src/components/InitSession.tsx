@@ -5,7 +5,7 @@ import { useShallow } from "zustand/shallow";
 
 export function InitSession() {
 
-    const [initialized, initializeSession, setAnonId, setUserId] = useSession(useShallow((s) => [s.initialized, s.initializeSession, s.setAnonId, s.setUserId]));
+    const [initialized, initializeSession, setAnonId, setUserId, userId, anonId] = useSession(useShallow((s) => [s.initialized, s.initializeSession, s.setAnonId, s.setUserId, s.userId, s.anonId]));
 
     useEffect(() => {
         // Initialize session from cookies first
@@ -22,10 +22,13 @@ export function InitSession() {
         fetch("/api/session")
             .then((res) => res.json())
             .then((data) => {
-                if (data.user_id) {
+                // Only update if the ID has actually changed
+                if (data.user_id && data.user_id !== userId) {
+                    console.log('Updating user_id from API:', data.user_id);
                     setUserId(data.user_id);
                 }
-                if (data.anon_id) {
+                if (data.anon_id && data.anon_id !== anonId) {
+                    console.log('Updating anon_id from API:', data.anon_id);
                     setAnonId(data.anon_id);
                 }
             })

@@ -65,6 +65,7 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         if (existingConnection) {
             console.log('Closing existing SSE connection before creating new one');
             existingConnection.close();
+            set({ eventSource: null });
         }
 
         console.log('Establishing SSE connection for user:', userId);
@@ -73,23 +74,27 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         });
 
         es.onopen = () => {
-            console.log('SSE connection opened');
+            console.log('SSE connection opened successfully for user:', userId);
         };
 
         es.onmessage = (event) => {
             console.log('SSE message received:', event.data);
-            const data = JSON.parse(event.data);
-            set({
-                processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
-                state: "completed",
-                progress: 100
-            });
+            try {
+                const data = JSON.parse(event.data);
+                set({
+                    processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
+                    state: "completed",
+                    progress: 100
+                });
+            } catch (error) {
+                console.error('Failed to parse SSE message:', error);
+            }
             // Don't close the connection here - let the component manage it
         };
 
         es.onerror = (error) => {
             console.error('SSE connection error:', error);
-            // Don't automatically retry - let the component handle reconnection
+            // Don't automatically close or retry - let the component handle reconnection
         };
 
         set({ eventSource: es });
