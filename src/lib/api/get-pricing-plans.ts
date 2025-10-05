@@ -4,7 +4,7 @@ export const getPricingPlans = async () => {
     const response = await fetch('/api/billing/plans', {
         next: { revalidate: 3600 }
     });
-
+    console.log("response:", response);
     if (!response.ok) {
         throw new Error(`Failed to fetch plans: ${response.statusText}`);
     }

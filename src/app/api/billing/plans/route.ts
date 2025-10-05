@@ -5,16 +5,14 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-
     const response = await fetch(`${serverBaseUrl}/billing/plans`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'x-api-key': process.env.API_KEY!
       },
       next: { revalidate: 3600 }
     });
-
+    console.log("response", response);
     if (!response.ok) {
       return NextResponse.json({
         success: false,

@@ -4,7 +4,7 @@ import { PricingCard } from '@/components/PricingCard';
 import { PricingHeader } from '@/components/PricingHeader';
 import { PAYMENT_FREQUENCIES } from '@/config';
 import { useSubscriptionStore } from '@/stores/subscription-store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { PricingError } from './PricingError';
 import { PricingSkeleton } from './PricingSkeleton';
@@ -15,7 +15,12 @@ export const Pricing = () => {
   );
 
   // Use custom hooks for data fetching
-  const [userSubscription, plans, loading, error] = useSubscriptionStore(useShallow((state) => [state.subscription, state.plans, state.loading, state.error]));
+  const [userSubscription, plans, loading, error, fetchPlans] = useSubscriptionStore(useShallow((state) => [state.subscription, state.plans, state.loading, state.error, state.fetchPlans]));
+
+  // Fetch plans when component mounts
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
 
   // Show loading skeleton while data is being fetched
   if (loading) {
