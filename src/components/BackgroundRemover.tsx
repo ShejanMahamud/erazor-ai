@@ -40,6 +40,7 @@ export function BackgroundRemover({
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
     const sseConnectedRef = useRef<boolean>(false)
+    const currentUserIdRef = useRef<string | null>(null)
 
     const router = useRouter()
     const session = useSession(useShallow((state) => state));
@@ -89,36 +90,38 @@ export function BackgroundRemover({
         }
     }, [session.initialized, session.loading, session.userId, session.anonId]);
 
+    // Single effect to manage SSE connection lifecycle
     useEffect(() => {
         if (!session.initialized || !userIdentifier) return;
 
-        // Only connect if not already connected
-        if (!sseConnectedRef.current) {
-            console.log('Connecting SSE for user:', userIdentifier);
-            backgroundRemoverStore.getState().connectSSE(userIdentifier);
-            sseConnectedRef.current = true;
-        }
+        // Check if user ID has changed
+        const userIdChanged = currentUserIdRef.current !== null && currentUserIdRef.current !== userIdentifier;
 
-        // Only cleanup on actual unmount, not on dependency changes
-        return () => {
-            // Check if we're actually unmounting vs just re-rendering
-            if (sseConnectedRef.current) {
-                console.log('Component unmounting, cleaning up SSE connection');
+        // Connect if not connected, or reconnect if user changed
+        if (!sseConnectedRef.current || userIdChanged) {
+            if (userIdChanged) {
+                console.log('User ID changed from', currentUserIdRef.current, 'to', userIdentifier, '- reconnecting SSE');
+                // Disconnect existing connection first
                 backgroundRemoverStore.getState().disconnectSSE();
                 sseConnectedRef.current = false;
+            } else {
+                console.log('Connecting SSE for user:', userIdentifier);
             }
-        };
-    }, []); // Remove dependencies to prevent reconnections
 
-    // Separate effect to handle user changes
-    useEffect(() => {
-        if (session.initialized && userIdentifier && sseConnectedRef.current) {
-            // Reconnect with new user if user changed
-            console.log('User changed, reconnecting SSE for:', userIdentifier);
-            backgroundRemoverStore.getState().disconnectSSE();
+            // Establish new connection
             backgroundRemoverStore.getState().connectSSE(userIdentifier);
+            sseConnectedRef.current = true;
+            currentUserIdRef.current = userIdentifier;
         }
-    }, [userIdentifier]); // Only reconnect when user actually changes
+
+        // Cleanup only on unmount
+        return () => {
+            console.log('Component unmounting, cleaning up SSE connection');
+            backgroundRemoverStore.getState().disconnectSSE();
+            sseConnectedRef.current = false;
+            currentUserIdRef.current = null;
+        };
+    }, [session.initialized, userIdentifier])
 
 
     // Simulate progress when processing starts

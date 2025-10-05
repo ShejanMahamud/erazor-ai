@@ -15,8 +15,20 @@ interface SessionState {
 const sessionStore = createStore<SessionState>((set) => ({
     userId: null,
     anonId: null,
-    setUserId: (id: string) => set({ userId: id }),
-    setAnonId: (id: string) => set({ anonId: id }),
+    setUserId: (id: string) => {
+        // Update cookie and state
+        if (typeof window !== 'undefined') {
+            Cookies.set('user_id', id, { sameSite: 'lax', secure: true })
+        }
+        set({ userId: id, loading: false })
+    },
+    setAnonId: (id: string) => {
+        // Update cookie and state
+        if (typeof window !== 'undefined') {
+            Cookies.set('anon_id', id, { sameSite: 'lax', secure: true })
+        }
+        set({ anonId: id, loading: false })
+    },
     loading: true,
     initialized: false,
     initializeSession: () => {
@@ -25,10 +37,12 @@ const sessionStore = createStore<SessionState>((set) => ({
         const anonId = Cookies.get('anon_id') || null
         const userId = Cookies.get('user_id') || null
 
+        console.log('Initializing session from cookies:', { userId, anonId })
+
         set({
             userId,
             anonId,
-            loading: !userId && !anonId,
+            loading: false,
             initialized: true
         })
     }
