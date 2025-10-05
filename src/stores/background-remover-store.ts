@@ -12,6 +12,7 @@ interface BackgroundRemoverState {
     progress: number;
     error: string | null;
     showUsageLimitDialog: boolean;
+    eventSource: EventSource | null;
 
 
     setState: (s: ProcessingState) => void;
@@ -21,7 +22,8 @@ interface BackgroundRemoverState {
     setError: (e: string | null) => void;
     reset: () => void;
     setShowUsageLimitDialog: (show: boolean) => void;
-    connectSSE: (userId: string) => void;
+    connectSSE: (userId: string) => EventSource;
+    disconnectSSE: () => void;
     downloadPhoto: () => void;
     fileUpload: (files: File[]) => Promise<any>;
 }
@@ -33,6 +35,7 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
     progress: 0,
     error: null,
     showUsageLimitDialog: false,
+    eventSource: null,
 
 
     setShowUsageLimitDialog: (show) => set({ showUsageLimitDialog: show }),
@@ -50,38 +53,55 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
     }),
 
     connectSSE: (userId: string) => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined') return null as any;
         
         if (!userId) {
             console.warn('Cannot connect SSE: No user identifier provided');
-            return;
+            return null as any;
         }
 
-        let retries = 0;
-        function start() {
-            const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {
-                withCredentials: true,
-            });
-            es.onopen = () => { retries = 0 };
-            es.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                set({ 
-                    processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
-                    state: "completed",
-                    progress: 100
-                });
-                es.close();
-            };
-            es.onerror = () => {
-                es.close();
-                if (retries < 5) {
-                    setTimeout(start, Math.min(1000 * 2 ** retries, 30000));
-                    retries++;
-                }
-            };
-            return es;
+        // Close existing connection if any
+        const existingConnection = get().eventSource;
+        if (existingConnection) {
+            console.log('Closing existing SSE connection before creating new one');
+            existingConnection.close();
         }
-        return start();
+
+        console.log('Establishing SSE connection for user:', userId);
+        const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {
+            withCredentials: true,
+        });
+        
+        es.onopen = () => { 
+            console.log('SSE connection opened');
+        };
+        
+        es.onmessage = (event) => {
+            console.log('SSE message received:', event.data);
+            const data = JSON.parse(event.data);
+            set({ 
+                processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
+                state: "completed",
+                progress: 100
+            });
+            // Don't close the connection here - let the component manage it
+        };
+        
+        es.onerror = (error) => {
+            console.error('SSE connection error:', error);
+            // Don't automatically retry - let the component handle reconnection
+        };
+        
+        set({ eventSource: es });
+        return es;
+    },
+    disconnectSSE: () => {
+        const { eventSource } = get();
+        if (eventSource) {
+            console.log('Disconnecting SSE');
+            eventSource.close();
+            set({ eventSource: null });
+        }
     },
     downloadPhoto: async () => {
         if (typeof window === 'undefined') return;
