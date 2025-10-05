@@ -245,10 +245,6 @@ export function BackgroundRemover({
                                             >
                                                 <Download className="h-4 w-4 mr-2" />
                                                 Download
-                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white">
-                                                    <Sparkle className="h-4 w-4 mr-1" />
-                                                    Pro
-                                                </div>
                                             </Button>
 
                                             <DropdownMenu>
@@ -260,8 +256,16 @@ export function BackgroundRemover({
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-48">
                                                     <DropdownMenuItem onClick={() => router.push('pricing')}>
-                                                        <Pencil className="h-4 w-4 mr-2" />
-                                                        Download HD
+                                                        <div className="flex items-center gap-2">
+                                                            <Pencil className="h-4 w-4 mr-2" />
+                                                            <span className="text-sm font-medium">
+                                                                Download HD
+                                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white">
+                                                                    <Sparkle className="h-4 w-4 mr-1" />
+                                                                    Pro
+                                                                </div>
+                                                            </span>
+                                                        </div>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={handleEditorOpen}>
                                                         <Pencil className="h-4 w-4 mr-2" />
