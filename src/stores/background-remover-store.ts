@@ -1,6 +1,7 @@
 import { uploadImage } from "@/lib/api/background-remover";
 import { toast } from "sonner";
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 
 type ProcessingState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
 
@@ -25,7 +26,7 @@ interface BackgroundRemoverState {
     fileUpload: (files: File[]) => Promise<any>;
 }
 
-export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, get) => ({
+const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) => ({
     state: "idle",
     originalImage: null,
     processedImage: null,
@@ -170,3 +171,11 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
         }
     }
 }));
+
+// Hook with optional equality function
+export function useBackgroundRemoverStore<T>(
+    selector: (state: BackgroundRemoverState) => T,
+    equals?: (a: T, b: T) => boolean
+): T {
+    return useStoreWithEqualityFn(backgroundRemoverStore, selector, equals);
+}

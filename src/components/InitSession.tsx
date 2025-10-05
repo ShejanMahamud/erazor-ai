@@ -13,7 +13,8 @@ export function InitSession() {
         if (!initialized) {
             initializeSession();
         }
-    }, [initialized, initializeSession]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialized]);
 
     useEffect(() => {
         // Fetch session from API after initialization
@@ -30,7 +31,8 @@ export function InitSession() {
                 }
             })
             .catch(() => { });
-    }, [initialized, setUserId, setAnonId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialized]);
 
     return null;
 }

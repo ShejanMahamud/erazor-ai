@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,11 +15,12 @@ import { Progress } from "@/components/ui/progress";
 import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
 import { useSession } from "@/stores/session-store";
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
-import dynamic from "next/dist/shared/lib/dynamic";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { shallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { Heading } from "./ui/heading";
@@ -38,7 +41,7 @@ export function BackgroundRemover({
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
 
     const router = useRouter()
-    const session = useSession((state) => state);
+    const session = useSession((state) => state, shallow);
     const {
         state,
         originalImage,
@@ -65,7 +68,7 @@ export function BackgroundRemover({
         reset: s.reset,
         connectSSE: s.connectSSE,
         setProgress: s.setProgress,
-    }));
+    }), shallow);
 
     // Initialize session on client side
     useEffect(() => {
@@ -107,7 +110,7 @@ export function BackgroundRemover({
                 clearInterval(progressInterval);
             };
         }
-    }, [state, setProgress]);
+    }, [state, progress, setProgress]);
 
     const handleFileUpload = async (files: File[]) => {
         fileUpload(files)
