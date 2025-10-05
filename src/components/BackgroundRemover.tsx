@@ -12,7 +12,7 @@ import {
 import { FileUpload } from "@/components/ui/file-upload";
 import { ProcessingOverlay } from "@/components/ui/processing-overlay";
 import { Progress } from "@/components/ui/progress";
-import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
+import { backgroundRemoverStore, useBackgroundRemoverStore } from "@/stores/background-remover-store";
 import { useSession } from "@/stores/session-store";
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -54,8 +54,6 @@ export function BackgroundRemover({
         fileUpload,
         downloadPhoto,
         reset,
-        connectSSE,
-        disconnectSSE,
         setProgress,
     ] = useBackgroundRemoverStore(useShallow((s) => ([
         s.state,
@@ -68,8 +66,6 @@ export function BackgroundRemover({
         s.fileUpload,
         s.downloadPhoto,
         s.reset,
-        s.connectSSE,
-        s.disconnectSSE,
         s.setProgress,
     ])));
 
@@ -99,17 +95,16 @@ export function BackgroundRemover({
         // Only connect if not already connected
         if (!sseConnectedRef.current) {
             console.log('Connecting SSE for user:', userIdentifier);
-            connectSSE(userIdentifier);
+            backgroundRemoverStore.getState().connectSSE(userIdentifier);
             sseConnectedRef.current = true;
         }
 
         // Cleanup function to disconnect when component unmounts
         return () => {
             console.log('Cleaning up SSE connection');
-            disconnectSSE();
+            backgroundRemoverStore.getState().disconnectSSE();
             sseConnectedRef.current = false;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session.initialized, userIdentifier]);
 
 

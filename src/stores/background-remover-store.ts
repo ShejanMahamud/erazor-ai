@@ -1,7 +1,7 @@
 import { uploadImage } from "@/lib/api/background-remover";
 import { toast } from "sonner";
-import { createStore } from "zustand/vanilla";
 import { useStoreWithEqualityFn } from "zustand/traditional";
+import { createStore } from "zustand/vanilla";
 
 type ProcessingState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
 
@@ -22,7 +22,7 @@ interface BackgroundRemoverState {
     setError: (e: string | null) => void;
     reset: () => void;
     setShowUsageLimitDialog: (show: boolean) => void;
-    connectSSE: (userId: string) => EventSource;
+    connectSSE: (userId: string) => EventSource | null;
     disconnectSSE: () => void;
     downloadPhoto: () => void;
     fileUpload: (files: File[]) => Promise<any>;
@@ -53,11 +53,11 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
     }),
 
     connectSSE: (userId: string) => {
-        if (typeof window === 'undefined') return null as any;
-        
+        if (typeof window === 'undefined') return null;
+
         if (!userId) {
             console.warn('Cannot connect SSE: No user identifier provided');
-            return null as any;
+            return null;
         }
 
         // Close existing connection if any
@@ -71,27 +71,27 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {
             withCredentials: true,
         });
-        
-        es.onopen = () => { 
+
+        es.onopen = () => {
             console.log('SSE connection opened');
         };
-        
+
         es.onmessage = (event) => {
             console.log('SSE message received:', event.data);
             const data = JSON.parse(event.data);
-            set({ 
+            set({
                 processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
                 state: "completed",
                 progress: 100
             });
             // Don't close the connection here - let the component manage it
         };
-        
+
         es.onerror = (error) => {
             console.error('SSE connection error:', error);
             // Don't automatically retry - let the component handle reconnection
         };
-        
+
         set({ eventSource: es });
         return es;
     },
@@ -105,7 +105,7 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
     },
     downloadPhoto: async () => {
         if (typeof window === 'undefined') return;
-        
+
         const { processedImage, setError } = get();
         if (!processedImage) return
 
@@ -191,6 +191,9 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         }
     }
 }));
+
+// Export the store for direct access to methods
+export { backgroundRemoverStore };
 
 // Hook with optional equality function
 export function useBackgroundRemoverStore<T>(
