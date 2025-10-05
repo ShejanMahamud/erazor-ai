@@ -14,17 +14,44 @@ export function ImageEditor({
     handleClose: () => void;
     imageSource: string;
 }) {
-    const handleSaveImage = (editedImageObject: any) => {
-        const { canvasBase64 } = editedImageObject;
+    const handleSaveImage = (imageData: any, imageDesignState: any) => {
+        console.log('Image data:', imageData);
+        console.log('Image design state:', imageDesignState);
 
-        if (!canvasBase64) return;
+        if (!imageData) {
+            console.error('No image data provided');
+            return;
+        }
 
+        let base64Data: string;
+
+        // Handle different formats of imageData
+        if (imageData instanceof HTMLCanvasElement) {
+            // If imageData is a canvas element, convert it to base64
+            base64Data = imageData.toDataURL('image/png');
+        } else if (typeof imageData === 'string') {
+            // If imageData is already a base64 string
+            base64Data = imageData;
+        } else if (imageData.canvas instanceof HTMLCanvasElement) {
+            // If imageData has a canvas property
+            base64Data = imageData.canvas.toDataURL('image/png');
+        } else if (imageData.base64) {
+            // If imageData has a base64 property
+            base64Data = imageData.base64;
+        } else {
+            console.error('Unable to process image data format:', typeof imageData);
+            return;
+        }
+
+        // Create download link
         const link = document.createElement("a");
-        link.href = canvasBase64; // base64 image URL
+        link.href = base64Data;
         link.download = "erazor_edited-image.png";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        console.log('Image saved successfully');
     }
 
     return (
@@ -42,8 +69,8 @@ export function ImageEditor({
             <div style={{ width: "90%", height: "90%" }}>
                 <FilerobotImageEditor
                     source={imageSource}
-                    onSave={(editedImageObject) =>
-                        handleSaveImage(editedImageObject)
+                    onSave={(imageData, imageDesignState) =>
+                        handleSaveImage(imageData, imageDesignState)
                     }
                     onClose={handleClose}
                     annotationsCommon={{ fill: "#ff0000" }}

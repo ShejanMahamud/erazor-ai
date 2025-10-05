@@ -300,7 +300,6 @@ export function BackgroundRemover({
                                                                 Download HD
                                                                 <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white text-xs">
                                                                     <Sparkle className="h-4 w-4 mr-1" />
-                                                                    Pro
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -369,7 +368,6 @@ export function BackgroundRemover({
                                     <ImageComparison className="aspect-square w-full rounded-lg" enableHover>
                                         <ImageComparisonImage
                                             src={originalImage}
-                                            className="grayscale"
                                             alt="Original Image"
                                             position="left"
                                         />
