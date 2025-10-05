@@ -77,64 +77,64 @@ export function BackgroundRemover({
         s.setState
     ])));
 
-    // const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
 
-    // eventSource.onmessage = (event) => {
-    //     const imageUpdate = JSON.parse(event.data);
-    //     setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-    //     setState('completed');
-    //     setProgress(100);
-    //     toast.success("Background removed successfully!", {
-    //         description: "Your image is ready for download."
-    //     });
-    //     if (imageUpdate.status === 'ready') {
+    eventSource.onmessage = (event) => {
+        const imageUpdate = JSON.parse(event.data);
+        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+        setState('completed');
+        setProgress(100);
+        toast.success("Background removed successfully!", {
+            description: "Your image is ready for download."
+        });
+        if (imageUpdate.status === 'ready') {
+            eventSource.close();
+        }
+    };
+    eventSource.onerror = (err) => {
+        console.error('SSE error', err);
+        toast.error("Error connecting to image processing service", {
+            description: "Failed to connect to image processing service. Please try again later."
+        });
+        eventSource.close();
+    };
+
+    // useEffect(() => {
+    //     if (!session.userId && !session.anonId) return;
+
+    //     const eventSource = new EventSource(
+    //         `${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`,
+    //         { withCredentials: true }
+    //     );
+
+    //     eventSource.onmessage = (event) => {
+    //         const imageUpdate = JSON.parse(event.data);
+
+    //         setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+    //         setState("completed");
+    //         setProgress(100);
+
+    //         toast.success("Background removed successfully!", {
+    //             description: "Your image is ready for download.",
+    //         });
+
+    //         if (imageUpdate.status === "ready") {
+    //             eventSource.close();
+    //         }
+    //     };
+
+    //     eventSource.onerror = (err) => {
+    //         console.error("SSE error", err);
+    //         toast.error("Error connecting to image processing service", {
+    //             description: "Failed to connect to image processing service. Please try again later.",
+    //         });
     //         eventSource.close();
-    //     }
-    // };
-    // eventSource.onerror = (err) => {
-    //     console.error('SSE error', err);
-    //     toast.error("Error connecting to image processing service", {
-    //         description: "Failed to connect to image processing service. Please try again later."
-    //     });
-    //     eventSource.close();
-    // };
+    //     };
 
-    useEffect(() => {
-        if (!session.userId && !session.anonId) return;
-
-        const eventSource = new EventSource(
-            `${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`,
-            { withCredentials: true }
-        );
-
-        eventSource.onmessage = (event) => {
-            const imageUpdate = JSON.parse(event.data);
-
-            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-            setState("completed");
-            setProgress(100);
-
-            toast.success("Background removed successfully!", {
-                description: "Your image is ready for download.",
-            });
-
-            if (imageUpdate.status === "ready") {
-                eventSource.close();
-            }
-        };
-
-        eventSource.onerror = (err) => {
-            console.error("SSE error", err);
-            toast.error("Error connecting to image processing service", {
-                description: "Failed to connect to image processing service. Please try again later.",
-            });
-            eventSource.close();
-        };
-
-        return () => {
-            eventSource.close();
-        };
-    }, [session.userId, session.anonId, setProcessedImage]);
+    //     return () => {
+    //         eventSource.close();
+    //     };
+    // }, [session.userId, session.anonId, setProcessedImage]);
 
     // Simulate progress when processing starts
     useEffect(() => {
