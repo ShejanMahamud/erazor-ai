@@ -1,10 +1,19 @@
 "use client";
-import { ImageEditor } from '@/components/ImageEditor';
 import MainLayout from '@/components/layout/main-layout';
 import { FileUpload } from '@/components/ui/file-upload';
 import HeadingText from '@/components/ui/heading-text';
 import { Spotlight } from '@/components/ui/spotlight';
+import dynamic from 'next/dynamic';
 import { Suspense, useState } from 'react';
+
+// Dynamically import ImageEditor to avoid SSR issues
+const ImageEditor = dynamic(
+    () => import('@/components/ImageEditor').then(mod => ({ default: mod.ImageEditor })),
+    {
+        ssr: false,
+        loading: () => <div className="flex items-center justify-center p-8">Loading editor...</div>
+    }
+);
 
 export default function ImageEditorPage() {
     const [originalImage, setOriginalImage] = useState<string | null>(null);
