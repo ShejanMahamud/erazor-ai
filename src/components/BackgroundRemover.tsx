@@ -295,12 +295,9 @@ export function BackgroundRemover({
                                                 <DropdownMenuContent align="end" className="w-48">
                                                     <DropdownMenuItem onClick={() => router.push('pricing')}>
                                                         <div className="flex items-center gap-2">
-                                                            <Pencil className="h-4 w-4 mr-2" />
+                                                            <Sparkle className="h-4 w-4 mr-2" />
                                                             <span className="text-sm font-medium">
                                                                 Download HD
-                                                                <div className="ml-2 rounded-md bg-gradient-to-r from-orange-500 to-purple-600 px-1.5 py-0.5 text-xs font-medium text-white text-xs">
-                                                                    <Sparkle className="h-4 w-4 mr-1" />
-                                                                </div>
                                                             </span>
                                                         </div>
                                                     </DropdownMenuItem>
