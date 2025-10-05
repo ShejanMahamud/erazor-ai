@@ -12,13 +12,13 @@ import {
 import { FileUpload } from "@/components/ui/file-upload";
 import { ProcessingOverlay } from "@/components/ui/processing-overlay";
 import { Progress } from "@/components/ui/progress";
-import { backgroundRemoverStore, useBackgroundRemoverStore } from "@/stores/background-remover-store";
+import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
 import { useSession } from "@/stores/session-store";
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
@@ -39,8 +39,6 @@ export function BackgroundRemover({
     showHeader?: boolean
 }) {
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
-    const sseConnectedRef = useRef<boolean>(false)
-    const currentUserIdRef = useRef<string | null>(null)
 
     const router = useRouter()
     const session = useSession(useShallow((state) => state));
@@ -55,6 +53,8 @@ export function BackgroundRemover({
         fileUpload,
         downloadPhoto,
         reset,
+        connectSSE,
+        disconnectSSE,
         setProgress,
     ] = useBackgroundRemoverStore(useShallow((s) => ([
         s.state,
@@ -67,18 +67,10 @@ export function BackgroundRemover({
         s.fileUpload,
         s.downloadPhoto,
         s.reset,
+        s.connectSSE,
+        s.disconnectSSE,
         s.setProgress,
     ])));
-
-    // Initialize session on client side
-    useEffect(() => {
-        if (!session.initialized) {
-            session.initializeSession();
-        }
-    }, [session.initialized]);
-
-    const userIdentifier = session.userId || session.anonId;
-
 
     useEffect(() => {
         if (!session.initialized || session.loading) return;
@@ -88,41 +80,8 @@ export function BackgroundRemover({
                 description: "Could not identify user. Please ensure cookies are enabled."
             });
         }
+        connectSSE(session.userId! || session.anonId!);
     }, [session.initialized, session.loading, session.userId, session.anonId]);
-
-    // Single effect to manage SSE connection lifecycle
-    useEffect(() => {
-        if (!session.initialized || !userIdentifier) return;
-
-        // Check if user ID has changed
-        const userIdChanged = currentUserIdRef.current !== null && currentUserIdRef.current !== userIdentifier;
-
-        // Connect if not connected, or reconnect if user changed
-        if (!sseConnectedRef.current || userIdChanged) {
-            if (userIdChanged) {
-                console.log('User ID changed from', currentUserIdRef.current, 'to', userIdentifier, '- reconnecting SSE');
-                // Disconnect existing connection first
-                backgroundRemoverStore.getState().disconnectSSE();
-                sseConnectedRef.current = false;
-            } else {
-                console.log('Connecting SSE for user:', userIdentifier);
-            }
-
-            // Establish new connection
-            backgroundRemoverStore.getState().connectSSE(userIdentifier);
-            sseConnectedRef.current = true;
-            currentUserIdRef.current = userIdentifier;
-        }
-
-        // Cleanup only on unmount
-        return () => {
-            console.log('Component unmounting, cleaning up SSE connection');
-            backgroundRemoverStore.getState().disconnectSSE();
-            sseConnectedRef.current = false;
-            currentUserIdRef.current = null;
-        };
-    }, [session.initialized, userIdentifier])
-
 
     // Simulate progress when processing starts
     useEffect(() => {
