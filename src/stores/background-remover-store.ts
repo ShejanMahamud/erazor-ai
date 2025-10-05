@@ -1,6 +1,7 @@
 import { uploadImage } from "@/lib/api/background-remover";
 import { toast } from "sonner";
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 
 type ProcessingState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
 
@@ -25,7 +26,7 @@ interface BackgroundRemoverState {
     fileUpload: (files: File[]) => Promise<any>;
 }
 
-export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, get) => ({
+const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) => ({
     state: "idle",
     originalImage: null,
     processedImage: null,
@@ -49,6 +50,8 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
     }),
 
     connectSSE: (userId: string) => {
+        if (typeof window === 'undefined') return;
+        
         if (!userId) {
             console.warn('Cannot connect SSE: No user identifier provided');
             return;
@@ -61,21 +64,28 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
             });
             es.onopen = () => { retries = 0 };
             es.onmessage = (event) => {
-                set({ processedImage: JSON.parse(event.data).bgRemovedImageUrlHQ || JSON.parse(event.data).bgRemovedImageUrlLQ });
-                set({ state: "completed" });
-                set({ progress: 100 });
+                const data = JSON.parse(event.data);
+                set({ 
+                    processedImage: data.bgRemovedImageUrlHQ || data.bgRemovedImageUrlLQ,
+                    state: "completed",
+                    progress: 100
+                });
                 es.close();
             };
             es.onerror = () => {
                 es.close();
-                setTimeout(start, Math.min(1000 * 2 ** retries, 30000));
-                retries++;
+                if (retries < 5) {
+                    setTimeout(start, Math.min(1000 * 2 ** retries, 30000));
+                    retries++;
+                }
             };
             return es;
         }
         return start();
     },
     downloadPhoto: async () => {
+        if (typeof window === 'undefined') return;
+        
         const { processedImage, setError } = get();
         if (!processedImage) return
 
@@ -99,6 +109,7 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
         }
     },
     fileUpload: async (files: File[]) => {
+        if (typeof window === 'undefined') return;
 
         if (files.length === 0) return
 
@@ -141,11 +152,9 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
         reader.readAsDataURL(file)
 
         try {
-            const response = await uploadImage(file)
+            const data = await uploadImage(file)
 
-            const data = await response.json()
-
-            if (/USAGE_LIMIT_EXCEEDED/.test(data.details)) {
+            if (data?.details && /USAGE_LIMIT_EXCEEDED/.test(data.details)) {
                 toast.error("Usage limit exceeded", {
                     description: "You have reached your usage limit for background removal.",
                 })
@@ -162,3 +171,11 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
         }
     }
 }));
+
+// Hook with optional equality function
+export function useBackgroundRemoverStore<T>(
+    selector: (state: BackgroundRemoverState) => T,
+    equals?: (a: T, b: T) => boolean
+): T {
+    return useStoreWithEqualityFn(backgroundRemoverStore, selector, equals);
+}

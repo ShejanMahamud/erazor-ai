@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,11 +15,12 @@ import { Progress } from "@/components/ui/progress";
 import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
 import { useSession } from "@/stores/session-store";
 import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
-import dynamic from "next/dist/shared/lib/dynamic";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useShallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { Heading } from "./ui/heading";
@@ -38,8 +41,8 @@ export function BackgroundRemover({
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
 
     const router = useRouter()
-    const session = useSession((state) => state);
-    const {
+    const session = useSession(useShallow((state) => state));
+    const [
         state,
         originalImage,
         processedImage,
@@ -52,27 +55,27 @@ export function BackgroundRemover({
         reset,
         connectSSE,
         setProgress,
-    } = useBackgroundRemoverStore((s) => ({
-        state: s.state,
-        originalImage: s.originalImage,
-        processedImage: s.processedImage,
-        progress: s.progress,
-        error: s.error,
-        showUsageLimitDialog: s.showUsageLimitDialog,
-        setShowUsageLimitDialog: s.setShowUsageLimitDialog,
-        fileUpload: s.fileUpload,
-        downloadPhoto: s.downloadPhoto,
-        reset: s.reset,
-        connectSSE: s.connectSSE,
-        setProgress: s.setProgress,
-    }));
+    ] = useBackgroundRemoverStore(useShallow((s) => ([
+        s.state,
+        s.originalImage,
+        s.processedImage,
+        s.progress,
+        s.error,
+        s.showUsageLimitDialog,
+        s.setShowUsageLimitDialog,
+        s.fileUpload,
+        s.downloadPhoto,
+        s.reset,
+        s.connectSSE,
+        s.setProgress,
+    ])));
 
     // Initialize session on client side
     useEffect(() => {
         if (!session.initialized) {
             session.initializeSession();
         }
-    }, [session.initialized, session.initializeSession]);
+    }, [session.initialized]);
 
     const userIdentifier = session.userId || session.anonId;
 
@@ -91,7 +94,7 @@ export function BackgroundRemover({
         if (session.initialized && userIdentifier) {
             connectSSE(userIdentifier);
         }
-    }, [session.initialized, userIdentifier, connectSSE]);
+    }, [session.initialized, userIdentifier]);
 
 
     // Simulate progress when processing starts
@@ -107,7 +110,7 @@ export function BackgroundRemover({
                 clearInterval(progressInterval);
             };
         }
-    }, [state, setProgress]);
+    }, [state, progress, setProgress]);
 
     const handleFileUpload = async (files: File[]) => {
         fileUpload(files)
@@ -185,7 +188,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={originalImage}
                                                     alt="Original"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>
@@ -193,10 +197,12 @@ export function BackgroundRemover({
                                         {/* Processing Overlay */}
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
-                                            <ProcessingOverlay
-                                                image={originalImage}
-                                                progress={progress}
-                                            />
+                                            {originalImage && (
+                                                <ProcessingOverlay
+                                                    image={originalImage}
+                                                    progress={progress}
+                                                />
+                                            )}
                                         </div>
                                     </div>
 
@@ -287,7 +293,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={originalImage}
                                                     alt="Original"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>
@@ -310,7 +317,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={processedImage}
                                                     alt="Background removed"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>

@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie'
-import { create } from 'zustand'
+import { createStore } from 'zustand/vanilla'
+import { useStoreWithEqualityFn } from 'zustand/traditional'
 
 interface SessionState {
     userId: string | null
@@ -11,7 +12,7 @@ interface SessionState {
     initializeSession: () => void
 }
 
-export const useSession = create<SessionState>((set, get) => ({
+const sessionStore = createStore<SessionState>((set) => ({
     userId: null,
     anonId: null,
     setUserId: (id: string) => set({ userId: id }),
@@ -31,4 +32,11 @@ export const useSession = create<SessionState>((set, get) => ({
             initialized: true
         })
     }
-}))
+}));
+
+export function useSession<T>(
+    selector: (state: SessionState) => T,
+    equals?: (a: T, b: T) => boolean
+): T {
+    return useStoreWithEqualityFn(sessionStore, selector, equals);
+}
