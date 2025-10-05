@@ -1,36 +1,34 @@
-"use client"
-import PageContainer from "@/components/layout/page-container"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { FileUpload } from "@/components/ui/file-upload"
-import { ProcessingOverlay } from "@/components/ui/processing-overlay"
-import { Progress } from "@/components/ui/progress"
-import { useBackgroundRemoverStore } from "@/stores/background-remover-store"
-import { useSession } from "@/stores/session-store"
-import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Suspense, useEffect, useState } from "react"
-import { toast } from "sonner"
-import { ImageEditor } from "./ImageEditor"
-import { Heading } from "./ui/heading"
+} from "@/components/ui/dropdown-menu";
+import { FileUpload } from "@/components/ui/file-upload";
+import { ProcessingOverlay } from "@/components/ui/processing-overlay";
+import { Progress } from "@/components/ui/progress";
+import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
+import { useSession } from "@/stores/session-store";
+import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
+import dynamic from "next/dist/shared/lib/dynamic";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { toast } from "sonner";
+import PageContainer from "./layout/page-container";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { Heading } from "./ui/heading";
+
+const ImageEditor = dynamic(
+    () => import('./ImageEditor').then(mod => ({ default: mod.ImageEditor })),
+    {
+        ssr: false,
+        loading: () => <div className="flex items-center justify-center p-4">Loading editor...</div>
+    }
+);
 
 export function BackgroundRemover({
     showHeader = true,
@@ -69,22 +67,31 @@ export function BackgroundRemover({
         setProgress: s.setProgress,
     }));
 
+    // Initialize session on client side
+    useEffect(() => {
+        if (!session.initialized) {
+            session.initializeSession();
+        }
+    }, [session.initialized, session.initializeSession]);
+
     const userIdentifier = session.userId || session.anonId;
 
 
     useEffect(() => {
-        if (session.loading) return;
+        if (!session.initialized || session.loading) return;
 
         if (!session.userId && !session.anonId) {
             toast.error("User identification error", {
                 description: "Could not identify user. Please ensure cookies are enabled."
             });
         }
-    }, [session]);
+    }, [session.initialized, session.loading, session.userId, session.anonId]);
 
     useEffect(() => {
-        if (userIdentifier) connectSSE(userIdentifier);
-    }, [userIdentifier]);
+        if (session.initialized && userIdentifier) {
+            connectSSE(userIdentifier);
+        }
+    }, [session.initialized, userIdentifier, connectSSE]);
 
 
     // Simulate progress when processing starts
@@ -100,7 +107,7 @@ export function BackgroundRemover({
                 clearInterval(progressInterval);
             };
         }
-    }, [state]);
+    }, [state, setProgress]);
 
     const handleFileUpload = async (files: File[]) => {
         fileUpload(files)

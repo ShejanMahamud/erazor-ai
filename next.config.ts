@@ -9,6 +9,38 @@ const baseConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production'
   },
 
+  webpack: (config, { isServer }) => {
+    // 👇 force konva to use browser build
+    config.resolve.alias['konva/lib/index-node'] = 'konva/lib/index.js';
+
+    // 👇 prevent Node.js modules from bundling into client
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        canvas: false,
+        fs: false,
+        path: false,
+        os: false,
+        crypto: false,
+        stream: false,
+        http: false,
+        https: false,
+        zlib: false,
+        url: false,
+        util: false,
+        buffer: false,
+        events: false,
+      };
+    }
+
+    // 👇 Externalize canvas for server-side rendering
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('canvas');
+    }
+
+    return config;
+  },
   // Optimize bundle size
   experimental: {
     optimizePackageImports: [
@@ -121,7 +153,9 @@ const baseConfig: NextConfig = {
     ];
   },
 
-  transpilePackages: ['geist']
+  transpilePackages: [
+    'geist'
+  ],
 };
 
 let configWithPlugins = baseConfig;

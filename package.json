@@ -7,7 +7,9 @@
     "url": "https://github.com/ShejanMahamud"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
+    "dev:webpack": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -26,7 +28,6 @@
   "dependencies": {
     "@clerk/nextjs": "^6.31.8",
     "@clerk/themes": "^2.2.26",
-    "@databuddy/sdk": "^2.1.76",
     "@number-flow/react": "^0.5.10",
     "@polar-sh/sdk": "^0.34.15",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -55,7 +56,6 @@
     "@tanstack/react-table": "^8.21.2",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.11.0",
-    "canvas": "^3.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
