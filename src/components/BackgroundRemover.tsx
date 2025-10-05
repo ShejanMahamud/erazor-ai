@@ -76,29 +76,27 @@ export function BackgroundRemover({
         s.setState
     ])));
 
-    useEffect(() => {
-        const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
 
-        eventSource.onmessage = (event) => {
-            const imageUpdate = JSON.parse(event.data);
-            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
-            setState('completed');
-            setProgress(100);
-            toast.success("Background removed successfully!", {
-                description: "Your image is ready for download."
-            });
-            if (imageUpdate.status === 'ready') {
-                eventSource.close();
-            }
-        };
-        eventSource.onerror = (err) => {
-            console.error('SSE error', err);
-            toast.error("SSE error", {
-                description: "Failed to connect to SSE. Please try again later."
-            });
+    eventSource.onmessage = (event) => {
+        const imageUpdate = JSON.parse(event.data);
+        setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+        setState('completed');
+        setProgress(100);
+        toast.success("Background removed successfully!", {
+            description: "Your image is ready for download."
+        });
+        if (imageUpdate.status === 'ready') {
             eventSource.close();
-        };
-    }, [session.anonId, session.userId])
+        }
+    };
+    eventSource.onerror = (err) => {
+        console.error('SSE error', err);
+        toast.error("SSE error", {
+            description: "Failed to connect to SSE. Please try again later."
+        });
+        eventSource.close();
+    };
 
     // Simulate progress when processing starts
     useEffect(() => {
