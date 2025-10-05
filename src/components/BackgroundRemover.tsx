@@ -56,6 +56,8 @@ export function BackgroundRemover({
         connectSSE,
         disconnectSSE,
         setProgress,
+        setProcessedImage,
+        setState
     ] = useBackgroundRemoverStore(useShallow((s) => ([
         s.state,
         s.originalImage,
@@ -70,18 +72,33 @@ export function BackgroundRemover({
         s.connectSSE,
         s.disconnectSSE,
         s.setProgress,
+        s.setProcessedImage,
+        s.setState
     ])));
 
     useEffect(() => {
-        if (!session.initialized || session.loading) return;
+        const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${session.userId || session.anonId}`, { withCredentials: true });
 
-        if (!session.userId && !session.anonId) {
-            toast.error("User identification error", {
-                description: "Could not identify user. Please ensure cookies are enabled."
+        eventSource.onmessage = (event) => {
+            const imageUpdate = JSON.parse(event.data);
+            setProcessedImage(imageUpdate.bgRemovedImageUrlHQ || imageUpdate.bgRemovedImageUrlLQ);
+            setState('completed');
+            setProgress(100);
+            toast.success("Background removed successfully!", {
+                description: "Your image is ready for download."
             });
-        }
-        connectSSE(session.userId! || session.anonId!);
-    }, [session.initialized, session.loading, session.userId, session.anonId]);
+            if (imageUpdate.status === 'ready') {
+                eventSource.close();
+            }
+        };
+        eventSource.onerror = (err) => {
+            console.error('SSE error', err);
+            toast.error("SSE error", {
+                description: "Failed to connect to SSE. Please try again later."
+            });
+            eventSource.close();
+        };
+    }, [session.anonId, session.userId])
 
     // Simulate progress when processing starts
     useEffect(() => {
