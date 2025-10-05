@@ -18,9 +18,9 @@ import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, Rotate
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 import PageContainer from "./layout/page-container";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { Heading } from "./ui/heading";
@@ -41,8 +41,8 @@ export function BackgroundRemover({
     const [editorOpen, setEditorOpen] = useState<boolean>(false)
 
     const router = useRouter()
-    const session = useSession((state) => state, shallow);
-    const {
+    const session = useSession(useShallow((state) => state));
+    const [
         state,
         originalImage,
         processedImage,
@@ -55,20 +55,20 @@ export function BackgroundRemover({
         reset,
         connectSSE,
         setProgress,
-    } = useBackgroundRemoverStore((s) => ({
-        state: s.state,
-        originalImage: s.originalImage,
-        processedImage: s.processedImage,
-        progress: s.progress,
-        error: s.error,
-        showUsageLimitDialog: s.showUsageLimitDialog,
-        setShowUsageLimitDialog: s.setShowUsageLimitDialog,
-        fileUpload: s.fileUpload,
-        downloadPhoto: s.downloadPhoto,
-        reset: s.reset,
-        connectSSE: s.connectSSE,
-        setProgress: s.setProgress,
-    }), shallow);
+    ] = useBackgroundRemoverStore(useShallow((s) => ([
+        s.state,
+        s.originalImage,
+        s.processedImage,
+        s.progress,
+        s.error,
+        s.showUsageLimitDialog,
+        s.setShowUsageLimitDialog,
+        s.fileUpload,
+        s.downloadPhoto,
+        s.reset,
+        s.connectSSE,
+        s.setProgress,
+    ])));
 
     // Initialize session on client side
     useEffect(() => {
