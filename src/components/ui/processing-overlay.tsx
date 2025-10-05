@@ -32,7 +32,8 @@ export function ProcessingOverlay({ image, progress, className }: ProcessingOver
                 <Image
                     src={image}
                     alt="Processing"
-                    className="w-full h-full object-contain opacity-80"
+                    fill
+                    className="object-contain opacity-80"
                 />
             )}
 

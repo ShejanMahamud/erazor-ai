@@ -72,7 +72,7 @@ export function BackgroundRemover({
         if (!session.initialized) {
             session.initializeSession();
         }
-    }, [session.initialized, session.initializeSession]);
+    }, [session.initialized]);
 
     const userIdentifier = session.userId || session.anonId;
 
@@ -91,7 +91,7 @@ export function BackgroundRemover({
         if (session.initialized && userIdentifier) {
             connectSSE(userIdentifier);
         }
-    }, [session.initialized, userIdentifier, connectSSE]);
+    }, [session.initialized, userIdentifier]);
 
 
     // Simulate progress when processing starts
@@ -185,7 +185,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={originalImage}
                                                     alt="Original"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>
@@ -193,10 +194,12 @@ export function BackgroundRemover({
                                         {/* Processing Overlay */}
                                         <div className="space-y-3">
                                             <h4 className="text-sm font-medium text-muted-foreground">AI Processing</h4>
-                                            <ProcessingOverlay
-                                                image={originalImage}
-                                                progress={progress}
-                                            />
+                                            {originalImage && (
+                                                <ProcessingOverlay
+                                                    image={originalImage}
+                                                    progress={progress}
+                                                />
+                                            )}
                                         </div>
                                     </div>
 
@@ -287,7 +290,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={originalImage}
                                                     alt="Original"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>
@@ -310,7 +314,8 @@ export function BackgroundRemover({
                                                 <Image
                                                     src={processedImage}
                                                     alt="Background removed"
-                                                    className="w-full h-full object-contain"
+                                                    fill
+                                                    className="object-contain"
                                                 />
                                             </div>
                                         </div>

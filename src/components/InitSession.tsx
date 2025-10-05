@@ -3,28 +3,34 @@ import { useSession } from "@/stores/session-store";
 import { useEffect } from "react";
 
 export function InitSession() {
-
-    const session = useSession((state) => state);
+    const initializeSession = useSession((state) => state.initializeSession);
+    const setUserId = useSession((state) => state.setUserId);
+    const setAnonId = useSession((state) => state.setAnonId);
+    const initialized = useSession((state) => state.initialized);
 
     useEffect(() => {
         // Initialize session from cookies first
-        if (!session.initialized) {
-            session.initializeSession();
+        if (!initialized) {
+            initializeSession();
         }
+    }, [initialized, initializeSession]);
 
-        // Then try to get session from API
+    useEffect(() => {
+        // Fetch session from API after initialization
+        if (!initialized) return;
+
         fetch("/api/session")
             .then((res) => res.json())
             .then((data) => {
                 if (data.user_id) {
-                    session.setUserId(data.user_id);
+                    setUserId(data.user_id);
                 }
                 if (data.anon_id) {
-                    session.setAnonId(data.anon_id);
+                    setAnonId(data.anon_id);
                 }
             })
             .catch(() => { });
-    }, [session.initialized, session.initializeSession, session.setUserId, session.setAnonId]);
+    }, [initialized, setUserId, setAnonId]);
 
     return null;
 }
