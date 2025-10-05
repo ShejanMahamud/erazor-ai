@@ -49,6 +49,11 @@ export const useBackgroundRemoverStore = create<BackgroundRemoverState>((set, ge
     }),
 
     connectSSE: (userId: string) => {
+        if (!userId) {
+            console.warn('Cannot connect SSE: No user identifier provided');
+            return;
+        }
+
         let retries = 0;
         function start() {
             const es = new EventSource(`${process.env.NEXT_PUBLIC_IMAGE_WS_URL}/${userId}`, {

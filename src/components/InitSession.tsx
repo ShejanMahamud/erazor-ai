@@ -7,6 +7,12 @@ export function InitSession() {
     const session = useSession((state) => state);
 
     useEffect(() => {
+        // Initialize session from cookies first
+        if (!session.initialized) {
+            session.initializeSession();
+        }
+
+        // Then try to get session from API
         fetch("/api/session")
             .then((res) => res.json())
             .then((data) => {
@@ -18,7 +24,7 @@ export function InitSession() {
                 }
             })
             .catch(() => { });
-    }, []);
+    }, [session.initialized, session.initializeSession, session.setUserId, session.setAnonId]);
 
     return null;
 }

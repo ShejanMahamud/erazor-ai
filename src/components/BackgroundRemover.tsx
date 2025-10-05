@@ -67,22 +67,31 @@ export function BackgroundRemover({
         setProgress: s.setProgress,
     }));
 
+    // Initialize session on client side
+    useEffect(() => {
+        if (!session.initialized) {
+            session.initializeSession();
+        }
+    }, [session.initialized, session.initializeSession]);
+
     const userIdentifier = session.userId || session.anonId;
 
 
     useEffect(() => {
-        if (session.loading) return;
+        if (!session.initialized || session.loading) return;
 
         if (!session.userId && !session.anonId) {
             toast.error("User identification error", {
                 description: "Could not identify user. Please ensure cookies are enabled."
             });
         }
-    }, [session]);
+    }, [session.initialized, session.loading, session.userId, session.anonId]);
 
     useEffect(() => {
-        if (userIdentifier) connectSSE(userIdentifier);
-    }, [userIdentifier]);
+        if (session.initialized && userIdentifier) {
+            connectSSE(userIdentifier);
+        }
+    }, [session.initialized, userIdentifier, connectSSE]);
 
 
     // Simulate progress when processing starts

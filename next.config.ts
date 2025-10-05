@@ -41,10 +41,8 @@ const baseConfig: NextConfig = {
 
     return config;
   },
-
   // Optimize bundle size
   experimental: {
-
     optimizePackageImports: [
       '@/components',
       '@/hooks',
