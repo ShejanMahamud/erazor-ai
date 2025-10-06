@@ -65,7 +65,7 @@ export const Footer = () => {
               Cookies
             </Link>
             <Link
-              href='https://monitor.erazor.app/status/erazor-ai'
+              href='https://monitor.erazor.app/status/heartbeat'
               target='_blank'
               rel='noopener noreferrer'
               className='text-foreground/60 hover:text-foreground transition-colors'
