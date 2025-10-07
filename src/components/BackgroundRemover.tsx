@@ -92,10 +92,6 @@ export function BackgroundRemover({
         }
     };
     eventSource.onerror = (err) => {
-        console.error('SSE error', err);
-        toast.error("Error connecting to image processing service", {
-            description: "Failed to connect to image processing service. Please try again later."
-        });
         eventSource.close();
     };
 
