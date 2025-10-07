@@ -179,31 +179,8 @@ export function BackgroundRemover({
                     }
                 </div>
 
-                {(!originalImage || state === 'error') && (
+                {!originalImage && (
                     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                        {state === 'error' && error && (
-                            <Card className="w-full max-w-md border-red-200 bg-red-50">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center space-y-3 text-center">
-                                        <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                                            <span className="text-red-600 text-xl">⚠️</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-red-900">Upload Failed</h3>
-                                            <p className="text-sm text-red-600 mt-1">{error}</p>
-                                        </div>
-                                        <Button
-                                            onClick={handleReset}
-                                            variant="outline"
-                                            className="border-red-200 text-red-700 hover:bg-red-100"
-                                            size="sm"
-                                        >
-                                            Try Again
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
                         <Suspense>
                             <FileUpload onChange={handleFileUpload} />
                         </Suspense>
@@ -400,6 +377,31 @@ export function BackgroundRemover({
                             </Card>
                         )}
                     </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <Card className="w-full max-w-md border-red-200 bg-red-50">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col items-center space-y-3 text-center">
+                                <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                    <span className="text-red-600 text-xl">⚠️</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-medium text-red-900">Upload Failed</h3>
+                                    <p className="text-sm text-red-600 mt-1">Something went wrong while uploading your image. Please try again.</p>
+                                </div>
+                                <Button
+                                    onClick={handleReset}
+                                    variant="outline"
+                                    className="border-red-200 text-red-700 hover:bg-red-100"
+                                    size="sm"
+                                >
+                                    Try Again
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
 
                 <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
