@@ -202,9 +202,19 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         reader.readAsDataURL(file)
 
         try {
-            const data = await uploadImage(file)
+            const data = await uploadImage(file);
 
-            if (data?.message === "USAGE_LIMIT_EXCEEDED") {
+            let details: any;
+
+            try {
+                // If details is a stringified JSON, parse it
+                details = typeof data?.details === 'string' ? JSON.parse(data.details) : data?.details;
+            } catch (e) {
+                details = data?.details; // fallback in case parsing fails
+            }
+
+            // Now check for your usage limit
+            if (details?.message === "Free daily limit exceeded, please try again tomorrow or consider upgrading to a paid plan.") {
                 toast.error("Usage limit exceeded", {
                     description: "You have reached your usage limit for background removal.",
                     action: {
@@ -213,11 +223,13 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
                             window.open('/pricing', '_blank');
                         }
                     }
-                })
-                set({ state: 'error', showUsageLimitDialog: true })
+                });
+
+                set({ state: 'error', showUsageLimitDialog: true });
             }
 
-            return data
+            return data;
+
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "An error occurred"
             set({ error: errorMessage, state: 'error' })
