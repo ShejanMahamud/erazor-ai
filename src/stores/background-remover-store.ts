@@ -206,31 +206,67 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
             return data;
         } catch (err: any) {
             let message = "An error occurred";
+            let shouldShowUsageLimitDialog = false;
 
-            // If it's an Axios error or fetch error with JSON response
-            const responseData = err?.response?.data || err?.data;
+            try {
+                // Handle different error response structures
+                const responseData = err?.response?.data || err?.data || err;
 
-            if (responseData) {
-                try {
-                    // details might be stringified JSON
-                    const details = typeof responseData.details === "string"
-                        ? JSON.parse(responseData.details)
-                        : responseData.details;
+                if (responseData) {
+                    // First check if details is a stringified JSON
+                    if (typeof responseData.details === "string") {
+                        const parsedDetails = JSON.parse(responseData.details);
+                        message = parsedDetails?.message || responseData?.message || responseData?.error || message;
 
-                    message = details?.message || responseData?.message || responseData?.error || message;
-                } catch {
-                    // fallback
-                    message = responseData?.message || responseData?.error || message;
+                        // Check if it's a usage limit error
+                        if (parsedDetails?.message?.includes("daily limit exceeded") ||
+                            parsedDetails?.meta?.statusCode === 403) {
+                            shouldShowUsageLimitDialog = true;
+                        }
+                    }
+                    // If details is already an object
+                    else if (responseData.details && typeof responseData.details === "object") {
+                        message = responseData.details.message || responseData?.message || responseData?.error || message;
+
+                        // Check if it's a usage limit error
+                        if (responseData.details.message?.includes("daily limit exceeded") ||
+                            responseData.details.meta?.statusCode === 403) {
+                            shouldShowUsageLimitDialog = true;
+                        }
+                    }
+                    // Fallback to direct message
+                    else {
+                        message = responseData?.message || responseData?.error || message;
+
+                        // Check if it's a usage limit error
+                        if (message?.includes("daily limit exceeded")) {
+                            shouldShowUsageLimitDialog = true;
+                        }
+                    }
                 }
-            } else if (err instanceof Error) {
-                message = err.message;
+            } catch (parseError) {
+                console.error("Error parsing error response:", parseError);
+                // Fallback to basic error handling
+                if (err instanceof Error) {
+                    message = err.message;
+                } else if (typeof err === "string") {
+                    message = err;
+                }
             }
 
             set({ error: message, state: 'error' });
 
-            toast.error("Upload failed", {
-                description: message
-            });
+            // Show usage limit dialog for limit exceeded errors
+            if (shouldShowUsageLimitDialog) {
+                set({ showUsageLimitDialog: true });
+                toast.error("Daily limit exceeded", {
+                    description: "You've reached your free daily limit. Please upgrade or try again tomorrow."
+                });
+            } else {
+                toast.error("Upload failed", {
+                    description: message
+                });
+            }
         }
 
     }
