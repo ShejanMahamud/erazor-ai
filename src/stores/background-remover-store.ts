@@ -204,9 +204,15 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
         try {
             const data = await uploadImage(file)
 
-            if (data?.details && /USAGE_LIMIT_EXCEEDED/.test(data.details)) {
+            if (data?.message === "USAGE_LIMIT_EXCEEDED") {
                 toast.error("Usage limit exceeded", {
                     description: "You have reached your usage limit for background removal.",
+                    action: {
+                        label: 'Upgrade',
+                        onClick: () => {
+                            window.open('/pricing', '_blank');
+                        }
+                    }
                 })
                 set({ state: 'error', showUsageLimitDialog: true })
             }

@@ -23,35 +23,60 @@ export function ImageEditor({
             return;
         }
 
-        let base64Data: string;
+        try {
+            let downloadUrl: string;
+            let filename: string = "erazor_edited-image.png";
 
-        // Handle different formats of imageData
-        if (imageData instanceof HTMLCanvasElement) {
-            // If imageData is a canvas element, convert it to base64
-            base64Data = imageData.toDataURL('image/png');
-        } else if (typeof imageData === 'string') {
-            // If imageData is already a base64 string
-            base64Data = imageData;
-        } else if (imageData.canvas instanceof HTMLCanvasElement) {
-            // If imageData has a canvas property
-            base64Data = imageData.canvas.toDataURL('image/png');
-        } else if (imageData.base64) {
-            // If imageData has a base64 property
-            base64Data = imageData.base64;
-        } else {
-            console.error('Unable to process image data format:', typeof imageData);
-            return;
+            // Handle different formats of imageData from react-filerobot-image-editor
+            if (imageData.imageBase64) {
+                // Most common format returned by react-filerobot-image-editor
+                downloadUrl = imageData.imageBase64;
+            } else if (imageData.canvas instanceof HTMLCanvasElement) {
+                // If imageData has a canvas property
+                downloadUrl = imageData.canvas.toDataURL('image/png');
+            } else if (imageData instanceof HTMLCanvasElement) {
+                // If imageData is a canvas element
+                downloadUrl = imageData.toDataURL('image/png');
+            } else if (typeof imageData === 'string' && imageData.startsWith('data:image')) {
+                // If imageData is already a base64 string
+                downloadUrl = imageData;
+            } else if (imageData.base64) {
+                // If imageData has a base64 property
+                downloadUrl = imageData.base64;
+            } else if (imageData.blob) {
+                // If imageData has a blob property
+                downloadUrl = URL.createObjectURL(imageData.blob);
+                filename = imageData.name || filename;
+            } else {
+                console.error('Unable to process image data format:', imageData);
+                console.error('Available properties:', Object.keys(imageData));
+                return;
+            }
+
+            // Ensure the URL starts with data: or blob: or http
+            if (!downloadUrl.startsWith('data:') && !downloadUrl.startsWith('blob:') && !downloadUrl.startsWith('http')) {
+                console.error('Invalid download URL format:', downloadUrl);
+                return;
+            }
+
+            // Create and trigger download
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up blob URL if created
+            if (downloadUrl.startsWith('blob:')) {
+                setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+            }
+
+            console.log('Image saved successfully');
+        } catch (error) {
+            console.error('Error saving image:', error);
         }
-
-        // Create download link
-        const link = document.createElement("a");
-        link.href = base64Data;
-        link.download = "erazor_edited-image.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log('Image saved successfully');
     }
 
     return (
