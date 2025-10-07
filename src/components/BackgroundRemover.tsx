@@ -14,7 +14,7 @@ import { ProcessingOverlay } from "@/components/ui/processing-overlay";
 import { Progress } from "@/components/ui/progress";
 import { useBackgroundRemoverStore } from "@/stores/background-remover-store";
 import { useSession } from "@/stores/session-store";
-import { CheckCircle, Download, ImageIcon, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
+import { CheckCircle, Download, Loader2, MoreVertical, Pencil, RotateCcw, Sparkle } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -379,23 +379,6 @@ export function BackgroundRemover({
                     </div>
                 )}
 
-                {/* Error State */}
-                {error && (
-                    <Card className="border-destructive">
-                        <CardContent className="p-6">
-                            <div className="flex items-center space-x-2 text-destructive">
-                                <ImageIcon className="h-5 w-5" />
-                                <div>
-                                    <p className="text-sm font-medium">Error: {error}</p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Please try again or contact support if the problem persists.
-                                    </p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
                 <AlertDialog open={showUsageLimitDialog} onOpenChange={setShowUsageLimitDialog}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -406,7 +389,7 @@ export function BackgroundRemover({
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction>Upgrade Plan</AlertDialogAction>
+                            <AlertDialogAction onClick={() => router.push('/pricing')}>Upgrade Plan</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
