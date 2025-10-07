@@ -203,40 +203,36 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
 
         try {
             const data = await uploadImage(file);
-
-            let details: any;
-
-            try {
-                // If details is a stringified JSON, parse it
-                details = typeof data?.details === 'string' ? JSON.parse(data.details) : data?.details;
-            } catch (e) {
-                details = data?.details; // fallback in case parsing fails
-            }
-
-            // Now check for your usage limit
-            if (details?.message === "Free daily limit exceeded, please try again tomorrow or consider upgrading to a paid plan.") {
-                toast.error("Usage limit exceeded", {
-                    description: "You have reached your usage limit for background removal.",
-                    action: {
-                        label: 'Upgrade',
-                        onClick: () => {
-                            window.open('/pricing', '_blank');
-                        }
-                    }
-                });
-
-                set({ state: 'error', showUsageLimitDialog: true });
-            }
-
             return data;
+        } catch (err: any) {
+            let message = "An error occurred";
 
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "An error occurred"
-            set({ error: errorMessage, state: 'error' })
+            // If it's an Axios error or fetch error with JSON response
+            const responseData = err?.response?.data || err?.data;
+
+            if (responseData) {
+                try {
+                    // details might be stringified JSON
+                    const details = typeof responseData.details === "string"
+                        ? JSON.parse(responseData.details)
+                        : responseData.details;
+
+                    message = details?.message || responseData?.message || responseData?.error || message;
+                } catch {
+                    // fallback
+                    message = responseData?.message || responseData?.error || message;
+                }
+            } else if (err instanceof Error) {
+                message = err.message;
+            }
+
+            set({ error: message, state: 'error' });
+
             toast.error("Upload failed", {
-                description: errorMessage
-            })
+                description: message
+            });
         }
+
     }
 }));
 
