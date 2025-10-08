@@ -69,6 +69,7 @@ export const Hero = () => {
                 {/* <br /> */}
                 Instantly
               </h1>
+              <a href="https://www.producthunt.com/products/erazor?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erazor" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1024324&theme=dark&t=1759928055664" alt="Erazor - Erase&#0032;backgrounds&#0044;&#0032;edit&#0032;instantly&#0032;—&#0032;all&#0032;in&#0032;one&#0032;free&#0032;tool&#0046; | Product Hunt" style={{ width: 200, height: 50 }} width="250" height="54" /></a>
 
               <p className='text-foreground/70 max-w-lg text-xl leading-relaxed'>
                 Professional AI background removal in seconds. Perfect for
