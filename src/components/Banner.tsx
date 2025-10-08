@@ -17,7 +17,14 @@ export const Banner = ({
     timer?: boolean;
     days?: number;
 }) => {
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(() => {
+        // Check localStorage to see if banner was previously dismissed
+        if (typeof window !== 'undefined') {
+            const dismissed = localStorage.getItem('banner-dismissed');
+            return dismissed !== 'true';
+        }
+        return true;
+    });
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
         hours: 0,
@@ -85,7 +92,10 @@ export const Banner = ({
             {/* Close button */}
             <button
                 className="absolute right-2 sm:right-4 top-3 sm:top-1/2 sm:-translate-y-1/2 text-white hover:text-yellow-200 transition-colors"
-                onClick={() => setIsVisible(false)}
+                onClick={() => {
+                    setIsVisible(false);
+                    localStorage.setItem('banner-dismissed', 'true');
+                }}
                 aria-label="Close development banner"
             >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
