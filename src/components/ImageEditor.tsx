@@ -15,9 +15,6 @@ export function ImageEditor({
     imageSource: string;
 }) {
     const handleSaveImage = (imageData: any, imageDesignState: any) => {
-        console.log('Image data:', imageData);
-        console.log('Image design state:', imageDesignState);
-
         if (!imageData) {
             console.error('No image data provided');
             return;
@@ -73,7 +70,6 @@ export function ImageEditor({
                 setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
             }
 
-            console.log('Image saved successfully');
         } catch (error) {
             console.error('Error saving image:', error);
         }

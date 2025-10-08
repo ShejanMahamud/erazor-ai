@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Banner = ({
     focusText,
@@ -57,21 +57,26 @@ export const Banner = ({
     if (!isVisible) return null;
 
     return (
-        <div className="dev-banner w-full bg-gradient-to-r from-orange-500 to-purple-600 h-16 flex items-center justify-center relative z-[60] border-b border-white/20">
-            <div className="flex items-center gap-2 mx-0 max-w-[90%] text-white drop-shadow-md">
-                <div className="flex items-center gap-2">
-                    <p className="text-sm md:text-base">
+        <div className="dev-banner w-full bg-gradient-to-r from-orange-500 to-purple-600 min-h-16 flex items-center justify-center relative z-[60] border-b border-white/20 px-4 py-3">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mx-0 max-w-[95%] sm:max-w-[90%] text-white drop-shadow-md text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <p className="text-xs sm:text-sm md:text-base leading-tight">
                         <strong> {focusText}</strong> {text}{" "}
                         <a href={linkUrl} className="underline transition duration-200 hover:text-yellow-200">
                             {linkText}
                         </a>
                     </p>
                     {timer && days && (
-                        <div className="ml-4 flex items-center gap-1 bg-black/20 rounded-lg px-3 py-1">
-                            <span className="text-xs md:text-sm font-mono">
-                                {timeLeft.days}d {timeLeft.hours.toString().padStart(2, '0')}:
-                                {timeLeft.minutes.toString().padStart(2, '0')}:
-                                {timeLeft.seconds.toString().padStart(2, '0')}
+                        <div className="flex items-center gap-1 bg-black/20 rounded-lg px-2 sm:px-3 py-1">
+                            <span className="text-xs sm:text-sm font-mono whitespace-nowrap">
+                                <span className="hidden sm:inline">
+                                    {timeLeft.days}d {timeLeft.hours.toString().padStart(2, '0')}:
+                                    {timeLeft.minutes.toString().padStart(2, '0')}:
+                                    {timeLeft.seconds.toString().padStart(2, '0')}
+                                </span>
+                                <span className="sm:hidden">
+                                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+                                </span>
                             </span>
                         </div>
                     )}
@@ -79,11 +84,11 @@ export const Banner = ({
             </div>
             {/* Close button */}
             <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-yellow-200 transition-colors"
+                className="absolute right-2 sm:right-4 top-3 sm:top-1/2 sm:-translate-y-1/2 text-white hover:text-yellow-200 transition-colors"
                 onClick={() => setIsVisible(false)}
                 aria-label="Close development banner"
             >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>

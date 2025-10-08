@@ -12,7 +12,6 @@ export async function GET() {
       },
       next: { revalidate: 3600 }
     });
-    console.log("response", response);
     if (!response.ok) {
       return NextResponse.json({
         success: false,

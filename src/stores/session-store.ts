@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
-import { createStore } from 'zustand/vanilla'
 import { useStoreWithEqualityFn } from 'zustand/traditional'
+import { createStore } from 'zustand/vanilla'
 
 interface SessionState {
     userId: string | null
@@ -36,8 +36,6 @@ const sessionStore = createStore<SessionState>((set) => ({
 
         const anonId = Cookies.get('anon_id') || null
         const userId = Cookies.get('user_id') || null
-
-        console.log('Initializing session from cookies:', { userId, anonId })
 
         set({
             userId,

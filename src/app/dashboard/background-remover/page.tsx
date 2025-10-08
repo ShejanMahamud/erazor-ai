@@ -1,13 +1,12 @@
 "use client"
 import { BackgroundRemover } from "@/components/BackgroundRemover"
 import { Banner } from "@/components/Banner"
-import { useUserSubscription } from "@/hooks/useUserSubscription"
+import { useSubscriptionStore } from "@/stores/subscription-store"
+import { useShallow } from "zustand/shallow"
 
 export default function BackgroundRemoverPage() {
-  const { userSubscription, loading } = useUserSubscription()
 
-  const showBanner = !loading && (!userSubscription || userSubscription.status !== "active")
-
+  const [showBanner] = useSubscriptionStore(useShallow((state) => [!state.isSubscribed()]))
   return (
     <div className="min-h-screen bg-background">
       {showBanner && <Banner focusText="Upgrade Plan" text="To access the Background Remover tool, please upgrade your plan." linkText="Upgrade" linkUrl="/pricing" />}
