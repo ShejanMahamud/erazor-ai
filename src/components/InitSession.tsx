@@ -24,11 +24,9 @@ export function InitSession() {
             .then((data) => {
                 // Only update if the ID has actually changed
                 if (data.user_id && data.user_id !== userId) {
-                    console.log('Updating user_id from API:', data.user_id);
                     setUserId(data.user_id);
                 }
                 if (data.anon_id && data.anon_id !== anonId) {
-                    console.log('Updating anon_id from API:', data.anon_id);
                     setAnonId(data.anon_id);
                 }
             })

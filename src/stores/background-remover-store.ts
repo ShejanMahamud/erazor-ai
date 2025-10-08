@@ -128,7 +128,6 @@ const backgroundRemoverStore = createStore<BackgroundRemoverState>((set, get) =>
     disconnectSSE: () => {
         const { eventSource } = get();
         if (eventSource) {
-            console.log('Disconnecting SSE');
             eventSource.close();
             set({ eventSource: null });
         }
