@@ -338,9 +338,11 @@ export default async function RootLayout({
                 duration={400}
               >
                 <Banner
-                  focusText="Early Bird Offer: "
-                  text="Get 20% off on yearly plans. Limited time only! Coupon code: EARLYBIRD20"
+                  focusText="Product Hunt Launch Offer: "
+                  text="Get 50% off on yearly plans. Limited time only! Coupon code: PHLAUNCH50"
                   linkText="Claim Offer"
+                  timer={true}
+                  days={7}
                   linkUrl="/pricing"
                 />
                 <InitSession />
